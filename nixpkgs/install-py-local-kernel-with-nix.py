@@ -7,10 +7,15 @@ This replaces the former 'install-py-local-kernel-with-nix.sh' and
 configured through environment variables ('name', 'use_nom', 'kernel_prefix')
 is a command line option now, and '--all-variants' builds every variant in a
 single nix-build call, like the old '-cuda' script did.\n
-Nothing outside of the repo is written to when the usual user level directories
-are not writable: the nix-build out link always goes into the repo, and the
-Jupyter kernel spec, the nix cache and the nom state directory fall back to
-'<repo>/tmp/' as needed.
+The nix-build out link is installed into the current user's kernel directory,
+'$JUPYTER_DATA_DIR/kernels/nix-build-py-local<variant>/result' (by default
+'$HOME/.local/share/jupyter/kernels/...'), when that directory is writable.
+That is what the old bash script did, and it keeps the nix store path alive
+through the indirect gc root nix registers for the out link.  The repo link
+'./result-py-local<variant>' points at that out link, so it stays usable.\n
+When the user level kernel directory is not writable, the out link, the Jupyter
+kernel spec, the nix cache and the nom state directory all fall back to
+'<repo>/tmp/', so that nothing outside of the repo is written to.
 """
 
 import argparse
@@ -66,18 +71,26 @@ the suffix is '' for 'default' and '-<name>' otherwise: '--variant cuda' builds
 
 arguments that are not recognised here are passed on to nix-build.
 
-outputs (all inside the repo):
-  ./result-py-local<variant>              nix-build out link
-  ./tmp/jupyter/share/jupyter/kernels/    kernel spec, used when it cannot be
-                                          installed for the current user
+outputs:
+  $JUPYTER_DATA_DIR/kernels/nix-build-py-local<variant>/result
+                                          nix-build out link and its gc root,
+                                          used when the user level kernel
+                                          directory (by default
+                                          '$HOME/.local/share/jupyter/kernels')
+                                          is writable
+  ./result-py-local<variant>              link to that out link, always in the
+                                          repo
+  ./tmp/jupyter/share/jupyter/kernels/    out link and kernel spec, used when
+                                          the user level kernel directory is
+                                          not writable
   ./tmp/nix-cache, ./tmp/nix-state        nix and nom caches, used when the
                                           user level directories are not writable
 
-The kernel spec is installed for the current user when the user level kernel
-directory ('$JUPYTER_DATA_DIR/kernels', by default
-'$HOME/.local/share/jupyter/kernels') is writable.  Otherwise it is installed in
-'./tmp/jupyter' (or '--kernel-prefix') and has to be added to JUPYTER_PATH; the
-run prints the exact line, e.g.:
+The out link and the kernel spec are installed for the current user when the
+user level kernel directory ('$JUPYTER_DATA_DIR/kernels', by default
+'$HOME/.local/share/jupyter/kernels') is writable.  Otherwise they are installed
+in './tmp/jupyter' (or '--kernel-prefix') and it has to be added to
+JUPYTER_PATH; the run prints the exact line, e.g.:
   export JUPYTER_PATH="{REPO_PATH}/tmp/jupyter/share/jupyter${{JUPYTER_PATH:+:$JUPYTER_PATH}}"
 """
 
@@ -133,9 +146,10 @@ def parse_args(argv):
         "--kernel-prefix",
         type=Path,
         metavar="DIR",
-        help="install the repo local kernel spec into DIR/share/jupyter/kernels "
-        f"(default: {REPO_PATH / 'tmp' / 'jupyter'}); only used when the kernel "
-        "spec cannot be installed for the current user",
+        help="install the repo local out link and kernel spec into "
+        "DIR/share/jupyter/kernels "
+        f"(default: {REPO_PATH / 'tmp' / 'jupyter'}); only used when they "
+        "cannot be installed for the current user",
     )
     parser.add_argument(
         "--no-nom",
@@ -273,19 +287,21 @@ def setup_cache_fallbacks(env):
         env["XDG_STATE_HOME"] = str(repo_state)
 
 def setup_kernel_install(kernel_prefix):
-    """Return True when the kernel spec is to be installed for the current user."""
+    """Return '(kernels_dir, use_user_install)' for the out link and kernel spec.\n
+    The current user's kernel directory
+    ('$JUPYTER_DATA_DIR/kernels', by default '$HOME/.local/share/jupyter/kernels')
+    is used when it is writable; otherwise everything is installed in the repo,
+    under '<kernel_prefix>/share/jupyter/kernels'.
+    """
     user_kernels = get_user_jupyter_data() / "kernels"
     if can_write_dir(user_kernels):
-        print(
-            f"Installing the Jupyter kernel spec for the current user in '{user_kernels}'."
-        )
-        return True
+        print(f"Installing for the current user in '{user_kernels}'.")
+        return user_kernels, True
     print(f"The user Jupyter kernel directory '{user_kernels}' is not writable.")
-    print(
-        f"Installing the Jupyter kernel spec in the repo instead, in '{kernel_prefix}'."
-    )
-    kernel_prefix.mkdir(parents=True, exist_ok=True)
-    return False
+    repo_kernels = kernel_prefix / "share" / "jupyter" / "kernels"
+    print(f"Installing in the repo instead, in '{repo_kernels}'.")
+    repo_kernels.mkdir(parents=True, exist_ok=True)
+    return repo_kernels, False
 
 def nix_build(attrs, out_link, args, env, use_nom):
     cmd = ["nix-build", str(NIXPKGS_FILE)]
@@ -314,6 +330,23 @@ def remove_stale_out_link(out_link):
     if out_link.is_symlink():
         print(f"Removing stale out link '{out_link}'.")
         out_link.unlink()
+
+def kernel_out_link(kernels_dir, kernel_name):
+    """Return the nix-build out link for 'kernel_name' in its 'nix-build-*' directory.\n
+    nix registers an indirect gc root for the out link, so keeping it inside the
+    kernel directory (as the old bash script did) is what keeps the store path
+    alive.
+    """
+    out_dir = kernels_dir / f"nix-build-{kernel_name}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return out_dir / "result"
+
+def link_repo_out_link(repo_link, out_link):
+    """Make '<repo>/result-<kernel>' point at 'out_link', replacing any old link."""
+    if repo_link.is_symlink() or repo_link.exists():
+        repo_link.unlink()
+    repo_link.symlink_to(out_link)
+    print(f"'{repo_link}' -> '{out_link}'")
 
 def ipykernel_env_args(variant, out_link):
     args = [
@@ -379,9 +412,10 @@ def install_kernel(variant, out_link, kernel_prefix, use_user_install, env):
             f'    export JUPYTER_PATH="{jupyter_data_dir}${{JUPYTER_PATH:+:$JUPYTER_PATH}}"'
         )
 
-def install_one_variant(variant, args, env, use_user_install, bulk_build):
+def install_one_variant(variant, args, env, kernels_dir, use_user_install, bulk_build):
     kernel_name = f"py-local{variant}"
-    out_link = REPO_PATH / f"result-{kernel_name}"
+    out_link = kernel_out_link(kernels_dir, kernel_name)
+    repo_link = REPO_PATH / f"result-{kernel_name}"
     #
     print()
     print(f"Building 'pkgs{variant}.qlat-jhub-env' for kernel '{kernel_name}'.")
@@ -391,6 +425,7 @@ def install_one_variant(variant, args, env, use_user_install, bulk_build):
     if not (out_link / "bin" / "python3").exists():
         die(f"'{out_link}/bin/python3' not found.")
     print(f"'{out_link}' -> '{os.path.realpath(out_link)}'")
+    link_repo_out_link(repo_link, out_link)
     install_kernel(variant, out_link, args.kernel_prefix, use_user_install, env)
 
 def main(argv=None):
@@ -402,7 +437,7 @@ def main(argv=None):
     #
     env = dict(os.environ)
     setup_cache_fallbacks(env)
-    use_user_install = setup_kernel_install(args.kernel_prefix)
+    kernels_dir, use_user_install = setup_kernel_install(args.kernel_prefix)
     #
     bulk_build = len(args.variants) > 1
     if bulk_build:
@@ -412,7 +447,9 @@ def main(argv=None):
         nix_build(attrs, None, args, env, use_nom=not args.no_nom)
     #
     for variant in args.variants:
-        install_one_variant(variant, args, env, use_user_install, bulk_build)
+        install_one_variant(
+            variant, args, env, kernels_dir, use_user_install, bulk_build
+        )
     print()
     print("Finished successfully.")
     return 0
