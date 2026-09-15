@@ -29,6 +29,14 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
   prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
 }
 
+void free_mom_invert(SpinProp& sp_sol, const SpinProp& sp_src, const RealD mass,
+                     const RealD m5, const CoordinateD& momtwist)
+{
+  TIMER("free_mom_invert(qed-ff)");
+  sp_sol.init(sp_src);
+  prop_mom_spin_propagator4d(sp_sol, mass, m5, momtwist);
+}
+
 void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
                 const Field<ComplexD>& gf1, const RealD mass, const RealD m5,
                 const Int ls, const vector<ComplexD>& t_wick_phase_factor_vec,

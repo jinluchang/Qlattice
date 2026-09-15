@@ -25,6 +25,7 @@ Source: `qlat/qlat/propagator.pyx`
    - [`mk_rand_u1_prop`](#mk_rand_u1_prop)
 4. [Inversion Functions](#inversion-functions)
    - [`free_invert`](#free_invert)
+   - [`free_mom_invert`](#free_mom_invert)
    - [`invert_qed`](#invert_qed)
 5. [Format Conversion](#format-conversion)
    - [`convert_mspincolor_from_wm`](#convert_mspincolor_from_wm)
@@ -34,8 +35,8 @@ Source: `qlat/qlat/propagator.pyx`
    - [`mk_prop_from_ff_list`](#mk_prop_from_ff_list)
 7. [Miscellaneous](#miscellaneous)
    - [`flip_tpbc_with_tslice`](#flip_tpbc_with_tslice)
-   - [`free_scalar_invert_mom_cfield`](#free_scalar_invert_mom_cfield)
-   - [`free_scalar_invert_cfield`](#free_scalar_invert_cfield)
+   - [`free_scalar_mom_invert`](#free_scalar_mom_invert)
+   - [`free_scalar_invert`](#free_scalar_invert)
 8. [Examples](#examples)
 
 ---
@@ -299,6 +300,33 @@ Supports both `Prop` and `SpinProp` input; returns the same type.
 | `m5` | `float` | `1.0` | Fifth-dimensional mass for DWF |
 | `momtwist` | `CoordinateD` | `[0,0,0,0]` | Twist angles for twisted-boundary conditions |
 
+### `free_mom_invert`
+
+```python
+free_mom_invert(prop_src, mass: float, m5: float = 1.0,
+                momtwist: CoordinateD = None) -> Prop | SpinProp
+```
+
+Apply the free DWF inverse **in momentum space**.  Unlike `free_invert`, no
+Fourier transform is performed, so `prop_src` must already be in momentum
+space (e.g. the output of a normalizing forward FFT).  All parameters of the
+underlying C++ kernel are exposed.  Supports both `Prop` and `SpinProp`
+input; returns the same type.
+
+Equivalently, for a normalizing FFT pair `fft_f` / `fft_b`:
+
+```python
+sol = fft_b * q.free_mom_invert(fft_f * src, mass=m, m5=m5, momtwist=t)
+# equals q.free_invert(src, mass=m, m5=m5, momtwist=t)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `prop_src` | `Prop` or `SpinProp` | — | Source field, in momentum space |
+| `mass` | `float` | — | Fermion mass |
+| `m5` | `float` | `1.0` | Fifth-dimensional mass for DWF |
+| `momtwist` | `CoordinateD` | `[0,0,0,0]` | Twist angles for twisted-boundary conditions |
+
 ### `invert_qed`
 
 ```python
@@ -383,24 +411,28 @@ flip_tpbc_with_tslice(prop, tslice_flip_tpbc) -> None
 Flip the temporal boundary condition at `tslice_flip_tpbc` for a `SelProp`
 or `PselProp`.
 
-### `free_scalar_invert_mom_cfield`
+### `free_scalar_mom_invert`
 
 ```python
-free_scalar_invert_mom_cfield(f: FieldComplexD, mass: float) -> None
+free_scalar_mom_invert(f: FieldComplexD, mass: float,
+                       momtwist: CoordinateD = None) -> None
 ```
 
 Apply the free-scalar inverse in momentum space to a complex field `f`
-(modified in place).
+(modified in place).  `momtwist` is passed through to the C++ kernel and
+defaults to zero when `None`.
 
-### `free_scalar_invert_cfield`
+### `free_scalar_invert`
 
 ```python
-free_scalar_invert_cfield(src: FieldComplexD, mass: float,
-                          *, mode_fft: int = 1) -> FieldComplexD
+free_scalar_invert(src: FieldComplexD, mass: float, *,
+                   momtwist: CoordinateD = None,
+                   mode_fft: int = 1) -> FieldComplexD
 ```
 
 Compute the free-scalar inverse of a complex field in position space.
 Transforms to momentum space, applies the inverse, and transforms back.
+`momtwist` is passed through to `free_scalar_mom_invert`.
 
 ---
 

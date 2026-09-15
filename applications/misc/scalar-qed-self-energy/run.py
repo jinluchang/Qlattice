@@ -41,7 +41,7 @@ def mk_pion_prop(total_site, m_pi):
     xl = geo.coordinate_l_from_g(xg)
     c[ [xg,] ] = 1.0
     f = qg.qlat_from_gpt([c])
-    f = q.free_scalar_invert_cfield(f, m_pi)
+    f = q.free_scalar_invert(f, m_pi)
     for t in range(12):
         for i in range(16):
             q.displayln_info("spatial", t, i, f.get_elems([0, 0, i, t,])[0].real)

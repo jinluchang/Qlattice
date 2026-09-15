@@ -84,6 +84,31 @@ for src in [src_p, src_r]:
     q.json_results_append("free-invert: sol_z qnorm", sol_z.qnorm(), 1e-10)
     q.json_results_append("free-invert: sol_z_diff qnorm", sol_z_diff.qnorm(), 1e-8)
 
+# --- free_mom_invert applies the same kernel in momentum space, so a
+#     normalizing forward/inverse FFT round trip must reproduce free_invert.
+#     Checked for Prop (point and random source) and for SpinProp.
+fft_f = q.mk_fft(is_forward=True, is_normalizing=True)
+fft_b = q.mk_fft(is_forward=False, is_normalizing=True)
+momtwist = q.CoordinateD([0.0, 0.0, 0.0, 0.0])
+
+spin_src = q.SpinProp(geo)
+spin_src.set_rand(rs.split("spin_src"))
+
+for name, src in [("src_p", src_p), ("src_r", src_r), ("spin_src", spin_src)]:
+    sol = q.free_invert(src, mass=fa.mass(), m5=fa.m5(), momtwist=momtwist)
+    sol_mom = q.free_mom_invert(
+        fft_f * src, mass=fa.mass(), m5=fa.m5(), momtwist=momtwist
+    )
+    sol_rt = fft_b * sol_mom
+    sol_rt_diff = sol_rt.copy()
+    sol_rt_diff -= sol
+    q.json_results_append(
+        f"free-invert: free_mom_invert {name} diff qnorm",
+        sol_rt_diff.qnorm(),
+        1e-12,
+    )
+    assert sol_rt_diff.qnorm() < 1e-9
+
 q.timer_display()
 if q.is_test():
     q.check_log_json(__file__)

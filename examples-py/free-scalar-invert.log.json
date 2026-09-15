@@ -57,5 +57,20 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "free-scalar-invert: mom momtwist matches DFT reference",
+  1.0
+ ],
+ [
+  "free-scalar-invert: mom momtwist sol(k=(1,2,3,4))",
+  {
+   "value": [
+    0.006877795562820643,
+    -0.05410389051130768
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ]
 ]

@@ -286,6 +286,12 @@ def mk_rand_u1_prop(inv, sel, rs):
 
 @q.timer
 def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=None):
+    """
+    Compute the free (gauge-field-independent) inverse of a propagator source.\n
+    The source is transformed to momentum space, multiplied by the analytic
+    free DWF propagator, and transformed back.  Supports both `Prop` and
+    `SpinProp` input; returns the same type.
+    """
     cdef Prop qcd_prop_src
     cdef Prop qcd_prop_sol
     cdef SpinProp spin_prop_src
@@ -301,6 +307,34 @@ def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=N
         spin_prop_src = prop_src
         spin_prop_sol = SpinProp()
         cc.free_invert(spin_prop_sol.xxx().val(), spin_prop_src.xxx().val(), mass, m5, momtwist.xx)
+        return spin_prop_sol
+    else:
+        assert False
+
+@q.timer
+def free_mom_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=None):
+    """
+    Apply the free DWF inverse in momentum space.\n
+    Unlike `free_invert`, no Fourier transform is performed: `prop_src` is
+    assumed to already be in momentum space (e.g. the output of a normalizing
+    forward FFT).  Supports both `Prop` and `SpinProp` input; returns the same
+    type.  All parameters of the C++ `free_mom_invert` kernel are exposed.
+    """
+    cdef Prop qcd_prop_src
+    cdef Prop qcd_prop_sol
+    cdef SpinProp spin_prop_src
+    cdef SpinProp spin_prop_sol
+    if momtwist is None:
+        momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
+    if isinstance(prop_src, Prop):
+        qcd_prop_src = prop_src
+        qcd_prop_sol = Prop()
+        cc.free_mom_invert(qcd_prop_sol.xxx().val(), qcd_prop_src.xxx().val(), mass, m5, momtwist.xx)
+        return qcd_prop_sol
+    elif isinstance(prop_src, SpinProp):
+        spin_prop_src = prop_src
+        spin_prop_sol = SpinProp()
+        cc.free_mom_invert(spin_prop_sol.xxx().val(), spin_prop_src.xxx().val(), mass, m5, momtwist.xx)
         return spin_prop_sol
     else:
         assert False
@@ -425,17 +459,23 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
         assert False
 
 @q.timer
-def free_scalar_invert_mom_cfield(FieldComplexD f, mass):
-    cdef cc.CoordinateD momtwist
-    # the momentum twist is not exposed, so it is always zero here
-    cc.prop_free_scalar_invert(f.xx, mass, momtwist)
+def free_scalar_mom_invert(FieldComplexD f, mass, CoordinateD momtwist=None):
+    """
+    Apply the free scalar inverse in momentum space, in-place.\n
+    `f` is assumed to already be in momentum space (e.g. the output of a
+    normalizing forward FFT).  `momtwist` is exposed and passed through to the
+    C++ kernel; when None it defaults to zero.
+    """
+    if momtwist is None:
+        momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
+    cc.free_scalar_mom_invert(f.xx, mass, momtwist.xx)
 
 @q.timer
-def free_scalar_invert_cfield(src, mass, *, mode_fft=1):
+def free_scalar_invert(src, mass, *, CoordinateD momtwist=None, mode_fft=1):
     fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
     fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
     f = fft_f * src
-    free_scalar_invert_mom_cfield(f, mass)
+    free_scalar_mom_invert(f, mass, momtwist)
     sol = fft_b * f
     return sol
 

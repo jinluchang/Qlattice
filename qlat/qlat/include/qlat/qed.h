@@ -231,10 +231,10 @@ inline RealD acosh(const RealD x)
   return std::log(x + std::sqrt(x + 1.0) * std::sqrt(x - 1.0));
 }
 
-inline void prop_free_scalar_invert(Field<ComplexD>& f, const RealD mass,
-                                    const CoordinateD& momtwist)
+inline void free_scalar_mom_invert(Field<ComplexD>& f, const RealD mass,
+                                   const CoordinateD& momtwist)
 {
-  TIMER("prop_free_scalar_invert");
+  TIMER("free_scalar_mom_invert");
   const Geometry& geo = f.geo();
   const Coordinate total_site = geo.total_site();
   const RealD m_pi_sq = 4.0 * sqr(std::sinh(mass / 2.0));
@@ -422,6 +422,13 @@ void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
 void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
                  const RealD m5 = 1.0,
                  const CoordinateD& momtwist = CoordinateD());
+
+// Apply the free DWF inverse in momentum space (no Fourier transform is
+// performed; `sp_src` is assumed to already be in momentum space, as produced
+// by a forward FFT).  This is the per-momentum kernel used by `free_invert`.
+void free_mom_invert(SpinProp& sp_sol, const SpinProp& sp_src, const RealD mass,
+                     const RealD m5 = 1.0,
+                     const CoordinateD& momtwist = CoordinateD());
 
 void invert_qed(
     SpinProp& sp_sol, const SpinProp& sp_src, const Field<ComplexD>& gf1,

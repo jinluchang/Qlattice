@@ -362,6 +362,13 @@ void free_invert(Prop& p_sol, const Prop& p_src, const RealD mass,
                  const RealD m5 = 1.0,
                  const CoordinateD& momtwist = CoordinateD());
 
+// Apply the free DWF inverse in momentum space (no Fourier transform is
+// performed; `p_src` is assumed to already be in momentum space, as produced
+// by a forward FFT).  This is the per-momentum kernel used by `free_invert`.
+void free_mom_invert(Prop& p_sol, const Prop& p_src, const RealD mass,
+                     const RealD m5 = 1.0,
+                     const CoordinateD& momtwist = CoordinateD());
+
 void convert_wm_from_mspincolor(Propagator4d& prop_wm,
                                 const Propagator4d& prop_msc);
 

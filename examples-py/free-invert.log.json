@@ -61,5 +61,20 @@
   "free-invert: sol_z_diff qnorm",
   0.3705540887559328,
   1e-08
+ ],
+ [
+  "free-invert: free_mom_invert src_p diff qnorm",
+  4.8191732496706514e-31,
+  1e-12
+ ],
+ [
+  "free-invert: free_mom_invert src_r diff qnorm",
+  1.025011150364353e-24,
+  1e-12
+ ],
+ [
+  "free-invert: free_mom_invert spin_src diff qnorm",
+  1.1275031146142878e-25,
+  1e-12
  ]
 ]

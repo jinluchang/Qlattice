@@ -412,6 +412,10 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
         Prop& p_sol, const Prop& p_src,
         const RealD mass, const RealD m5,
         const CoordinateD& momtwist) except +
+    void free_mom_invert(
+        Prop& p_sol, const Prop& p_src,
+        const RealD mass, const RealD m5,
+        const CoordinateD& momtwist) except +
     void convert_wm_from_mspincolor(Prop& prop_wm,
             const Prop& prop_msc) except +
     void convert_mspincolor_from_wm(Prop& prop_msc,
@@ -651,7 +655,12 @@ cdef extern from "qlat/qed.h" namespace "qlat":
         const RealD mass, const RealD m5,
         const CoordinateD& momtwist) except +
     #
-    void prop_free_scalar_invert(
+    void free_mom_invert(
+        SpinProp& sp_sol, const SpinProp& sp_src,
+        const RealD mass, const RealD m5,
+        const CoordinateD& momtwist) except +
+    #
+    void free_scalar_mom_invert(
         Field[ComplexD]& f, const RealD mass,
         const CoordinateD& momtwist) except +
     #

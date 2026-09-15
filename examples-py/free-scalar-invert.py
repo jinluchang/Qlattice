@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Tests for q.free_scalar_invert_cfield and q.free_scalar_invert_mom_cfield.
+# Tests for q.free_scalar_invert and q.free_scalar_mom_invert.
 #
-# free_scalar_invert_cfield(src, mass) must solve the free lattice scalar
+# free_scalar_invert(src, mass) must solve the free lattice scalar
 # equation
 #     (4 sinh^2(mass/2) - laplacian) sol = src
 # on the periodic lattice, i.e. multiply src~(k) by
@@ -57,6 +57,20 @@ def mk_s2_grid(latt_size):
 def mk_mom_factor(latt_size, mass):
     return get_m_pi_sq(mass) + mk_s2_grid(latt_size)
 
+def mk_mom_factor_twist(latt_size, mass, momtwist):
+    # same factor with the momentum grid shifted by the twist angles
+    ax = []
+    for i in range(4):
+        k = 2.0 * np.pi * (np.arange(latt_size[i]) + momtwist[i]) / latt_size[i]
+        ax.append(4.0 * np.sin(k / 2.0) ** 2)
+    s2 = (
+        ax[0][:, None, None, None]
+        + ax[1][None, :, None, None]
+        + ax[2][None, None, :, None]
+        + ax[3][None, None, None, :]
+    )
+    return get_m_pi_sq(mass) + s2
+
 def ref_free_scalar_invert(src_arr, latt_size, mass):
     # independent DFT reference: (1/V) sum_k e^{i k x} src~(k) / D(k)
     return np.fft.ifftn(np.fft.fftn(src_arr) / mk_mom_factor(latt_size, mass))
@@ -108,7 +122,7 @@ rs = q.RngState("free-scalar-invert")
 
 # --- delta source: compare with an independent numpy DFT reference
 delta_src = mk_field_from_global(geo, mk_delta_src(latt_size))
-delta_sol = q.free_scalar_invert_cfield(delta_src, mass)
+delta_sol = q.free_scalar_invert(delta_src, mass)
 delta_sol_arr = get_global_arr(geo, delta_sol)
 delta_ref_arr = ref_free_scalar_invert(mk_delta_src(latt_size), latt_size, mass)
 err_delta = float(np.max(np.abs(delta_sol_arr - delta_ref_arr)))
@@ -133,7 +147,7 @@ q.json_results_append("free-scalar-invert: delta G(3)/G(4)", pole_ratio, check_e
 src_arr = mk_global_src(rs.split("src"), latt_size)
 src = mk_field_from_global(geo, src_arr)
 src_before = get_global_arr(geo, src)
-sol = q.free_scalar_invert_cfield(src, mass)
+sol = q.free_scalar_invert(src, mass)
 sol_arr = get_global_arr(geo, sol)
 ref_arr = ref_free_scalar_invert(src_arr, latt_size, mass)
 err_ref = float(np.max(np.abs(sol_arr - ref_arr)))
@@ -161,17 +175,17 @@ q.json_results_append(
 )
 
 # --- mode_fft=0 must agree with the default mode_fft=1
-sol0 = q.free_scalar_invert_cfield(src, mass, mode_fft=0)
+sol0 = q.free_scalar_invert(src, mass, mode_fft=0)
 err_mode = float(np.max(np.abs(get_global_arr(geo, sol0) - sol_arr)))
 assert err_mode < check_eps, err_mode
 q.json_results_append(
     "free-scalar-invert: mode_fft=0 vs mode_fft=1", float(err_mode < check_eps)
 )
 
-# --- free_scalar_invert_mom_cfield applies 1 / D(k) in momentum space
+# --- free_scalar_mom_invert applies 1 / D(k) in momentum space
 fft_f = q.mk_fft(is_forward=True, is_normalizing=True)
 mom = fft_f * src
-q.free_scalar_invert_mom_cfield(mom, mass)
+q.free_scalar_mom_invert(mom, mass)
 mom_arr = get_global_arr(geo, mom)
 mom_ref_arr = (
     np.fft.fftn(src_arr) / np.sqrt(np.prod(latt_size)) / mk_mom_factor(latt_size, mass)
@@ -184,6 +198,29 @@ q.json_results_append(
 q.json_results_append(
     "free-scalar-invert: mom sol(k=(1,2,3,4))",
     np.array([mom_arr[1, 2, 3, 4].real, mom_arr[1, 2, 3, 4].imag]),
+    check_eps,
+)
+
+# --- momtwist is exposed and shifts the momentum grid used by the kernel
+momtwist_list = [0.5, -0.25, 0.0, 0.125]
+momtwist = q.CoordinateD(momtwist_list)
+mom_tw = fft_f * src
+q.free_scalar_mom_invert(mom_tw, mass, momtwist)
+mom_tw_arr = get_global_arr(geo, mom_tw)
+mom_tw_ref_arr = (
+    np.fft.fftn(src_arr)
+    / np.sqrt(np.prod(latt_size))
+    / mk_mom_factor_twist(latt_size, mass, momtwist_list)
+)
+err_mom_tw = float(np.max(np.abs(mom_tw_arr - mom_tw_ref_arr)))
+assert err_mom_tw < check_eps, err_mom_tw
+q.json_results_append(
+    "free-scalar-invert: mom momtwist matches DFT reference",
+    float(err_mom_tw < check_eps),
+)
+q.json_results_append(
+    "free-scalar-invert: mom momtwist sol(k=(1,2,3,4))",
+    np.array([mom_tw_arr[1, 2, 3, 4].real, mom_tw_arr[1, 2, 3, 4].imag]),
     check_eps,
 )
 
