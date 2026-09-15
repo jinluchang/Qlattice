@@ -77,7 +77,7 @@ from these internal submodules:
 | Submodule | Domain |
 |-----------|--------|
 | `qlat_utils.c` | All qlat-utils low-level symbols |
-| `cqlat` | Cython bindings for qlat C++ core |
+| `cqlat` | CPython C-API extension exposing the qlat C++ core |
 | `utils_io` | File I/O utilities |
 | `mpi` | MPI communication |
 | `geometry` | Lattice geometry |
