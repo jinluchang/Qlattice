@@ -65,5 +65,89 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "free-scalar-invert: deriv none leaves field unchanged = True"
+ ],
+ [
+  "free-scalar-invert: deriv dx matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv dt matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv dx dy matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv dx twist matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv dx sol(k=(1,2,3,4))",
+  {
+   "value": [
+    1.0209338450299057,
+    0.12978316721627547
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "free-scalar-invert: deriv d0 drops self-conjugate mode = True"
+ ],
+ [
+  "free-scalar-invert: deriv d0^2 keeps self-conjugate mode = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3 drops self-conjugate mode = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3^2 keeps self-conjugate mode = True"
+ ],
+ [
+  "free-scalar-invert: deriv d0 is forward difference = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3 is forward difference = True"
+ ],
+ [
+  "free-scalar-invert: deriv d0^2 is minus laplacian term = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3^2 is minus laplacian term = True"
+ ],
+ [
+  "free-scalar-invert: deriv commutes with free inverse = True"
+ ],
+ [
+  "free-scalar-invert: deriv free sol(xg=(1,2,3,4))",
+  {
+   "value": [
+    -0.051008007758225594,
+    -0.03491910152586806
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "free-scalar-invert: invert_deriv matches mom composition = True"
+ ],
+ [
+  "free-scalar-invert: invert_deriv deriv none = free_scalar_invert = True"
+ ],
+ [
+  "free-scalar-invert: invert_deriv mode_fft=0 vs mode_fft=1 = True"
+ ],
+ [
+  "free-scalar-invert: invert_deriv sol(xg=(1,2,3,4))",
+  {
+   "value": [
+    -0.051008007758225594,
+    -0.03491910152586806
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ]
 ]

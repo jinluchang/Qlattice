@@ -471,10 +471,68 @@ def free_scalar_mom_invert(FieldComplexD f, mass, CoordinateD momtwist=None):
     cc.free_scalar_mom_invert(f.xx, mass, momtwist.xx)
 
 @q.timer
+def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None):
+    """
+    Apply a lattice derivative in momentum space, in-place.\n
+    `f` is assumed to already be in momentum space (e.g. the output of a
+    normalizing forward FFT).  `deriv` gives the derivative order for each
+    direction `x, y, z, t` and the field is multiplied by\n
+        prod_mu ( 2 i sin(k_mu / 2) )^{deriv[mu]}\n
+    with `k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu`.\n
+    This is the bare derivative factor: it contains no mass and no `1 / D(k)`.
+    Compose it with `free_scalar_mom_invert` to differentiate the free scalar
+    inverse; the two factors commute.  Note `d_mu^2 = -4 sin^2(k_mu / 2)`, i.e.
+    minus the mu term of the `D(k)` used by `free_scalar_mom_invert`.\n
+    At the self-conjugate momentum `k_mu = pi` the two branches of
+    `2 i sin(k_mu / 2)` differ by a sign.  For an odd `deriv[mu]` that sign is
+    ambiguous, so that mode is dropped (`d_mu = 0`); for an even `deriv[mu]`
+    the sign squares out and the mode is kept.\n
+    `deriv=None` is equivalent to `[0, 0, 0, 0]` and leaves `f` unchanged.
+    """
+    cdef cc.vector[cc.Int] deriv_vec = cc.vector[cc.Int]()
+    cdef cc.Int i
+    cdef cc.Int n
+    if momtwist is None:
+        momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
+    if deriv is None:
+        deriv = [ 0, 0, 0, 0 ]
+    else:
+        deriv = list(deriv)
+    if len(deriv) != 4:
+        raise Exception(f"free_scalar_deriv_mom: deriv={deriv} must have length 4")
+    deriv_vec.resize(4)
+    for i in range(4):
+        n = int(deriv[i])
+        if n < 0:
+            raise Exception(f"free_scalar_deriv_mom: deriv={deriv} must be non-negative")
+        deriv_vec[i] = n
+    cc.free_scalar_deriv_mom(f.xx, deriv_vec, momtwist.xx)
+
+@q.timer
 def free_scalar_invert(src, mass, *, CoordinateD momtwist=None, mode_fft=1):
     fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
     fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
     f = fft_f * src
+    free_scalar_mom_invert(f, mass, momtwist)
+    sol = fft_b * f
+    return sol
+
+@q.timer
+def free_scalar_invert_deriv(src, mass, *, CoordinateD momtwist=None, mode_fft=1, deriv=None):
+    """
+    Free scalar inverse with a lattice derivative, in position space.\n
+    Transforms `src` to momentum space, applies the bare derivative factor
+    `free_scalar_deriv_mom` with the orders `deriv`, applies the free scalar
+    inverse `free_scalar_mom_invert`, and transforms back.  The derivative and
+    the inverse commute, so this is the derivative of the free scalar inverse
+    (equivalently the free scalar inverse of the derivative source).\n
+    `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result
+    equals `free_scalar_invert(src, mass, ...)`.
+    """
+    fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
+    fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
+    f = fft_f * src
+    free_scalar_deriv_mom(f, deriv, momtwist)
     free_scalar_mom_invert(f, mass, momtwist)
     sol = fft_b * f
     return sol

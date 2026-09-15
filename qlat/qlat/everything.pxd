@@ -664,6 +664,11 @@ cdef extern from "qlat/qed.h" namespace "qlat":
         Field[ComplexD]& f, const RealD mass,
         const CoordinateD& momtwist) except +
     #
+    void free_scalar_deriv_mom(
+        Field[ComplexD]& f,
+        const vector[Int]& deriv_order,
+        const CoordinateD& momtwist) except +
+    #
     void invert_qed(
         SpinProp& sp_sol, const SpinProp& sp_src, const Field[ComplexD]& gf1,
         const RealD mass, const RealD m5, const Int ls,

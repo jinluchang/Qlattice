@@ -36,7 +36,9 @@ Source: `qlat/qlat/propagator.pyx`
 7. [Miscellaneous](#miscellaneous)
    - [`flip_tpbc_with_tslice`](#flip_tpbc_with_tslice)
    - [`free_scalar_mom_invert`](#free_scalar_mom_invert)
+   - [`free_scalar_deriv_mom`](#free_scalar_deriv_mom)
    - [`free_scalar_invert`](#free_scalar_invert)
+   - [`free_scalar_invert_deriv`](#free_scalar_invert_deriv)
 8. [Examples](#examples)
 
 ---
@@ -422,6 +424,46 @@ Apply the free-scalar inverse in momentum space to a complex field `f`
 (modified in place).  `momtwist` is passed through to the C++ kernel and
 defaults to zero when `None`.
 
+### `free_scalar_deriv_mom`
+
+```python
+free_scalar_deriv_mom(f: FieldComplexD, deriv, momtwist: CoordinateD = None) -> None
+```
+
+Apply a lattice derivative **in momentum space** to a complex field `f`
+(modified in place).  `f` must already be in momentum space (e.g. the output
+of a normalizing forward FFT).  `deriv` gives the derivative order for each
+direction `x, y, z, t`, and the field is multiplied by
+
+```
+prod_mu ( 2 i sin(k_mu / 2) )^{deriv[mu]},   k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu
+```
+
+`smod` is the signed momentum index (folded to `[-L/2, L/2)`), matching the
+convention used by `free_scalar_mom_invert`; this matters here because
+`2 i sin(k_mu / 2)` is odd in `k_mu`.
+
+At the **self-conjugate** momentum `k_mu = pi` (`smod(n_mu, L_mu) + momtwist_mu
+= +- L_mu / 2`) the two branches of `2 i sin(k_mu / 2)` under `k_mu -> k_mu +
+2 pi` differ by a sign.  For an **odd** `deriv[mu]` that sign is ambiguous, so
+the mode is dropped (`d_mu = 0`); for an **even** `deriv[mu]` the sign squares
+out and the mode is kept.
+
+This is the **bare** derivative factor: it contains no mass and no `1 / D(k)`.
+Compose it with `free_scalar_mom_invert` to differentiate the free scalar
+inverse — the two factors commute, so the order does not matter:
+
+```python
+f = q.mk_fft(is_forward=True, is_normalizing=True) * src
+q.free_scalar_deriv_mom(f, [1, 0, 0, 0], momtwist)
+q.free_scalar_mom_invert(f, mass, momtwist)
+sol = q.mk_fft(is_forward=False, is_normalizing=True) * f
+```
+
+`deriv=None` is equivalent to `[0, 0, 0, 0]` and leaves `f` unchanged.  Note
+`d_mu^2 = -4 sin^2(k_mu / 2)`, i.e. minus the `mu` term of the `D(k)` used by
+`free_scalar_mom_invert`, so `deriv[mu] = 2` gives minus that Laplacian term.
+
 ### `free_scalar_invert`
 
 ```python
@@ -433,6 +475,28 @@ free_scalar_invert(src: FieldComplexD, mass: float, *,
 Compute the free-scalar inverse of a complex field in position space.
 Transforms to momentum space, applies the inverse, and transforms back.
 `momtwist` is passed through to `free_scalar_mom_invert`.
+
+### `free_scalar_invert_deriv`
+
+```python
+free_scalar_invert_deriv(src: FieldComplexD, mass: float, *,
+                         momtwist: CoordinateD = None,
+                         mode_fft: int = 1,
+                         deriv=None) -> FieldComplexD
+```
+
+Position-space entry point for the derivative of the free scalar inverse.
+Transforms `src` to momentum space, applies `free_scalar_deriv_mom` with the
+orders `deriv`, applies `free_scalar_mom_invert`, and transforms back.  The
+derivative and the inverse commute, so this equals the free scalar inverse of
+the derivative source as well:
+
+```python
+sol = q.free_scalar_invert_deriv(src, mass, deriv=[1, 0, 0, 0], momtwist=t)
+```
+
+`deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result equals
+`free_scalar_invert(src, mass, ...)`.
 
 ---
 

@@ -177,7 +177,9 @@ __all__ += [
         'mk_prop_from_ff_list',
         'flip_tpbc_with_tslice',
         'free_scalar_mom_invert',
+        'free_scalar_deriv_mom',
         'free_scalar_invert',
+        'free_scalar_invert_deriv',
         ]
 
 __all__ += [

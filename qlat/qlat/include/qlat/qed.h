@@ -257,6 +257,67 @@ inline void free_scalar_mom_invert(Field<ComplexD>& f, const RealD mass,
   })
 }
 
+inline void free_scalar_deriv_mom(Field<ComplexD>& f,
+                                  const array<Int, DIMN>& deriv_order,
+                                  const CoordinateD& momtwist)
+// f is in momentum space.
+// f(k) <- [ prod_mu d_mu(k)^{deriv_order[mu]} ] f(k)
+// d_mu(k) = 2 ii sin(k_mu / 2),  k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu )
+// / L_mu.
+//
+// The bare lattice derivative factor, with no mass and no 1 / D(k).  It is
+// meant to be composed with free_scalar_mom_invert, which commutes with it.
+//
+// At the self-conjugate momentum k_mu = pi ( smod(n_mu, L_mu) + momtwist_mu =
+// +- L_mu / 2 ) the two branches of 2 ii sin(k_mu / 2) under k_mu -> k_mu + 2
+// pi differ by a sign.  For an odd deriv_order[mu] that sign is ambiguous, so
+// d_mu is set to 0 there and the mode is dropped.  For an even
+// deriv_order[mu] the sign squares out and the mode is kept, so that
+// d_mu^2 = -4 sin^2(k_mu / 2) is minus the mu term of the D(k) used by
+// free_scalar_mom_invert.
+{
+  TIMER("free_scalar_deriv_mom");
+  const Geometry& geo = f.geo();
+  const Coordinate total_site = geo.total_site();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
+    ComplexD fac = 1.0;
+    for (Int i = 0; i < DIMN; i++) {
+      kg[i] = smod(kg[i], total_site[i]);
+      const RealD kk = 2.0 * PI * (kg[i] + momtwist[i]) / (RealD)total_site[i];
+      ComplexD d = ComplexD(0.0, 2.0 * std::sin(kk / 2.0));
+      if (0 != deriv_order[i] % 2) {
+        const RealD rem2 = 2.0 * (kg[i] + momtwist[i]);
+        if (std::abs(rem2 - (RealD)total_site[i]) < 1.0e-12 ||
+            std::abs(rem2 + (RealD)total_site[i]) < 1.0e-12) {
+          d = ComplexD(0.0, 0.0);
+        }
+      }
+      for (Int n = 0; n < deriv_order[i]; ++n) {
+        fac *= d;
+      }
+    }
+    Vector<ComplexD> v = f.get_elems(kl);
+    for (Int i = 0; i < v.size(); ++i) {
+      v[i] *= fac;
+    }
+  })
+}
+
+inline void free_scalar_deriv_mom(Field<ComplexD>& f,
+                                  const vector<Int>& deriv_order,
+                                  const CoordinateD& momtwist)
+// host-only overload for the Cython boundary (`array` is not bound there)
+{
+  qassert((Long)deriv_order.size() == DIMN);
+  array<Int, DIMN> deriv_order_arr;
+  for (Int i = 0; i < DIMN; ++i) {
+    deriv_order_arr[i] = deriv_order[i];
+  }
+  free_scalar_deriv_mom(f, deriv_order_arr, momtwist);
+}
+
 template <class T>
 void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
                                 const RealD m5, const CoordinateD& momtwist)
