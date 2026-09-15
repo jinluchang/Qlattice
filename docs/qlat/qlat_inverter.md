@@ -1,6 +1,6 @@
 # `qlat.inverter` — Fermion-Matrix Inverter Framework
 
-Source: `qlat/qlat/inverter.py`
+Source: `qlat/qlat/inverter.pyx`
 
 > **Note:** Update this document when updating the source file.
 
