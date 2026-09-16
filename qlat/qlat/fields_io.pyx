@@ -179,25 +179,6 @@ cdef class ShuffledBitSet:
 ## --------------
 
 @q.timer
-def open_fields(str path, str mode, Coordinate new_size_node=None):
-    """
-    path can be the folder path or the 'geon-info.txt' path
-    """
-    if path[-14:] == "/geon-info.txt":
-        path = path[:-14]
-    if mode == "r":
-        return ShuffledFieldsReader(path, new_size_node)
-    elif mode == "w":
-        assert new_size_node is not None
-        return ShuffledFieldsWriter(path, new_size_node)
-    elif mode == "a":
-        if new_size_node is None:
-            new_size_node = Coordinate()
-        return ShuffledFieldsWriter(path, new_size_node, True)
-    else:
-        raise Exception("open_fields")
-
-@q.timer
 def list_fields(str path, Coordinate new_size_node=None):
     cdef ShuffledFieldsReader sfr = open_fields(path, "r", new_size_node)
     cdef list fns = sfr.list()
@@ -242,16 +223,6 @@ def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
         raise Exception(f"truncate_fields: error {ret}")
 
 @q.timer
-def check_fields(str path, cc.Bool is_check_all=True, Coordinate new_size_node=None):
-    """
-    return list of field that is stored successful
-    """
-    if path[-14:] == "/geon-info.txt":
-        path = path[:-14]
-    is_only_check = True
-    return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
-
-@q.timer
 def check_compressed_eigen_vectors(str path):
     """
     return bool value suggest whether the data can be read successfully
@@ -274,3 +245,11 @@ def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""
 
 def show_all_shuffled_fields_writer():
     return cc.show_all_shuffled_fields_writer()
+
+## -------------------------------------------------------------------
+
+# Imported at the end of the module: ``fields_io_utils`` needs the shuffled
+# reader/writer classes and ``properly_truncate_fields`` defined above, while
+# the functions above call ``open_fields`` back.
+from .fields_io_utils import open_fields
+

@@ -31,8 +31,6 @@ from cpython.buffer cimport PyBUF_FORMAT
 import qlat_utils as q
 import numpy as np
 
-from .field_utils import mk_fft
-
 cdef class Prop(FieldWilsonMatrix):
 
     def __init__(self, Geometry geo=None, multiplicity=1):
@@ -283,17 +281,6 @@ def get_rand_u1_sol(Prop prop_sol, FieldComplexD fu1, sel):
         return sp_prop
     else:
         raise Exception(f"get_rand_u1_sol {type(sel)}")
-
-@q.timer_verbose
-def mk_rand_u1_prop(inv, sel, rs):
-    """
-    interface function
-    return s_prop
-    sel can be psel or fsel
-    """
-    prop_src, fu1 = mk_rand_u1_src(sel, rs)
-    prop_sol = inv * prop_src
-    return get_rand_u1_sol(prop_sol, fu1, sel)
 
 @q.timer
 def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=None):
@@ -557,35 +544,6 @@ def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None):
             raise Exception(f"free_scalar_deriv_mom: deriv={deriv} must be non-negative")
         deriv_vec[i] = n
     cc.free_scalar_deriv_mom(f.xx, deriv_vec, momtwist.xx)
-
-@q.timer
-def free_scalar_invert(src, mass, *, CoordinateD momtwist=None, mode_fft=1):
-    fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
-    fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
-    f = fft_f * src
-    free_scalar_mom_invert(f, mass, momtwist)
-    sol = fft_b * f
-    return sol
-
-@q.timer
-def free_scalar_invert_deriv(src, mass, *, CoordinateD momtwist=None, mode_fft=1, deriv=None):
-    """
-    Free scalar inverse with a lattice derivative, in position space.\n
-    Transforms `src` to momentum space, applies the bare derivative factor
-    `free_scalar_deriv_mom` with the orders `deriv`, applies the free scalar
-    inverse `free_scalar_mom_invert`, and transforms back.  The derivative and
-    the inverse commute, so this is the derivative of the free scalar inverse
-    (equivalently the free scalar inverse of the derivative source).\n
-    `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result
-    equals `free_scalar_invert(src, mass, ...)`.
-    """
-    fft_f = mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
-    fft_b = mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
-    f = fft_f * src
-    free_scalar_deriv_mom(f, deriv, momtwist)
-    free_scalar_mom_invert(f, mass, momtwist)
-    sol = fft_b * f
-    return sol
 
 cdef class FermionField4d(FieldWilsonVector):
 

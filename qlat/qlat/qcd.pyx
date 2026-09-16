@@ -29,12 +29,6 @@ from .field_selection cimport (
     PointsSelection,
 )
 
-from .geometry import geo_resize
-from .field_utils import (
-    field_expanded,
-    refresh_expanded_1,
-)
-
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
@@ -188,11 +182,6 @@ cdef class GaugeTransform(FieldColorMatrix):
 
 ###
 
-@q.timer_verbose
-def gf_show_info(GaugeField gf):
-    assert gf is not None
-    q.displayln_info(f"gf_show_info: plaq = {gf.plaq():.16F} ; link_trace = {gf.link_trace():.16F}.")
-
 def gf_avg_plaq(GaugeField gf):
     assert gf is not None
     return cc.gf_avg_plaq(gf.xxx().val())
@@ -237,25 +226,6 @@ def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
                                   (<GaugeField>gf_ext).xxx().val(), path_v,
                                   path_n_v)
 
-def gf_wilson_lines_no_comm(gf_ext, path_list):
-    """
-    path_list = [ path_spec, ... ]
-    e.g. path_spec = [ mu, mu, nu, -mu-1, -mu-1, ]
-    e.g. path_spec = ([ mu, nu, -mu-1, ], [ 2, 1, 2, ],)
-    return wlf
-    """
-    multiplicity = len(path_list)
-    geo = geo_resize(gf_ext.geo)
-    wlf = FieldColorMatrix(geo, multiplicity)
-    for m, p in enumerate(path_list):
-        if isinstance(p, tuple) and len(p) == 2:
-            path, path_n = p
-            gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
-        else:
-            path = p
-            gf_wilson_line_no_comm(wlf, m, gf_ext, path)
-    return wlf
-
 def gf_avg_wilson_loop_normalized_tr(GaugeField gf, int l, int t):
     cdef cc.PyComplexD tr = cc.pycc_d(
         cc.matrix_trace(cc.gf_avg_wilson_loop(gf.xxx().val(), l, t)))
@@ -285,15 +255,6 @@ def load_gauge_transform_cps(GaugeTransform gt, path):
     Load a GaugeTransform with the format used in CPS.
     """
     return cc.load_gauge_transform_cps(gt.xxx().val(), path)
-
-def mk_left_expanded_field(gf):
-    """
-    Return left expanded field.
-    Similar to ``set_left_expanded_gauge_field`` in C++
-    """
-    gf1 = field_expanded(gf, 1, 0)
-    refresh_expanded_1(gf1)
-    return gf1
 
 def gf_reduce_half(GaugeField gf):
     """
@@ -390,4 +351,12 @@ def multiply_m_dwf_qed(
     cc.multiply_m_dwf_qed(f_out5d.xx, f_in5d.xx, gf1.xx, mass, m5, ls, t_wick_phase_factor_vec, is_dagger)
     return f_out5d
 
-###
+### -------------------------------------------------------------------
+
+# Imported at the end of the module: ``qcd_utils`` needs the gauge field
+# helpers defined above, while ``GaugeField.show_info`` calls it back.
+from .qcd_utils import (
+        gf_show_info,
+        gf_wilson_lines_no_comm,
+        mk_left_expanded_field,
+        )

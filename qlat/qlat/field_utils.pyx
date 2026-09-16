@@ -3,8 +3,10 @@
 """
 Module ``qlat.field_utils``
 ============================\n
-Field utility functions: expansion, communication plans, FFT, norms,
-element-wise square root, coordinate shifting, and field shuffling.\n
+Field utility functions: communication plans, coordinate shifting, and
+field shuffling.  The pure-Python helpers (field expansion, halo refresh,
+FFT, norms, and element-wise square root) live in
+``qlat.field_utils_utils``.\n
 Documentation: ``docs/qlat/qlat_field_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
@@ -12,11 +14,7 @@ Documentation: ``docs/qlat/qlat_field_utils.md``\n
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
-from .field_base cimport (
-        FieldBase,
-        SelectedFieldBase,
-        SelectedPointsBase,
-        )
+from .field_base cimport FieldBase
 from .field_types cimport (
         FieldInt8t,
         FieldRealD,
@@ -30,32 +28,8 @@ from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
 import qlat_utils as q
-import numpy as np
-import math
 
-from .geometry import geo_resize
-from .field_base import (
-        Field,
-        SelectedField,
-        SelectedPoints,
-        )
-
-def field_expanded(f, expansion_left, expansion_right):
-    geo = f.geo
-    multiplicity = f.multiplicity
-    geo_e = geo_resize(geo, expansion_left, expansion_right)
-    f_e = type(f)(geo_e, multiplicity)
-    f_e @= f
-    return f_e
-
-def refresh_expanded(field, comm_plan=None):
-    if comm_plan is None:
-        field._cc_refresh_expanded()
-    else:
-        field._cc_refresh_expanded_plan(comm_plan.cdata)
-
-def refresh_expanded_1(field):
-    field._cc_refresh_expanded_1()
+from .field_base_utils import Field
 
 cdef class CommMarks(FieldInt8t):
 
@@ -102,25 +76,6 @@ def set_marks_field_all(CommMarks comm_marks, Geometry geo, int multiplicity,
     """
     cc.py_set_marks_field_all(comm_marks.xx, geo.xx, multiplicity, tag)
 
-def refresh_expanded_field(field, comm_plan=None):
-    """
-    cqlat-compatible name for ``refresh_expanded``.
-    """
-    refresh_expanded(field, comm_plan)
-
-def refresh_expanded_1_field(field):
-    """
-    cqlat-compatible name for ``refresh_expanded_1``.
-    """
-    refresh_expanded_1(field)
-
-def merge_fields_ms_field(f, fs, ms):
-    """
-    cqlat-compatible name for ``Field._cc_merge_fields_ms``.
-    """
-    assert isinstance(f, FieldBase)
-    f._cc_merge_fields_ms(fs, ms)
-
 def mk_phase_field(Geometry geo, lmom):
     """
     lmom is in lattice momentum unit
@@ -130,68 +85,6 @@ def mk_phase_field(Geometry geo, lmom):
     cdef FieldComplexD f = Field(ElemTypeComplexD, geo, 1)
     cc.py_set_phase_field(f.xx, lmom_d.xx)
     return f
-
-class FastFourierTransform:
-
-    def __init__(self, fft_infos, *, is_normalizing=False, mode_fft=1):
-        # mode_fft in [ 0, 1, ]
-        # fft_infos = [ ( fft_dir, is_forward, ), ... ]
-        self.fft_infos = fft_infos
-        self.is_normalizing = is_normalizing
-        self.mode_fft = mode_fft
-
-    def copy(self):
-        return self.__copy__()
-
-    def __mul__(self, fields):
-        if isinstance(fields, FieldBase):
-            return (self * [ fields, ])[0]
-        assert isinstance(fields, list)
-        for f in fields:
-            assert isinstance(f, FieldBase)
-        fields = [ f.copy() for f in fields ]
-        fft_dirs, fft_is_forwards = zip(*self.fft_infos)
-        fields[0]._cc_fft(fields, fft_dirs, fft_is_forwards, self.mode_fft)
-        if self.is_normalizing and self.fft_infos:
-            for field in fields:
-                total_site = field.total_site
-                scale_factor = 1
-                for fft_dir, is_forward in self.fft_infos:
-                    scale_factor *= total_site[fft_dir]
-                scale_factor = 1.0 / math.sqrt(scale_factor)
-                field *= scale_factor
-        return fields
-
-###
-
-@q.timer
-def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=1):
-    if is_only_spatial:
-        fft_infos = [
-                (0, is_forward,),
-                (1, is_forward,),
-                (2, is_forward,),
-                ]
-        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
-    else:
-        fft_infos = [
-                (0, is_forward,),
-                (1, is_forward,),
-                (2, is_forward,),
-                (3, is_forward,),
-                ]
-        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
-
-###
-
-@q.timer
-def qnorm_field(f):
-    if isinstance(f, (FieldBase, SelectedFieldBase, SelectedPointsBase,)):
-        f_n = f.qnorm_field()
-    else:
-        q.displayln_info("qnorm_field:", type(f))
-        assert False
-    return f_n
 
 @q.timer
 def sqrt_selected_points_real_d(SelectedPointsRealD f):
@@ -210,21 +103,6 @@ def sqrt_field_real_d(FieldRealD f):
     cdef FieldRealD f_ret = f.copy(is_copying_data=False)
     cc.set_sqrt_field(f_ret.xx, f.xx)
     return f_ret
-
-@q.timer
-def sqrt_field(f):
-    if isinstance(f, FieldRealD):
-        f_ret = sqrt_field_real_d(f)
-    elif isinstance(f, SelectedFieldRealD):
-        f_ret = sqrt_selected_field_real_d(f)
-    elif isinstance(f, SelectedPointsRealD):
-        f_ret = sqrt_selected_points_real_d(f)
-    else:
-        q.displayln_info("sqrt_field:", type(f))
-        assert False
-    return f_ret
-
-###
 
 @q.timer
 def field_char_shift(FieldChar f, Coordinate shift):

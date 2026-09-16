@@ -3,8 +3,10 @@
 """
 Module ``qlat.field_base``
 ==========================\n
-Base classes and factory functions for lattice field types, selected fields,
-and selected points — the core data containers in qlat.\n
+Base classes for lattice field types, selected fields, and selected
+points — the core data containers in qlat.  The pure-Python
+``Field``/``SelectedField``/``SelectedPoints`` factories and the
+split/merge helpers live in ``qlat.field_base_utils``.\n
 Documentation: ``docs/qlat/qlat_field_base.md``\n
 .. note:: Update the documentation when updating this source file.
 """
@@ -50,11 +52,8 @@ from cpython.buffer cimport PyBUF_FORMAT
 import qlat_utils as q
 import numpy as np
 
-from .mpi import glb_sum
+from .mpi_utils import glb_sum
 from .field_type_dict import (
-        field_type_dict,
-        selected_field_type_dict,
-        selected_points_type_dict,
         field_ctypes_complex,
         field_ctypes_complex_f,
         field_ctypes_double,
@@ -62,66 +61,6 @@ from .field_type_dict import (
         field_ctypes_long,
         field_ctypes_char,
         )
-
-### -------------------------------------------------------------------
-
-def Field(type ctype, Geometry geo=None, int multiplicity=0):
-    assert ctype in field_type_dict
-    FieldType = field_type_dict[ctype]
-    field = FieldType(geo, multiplicity)
-    return field
-
-def SelectedField(type ctype, FieldSelection fsel, int multiplicity=0):
-    """
-    SelectedField(ctype, fsel) with the default multiplicity == 0 creates an
-    *empty*, uninitialized field that keeps fsel: it is meant to be filled
-    later, e.g. with load_double / float_from_double (see examples-py
-    selected-convert-io.py).  Pass a positive multiplicity to allocate now.
-    """
-    assert ctype in field_type_dict
-    FieldType = selected_field_type_dict[ctype]
-    field = FieldType(fsel, multiplicity)
-    return field
-
-def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
-    """
-    SelectedPoints(ctype, psel) with the default multiplicity == 0 creates an
-    *empty*, uninitialized field that keeps psel; pass a positive multiplicity
-    to allocate now.
-    """
-    assert ctype in field_type_dict
-    FieldType = selected_points_type_dict[ctype]
-    field = FieldType(psel, multiplicity)
-    return field
-
-def field_check_key(idx):
-    """
-    Validate a field index and return the NumPy index to use.
-
-    Field buffers are ``(local_volume, multiplicity, *elem_shape)``,
-    C-contiguous, indexed by the **flat local site index** with the first
-    coordinate varying fastest, matching ``geo.coordinate_from_index``.
-
-    A ``Coordinate`` (or a tuple/list containing one) is a common mistake
-    because it looks like the C++ ``get_elem`` API; reject it with an
-    actionable message instead of silently doing the wrong thing.
-    """
-    if isinstance(idx, (q.Coordinate, q.CoordinateD)):
-        raise TypeError(
-            f"field indices are flat local site indices, not {type(idx).__name__}"
-            "; use get_elem_xg(xg, m) for global coordinates, or "
-            "geo.index_from_coordinate(xl) to convert a local coordinate to a "
-            "flat local index")
-    if isinstance(idx, (tuple, list)):
-        for key in idx:
-            if isinstance(key, (q.Coordinate, q.CoordinateD)):
-                raise TypeError(
-                    "field indices are flat local site indices; a tuple "
-                    "containing a Coordinate would be interpreted by NumPy as a "
-                    "fancy index over the site axis. Use "
-                    "get_elem_xg(xg, m) for global coordinates, or "
-                    "geo.index_from_coordinate(xl)")
-    return idx
 
 ### -------------------------------------------------------------------
 
@@ -519,109 +458,6 @@ cdef class FieldBase:
         return self.n_sites
 
 ### -------------------------------------------------------------------
-
-def split_fields(fs, f):
-    nf = len(fs)
-    assert nf >= 1
-    ctype = f.ctype
-    for i in range(nf):
-        if not isinstance(fs[i], FieldBase):
-            fs[i] = Field(ctype)
-        else:
-            assert fs[i].ctype is ctype
-    f._cc_split_fields(fs)
-
-def merge_fields(f, fs):
-    nf = len(fs)
-    assert nf >= 1
-    assert isinstance(f, FieldBase)
-    assert f.ctype is fs[0].ctype
-    f._cc_merge_fields(fs)
-
-def merge_fields_ms(f, fms):
-    """
-    fms = [ (f0, m0,), (f1, m1,), ... ]
-    f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
-    """
-    multiplicity = len(fms)
-    assert multiplicity >= 1
-    assert isinstance(f, FieldBase)
-    assert f.ctype is fms[0][0].ctype
-    fs, ms = zip(*fms)
-    f._cc_merge_fields_ms(fs, ms)
-
-def mk_merged_fields_ms(fms):
-    """
-    fms = [ (f0, m0,), (f1, m1,), ... ]
-    f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
-    return f
-    """
-    multiplicity = len(fms)
-    assert multiplicity >= 1
-    for m in range(multiplicity):
-        assert isinstance(fms[m][0], FieldBase)
-        assert isinstance(fms[m][1], int)
-    ctype = fms[0][0].ctype
-    for m in range(multiplicity):
-        assert ctype is fms[m][0].ctype
-    f = Field(ctype)
-    merge_fields_ms(f, fms)
-    return f
-
-### -------------------------------------------------------------------
-### low-level cqlat-compatible entry points
-
-def get_mview_field(field):
-    """
-    Return a flat, writable memoryview of the field data.
-    """
-    assert isinstance(field, FieldBase)
-    return field.mview()
-
-def set_add_sfield(f_new, f):
-    """
-    ``f_new += f`` for two SelectedField objects with the same FieldSelection.
-    """
-    assert isinstance(f_new, SelectedFieldBase)
-    assert isinstance(f, SelectedFieldBase)
-    f_new._cc_iadd(f)
-
-def set_mul_double_sfield(f, factor):
-    """
-    ``f *= factor`` for a SelectedField.
-    """
-    assert isinstance(f, SelectedFieldBase)
-    f._cc_imul_double(float(factor))
-
-def acc_field_sfield(f, f1):
-    """
-    Accumulate a SelectedField into a Field: ``f += f1``.
-    """
-    assert isinstance(f, FieldBase)
-    assert isinstance(f1, SelectedFieldBase)
-    assert f1.ctype is f.ctype
-    f._cc_acc_field_sfield(f1, f1.fsel)
-
-def acc_field_spfield(f, f1, geo=None, psel=None):
-    """
-    Accumulate a SelectedPoints into a Field: ``f += f1``.
-    """
-    assert isinstance(f, FieldBase)
-    assert isinstance(f1, SelectedPointsBase)
-    assert f1.ctype is f.ctype
-    if psel is None:
-        psel = f1.psel
-    if geo is None:
-        geo = psel.geo
-    f._cc_acc_field_spfield(f1, geo, psel)
-
-def glb_sum_tslice_long_sfield(sp, f, t_dir=3):
-    """
-    Global-sum a SelectedField over the spatial sites of each time slice
-    into the SelectedPoints ``sp``.
-    """
-    assert isinstance(f, SelectedFieldBase)
-    f._cc_glb_sum_tslice(sp, f.fsel, t_dir)
 
 ### -------------------------------------------------------------------
 
@@ -1094,3 +930,12 @@ cdef class SelectedPointsBase:
         return self.n_points
 
 ### -------------------------------------------------------------------
+
+# Imported at the end of the module: ``field_base_utils`` needs the field
+# classes defined above, while the classes above call these helpers.
+from .field_base_utils import (
+        Field,
+        SelectedField,
+        SelectedPoints,
+        field_check_key,
+        )

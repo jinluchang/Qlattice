@@ -46,18 +46,6 @@ def get_lmbd_scalar_action(sa):
 def get_alpha_scalar_action(sa):
     return get_scalar_action_ptr(sa).alpha
 
-def hmc_estimate_mass_scalar_action(sa, masses, field_ft, force_ft, phi0):
-    """
-    cqlat-compatible entry point for ``ScalarAction.hmc_estimate_mass``.
-    """
-    sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0)
-
-def to_mass_factor_scalar_action(sa, sin_domega):
-    """
-    cqlat-compatible entry point for ``ScalarAction.to_mass_factor``.
-    """
-    sa.to_mass_factor(sin_domega)
-
 class ScalarAction:
     def __init__(self, m_sq, lmbd, alpha):
         self.cdata = mk_scalar_action(m_sq, lmbd, alpha)

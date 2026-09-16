@@ -30,7 +30,7 @@ from .field_utils import (
     shuffle_field,
     shuffle_field_back,
 )
-from .mpi import (
+from .mpi_utils import (
     glb_sum,
 )
 
@@ -106,45 +106,6 @@ def gf_energy_derivative_density_field(GaugeField gf, *, cc.RealD epsilon=0.0125
     fd1 -= fd2
     fd1 *= 1 / (2 * epsilon)
     return fd1
-
-@q.timer
-def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
-        *, cc.RealD c1=0.0, cc.RealD existing_flow_time=0.0, str wilson_flow_integrator_type=None):
-    fname = q.get_fname()
-    epsilon = flow_time / steps
-    energy_density_list = []
-    for i in range(steps):
-        gf_wilson_flow_step(gf, epsilon, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
-        t = (i + 1) * epsilon + existing_flow_time
-        energy_density = gf_energy_density(gf)
-        energy_density_list.append(energy_density)
-        q.displayln_info(f"{fname}: t={t} ; E={energy_density} ; t^2 E={t*t*energy_density}")
-    return energy_density_list
-
-@q.timer
-def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1, *, str method=None):
-    """
-    Apply stout smearing to gf in place for num_step steps.
-    method: None or "force" uses gf_wilson_flow_force + gf_evolve directly (default, fastest).
-            "stout" uses gf_block_stout_smear.
-            "wilson-flow" uses gf_wilson_flow_step with euler integrator and c1=0.
-    """
-    fname = q.get_fname()
-    if method is None:
-        method = "force"
-    if method == "stout":
-        for step in range(num_step):
-            gf_block_stout_smear(gf, Coordinate(), step_size)
-    elif method == "wilson-flow":
-        for step in range(num_step):
-            gf_wilson_flow_step(gf, step_size, c1=0.0, wilson_flow_integrator_type="euler")
-    elif method == "force":
-        for step in range(num_step):
-            gm = gf_wilson_flow_force(gf, c1=0.0)
-            gf_evolve(gf, gm, step_size)
-    else:
-        raise ValueError(f"{fname}: unknown method={method}")
-    q.displayln_info(f"{fname}: method={method}, num_step={num_step}, step_size={step_size}, plaq={gf.plaq()}")
 
 @q.timer
 def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):

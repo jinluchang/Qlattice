@@ -86,16 +86,6 @@ def gf_topology_field_clf(GaugeField gf):
     return topf
 
 @q.timer
-def gf_topology_clf(GaugeField gf):
-    r"""
-    return top
-    ininstance(top, float)
-    Use the basic gf_clover_leaf_field
-    NOT using 5 loop improved definition
-    """
-    return gf_topology_field_clf(gf).glb_sum()[:].item()
-
-@q.timer
 def gf_topology_field(GaugeField gf):
     r"""
     return topf
@@ -108,16 +98,6 @@ def gf_topology_field(GaugeField gf):
     return topf
 
 @q.timer
-def gf_topology(GaugeField gf):
-    r"""
-    return top
-    ininstance(top, float)
-    Using the 5 loop improved definition Eq. (2-7)
-    https://arxiv.org/pdf/hep-lat/9701012v2.pdf
-    """
-    return gf_topology_field(gf).glb_sum()[:].item()
-
-@q.timer
 def gf_topology_terms_field(GaugeField gf):
     r"""
     return topf;
@@ -127,13 +107,3 @@ def gf_topology_terms_field(GaugeField gf):
     topf = FieldRealD()
     cc.clf_topology_field_5_terms(topf.xx, gf.xxx().val())
     return topf
-
-@q.timer
-def gf_topology_terms(GaugeField gf):
-    r"""
-    return top_terms;
-    top_terms.shape == (5,)
-    top_terms.dtype == np.float64
-    sum of the 5 terms should equal to gf_topology
-    """
-    return gf_topology_terms_field(gf).glb_sum()[0, :]
