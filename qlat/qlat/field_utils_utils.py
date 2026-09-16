@@ -37,7 +37,7 @@ def refresh_expanded(field, comm_plan=None):
     if comm_plan is None:
         field._cc_refresh_expanded()
     else:
-        field._cc_refresh_expanded_plan(comm_plan.cdata)
+        field._cc_refresh_expanded_plan(comm_plan)
 
 def refresh_expanded_1(field):
     field._cc_refresh_expanded_1()

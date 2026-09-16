@@ -23,11 +23,6 @@ cache_fields_io = q.mk_cache("fields_io")
 
 cdef class ShuffledFieldsWriter:
 
-    # self.cdata
-
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
-
     def __init__(self, str path not None, Coordinate new_size_node not None, cc.Bool is_append=False):
         self.xx.init(path, new_size_node.xx, is_append)
 
@@ -81,11 +76,6 @@ cdef class ShuffledFieldsWriter:
 ## --------------
 
 cdef class ShuffledFieldsReader:
-
-    # self.cdata
-
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, str path not None, Coordinate new_size_node=None):
         if new_size_node is None:
@@ -169,9 +159,6 @@ cdef class ShuffledFieldsReader:
 ## --------------
 
 cdef class ShuffledBitSet:
-
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, FieldSelection fsel not None, Coordinate new_size_node not None):
         self.xx = cc.mk_shuffled_bitset(fsel.xx, new_size_node.xx)

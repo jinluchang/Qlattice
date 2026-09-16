@@ -19,7 +19,6 @@ cdef class GaugeAction:
 
     def __cinit__(self):
         self.xx = cc.GaugeAction()
-        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, cc.RealD beta, cc.RealD c1=0.0):
         self.xx.beta = beta

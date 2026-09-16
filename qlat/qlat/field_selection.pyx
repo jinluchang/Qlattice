@@ -694,7 +694,6 @@ cdef class SelectedShufflePlan:
 cdef class PointsSelection:
 
     def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __init__(self, *args):
@@ -1087,7 +1086,6 @@ cdef class PointsSelection:
 cdef class FieldSelection:
 
     def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __init__(self, *args):

@@ -25,9 +25,6 @@ import functools
 
 cdef class RngState:
 
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
-
     def __init__(self, x=None, y=None):
         cdef cc.std_string seed
         if x is None:

@@ -24,7 +24,6 @@ cdef class Geometry:
 
     def __cinit__(self):
         self.xx = cc.Geometry()
-        self.cdata = <cc.Long>&(self.xx)
 
     def __init__(self, *args):
         """

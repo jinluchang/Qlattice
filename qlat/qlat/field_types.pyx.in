@@ -47,6 +47,7 @@ from cpython.buffer cimport PyBUF_FORMAT
 from .geometry cimport *
 from .field_selection cimport *
 from .fields_io cimport *
+from .field_utils cimport CommPlan
 from .selected_field_types cimport *
 from .selected_points_types cimport *
 
@@ -75,7 +76,6 @@ cdef class Field{{name}}(FieldBase):
     ctype = ElemType{{name}}
 
     def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __init__(self, *args):
@@ -418,8 +418,8 @@ cdef class Field{{name}}(FieldBase):
     def _cc_refresh_expanded(self):
         cc.py_refresh_expanded_field(self.xx)
 
-    def _cc_refresh_expanded_plan(self, cc.Long cdata):
-        cc.refresh_expanded(self.xx, (<cc.CommPlan*>cdata)[0])
+    def _cc_refresh_expanded_plan(self, CommPlan comm_plan):
+        cc.refresh_expanded(self.xx, comm_plan.xx)
 
     def _cc_refresh_expanded_1(self):
         cc.refresh_expanded_1(self.xx)

@@ -40,9 +40,6 @@ cdef class CommMarks(FieldInt8t):
 
 cdef class CommPlan:
 
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
-
     def __imatmul__(self, CommPlan v1):
         self.xx = v1.xx
         return self

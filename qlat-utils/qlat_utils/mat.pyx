@@ -20,9 +20,6 @@ import numpy as np
 
 cdef class WilsonMatrix:
 
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
-
     def __imatmul__(self, WilsonMatrix v1):
         self.xx = v1.xx
         return self
@@ -128,9 +125,6 @@ cdef class WilsonMatrix:
 
 cdef class SpinMatrix:
 
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
-
     def __imatmul__(self, SpinMatrix v1):
         self.xx = v1.xx
         return self
@@ -232,9 +226,6 @@ cdef class SpinMatrix:
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
-
-    def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
 
     def __imatmul__(self, ColorMatrix v1):
         self.xx = v1.xx

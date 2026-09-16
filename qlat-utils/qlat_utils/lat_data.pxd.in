@@ -13,7 +13,6 @@ type_name_list = [
 
 cdef class LatData{{type_ext}}:
     cdef cqlat_utils.LatData{{type_ext}} xx
-    cdef readonly cqlat_utils.Long cdata
     cdef readonly int view_count
 
 {{endfor}}

@@ -38,7 +38,6 @@ type_name_list = [
 cdef class LatData{{type_ext}}:
 
     def __cinit__(self):
-        self.cdata = <cc.Long>&(self.xx)
         self.view_count = 0
 
     def __imatmul__(self, v):
