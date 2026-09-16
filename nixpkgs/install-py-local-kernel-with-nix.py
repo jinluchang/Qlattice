@@ -13,9 +13,12 @@ The nix-build out link is installed into the current user's kernel directory,
 That is what the old bash script did, and it keeps the nix store path alive
 through the indirect gc root nix registers for the out link.  The repo link
 './result-py-local<variant>' points at that out link, so it stays usable.\n
-When the user level kernel directory is not writable, the out link, the Jupyter
-kernel spec, the nix cache and the nom state directory all fall back to
-'<repo>/tmp/', so that nothing outside of the repo is written to.
+When the user level kernel directory is not writable, the Jupyter kernel spec,
+the nix cache and the nom state directory fall back to '<repo>/tmp/', so that
+nothing outside of the repo is written to.  The out link still lives under
+'<repo>/tmp/jupyter' because nix registers its indirect gc root there, but the
+repo link './result-py-local<variant>' points at the nix store path directly
+instead of going through that out link.
 """
 
 import argparse
@@ -78,8 +81,11 @@ outputs:
                                           directory (by default
                                           '$HOME/.local/share/jupyter/kernels')
                                           is writable
-  ./result-py-local<variant>              link to that out link, always in the
-                                          repo
+  ./result-py-local<variant>              link to that out link, or directly to
+                                          the nix store path when the out link
+                                          is installed in './tmp/jupyter'
+                                          because the user level kernel
+                                          directory is not writable
   ./tmp/jupyter/share/jupyter/kernels/    out link and kernel spec, used when
                                           the user level kernel directory is
                                           not writable
@@ -341,12 +347,12 @@ def kernel_out_link(kernels_dir, kernel_name):
     out_dir.mkdir(parents=True, exist_ok=True)
     return out_dir / "result"
 
-def link_repo_out_link(repo_link, out_link):
-    """Make '<repo>/result-<kernel>' point at 'out_link', replacing any old link."""
+def link_repo_out_link(repo_link, target):
+    """Make '<repo>/result-<kernel>' point at 'target', replacing any old link."""
     if repo_link.is_symlink() or repo_link.exists():
         repo_link.unlink()
-    repo_link.symlink_to(out_link)
-    print(f"'{repo_link}' -> '{out_link}'")
+    repo_link.symlink_to(target)
+    print(f"'{repo_link}' -> '{target}'")
 
 def ipykernel_env_args(variant, out_link):
     args = [
@@ -424,8 +430,14 @@ def install_one_variant(variant, args, env, kernels_dir, use_user_install, bulk_
     nix_build([f"pkgs{variant}.qlat-jhub-env"], out_link, args, env, use_nom=use_nom)
     if not (out_link / "bin" / "python3").exists():
         die(f"'{out_link}/bin/python3' not found.")
-    print(f"'{out_link}' -> '{os.path.realpath(out_link)}'")
-    link_repo_out_link(repo_link, out_link)
+    store_path = Path(os.path.realpath(out_link))
+    print(f"'{out_link}' -> '{store_path}'")
+    # The out link is kept for its indirect gc root, but when it is installed in
+    # the repo (because the user level kernel directory is not writable), the
+    # repo link points at the store path directly, so that it does not depend on
+    # '<kernel_prefix>/share/jupyter/kernels/nix-build-*/result'.
+    repo_target = out_link if use_user_install else store_path
+    link_repo_out_link(repo_link, repo_target)
     install_kernel(variant, out_link, args.kernel_prefix, use_user_install, env)
 
 def main(argv=None):
