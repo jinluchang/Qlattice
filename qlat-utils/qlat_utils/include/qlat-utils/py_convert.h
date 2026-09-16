@@ -216,7 +216,6 @@ T py_convert_data(PyObject* in)
 inline PyObject* py_convert_get_attr(PyObject* in, const std::string& attr)
 // interface
 // py_convert_data<std::string>(in, "ctype")
-// py_convert_data<Long>(in, "cdata")
 // explicit error instead of dereferencing NULL when the attribute is missing
 {
   if (in == NULL) {
@@ -238,7 +237,6 @@ template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
 // interface
 // py_convert_data<std::string>(in, "ctype")
-// py_convert_data<Long>(in, "cdata")
 {
   PyObject* p_obj = py_convert_get_attr(in, attr);
   T x = py_convert_data<T>(p_obj);
@@ -262,51 +260,6 @@ inline std::string py_get_ctype(PyObject* in)
 // py_convert_data<std::string>(in, "ctype", "name")
 {
   return py_convert_data<std::string>(in, "ctype", "name");
-}
-
-template <class T>
-T& py_convert_type(PyObject* in)
-// interface
-// use cdata property of PyObject* in as pointer
-// examples:
-// py_convert_type<Geometry>(in);
-// py_convert_type<LatData>(in);
-// py_convert_type<RngState>(in);
-// py_convert_type<PointsSelection>(in);
-// py_convert_type<CommPlan>(in);
-// py_convert_type<FieldSelection>(in);
-// specifications:
-// py_convert_type<Propagator4d>(in);
-// py_convert_type<GaugeField>(in);
-// py_convert_type<CommMarks>(in);
-{
-  T* out = (T*)py_convert_data<Long>(in, "cdata");
-  return *out;
-}
-
-template <class T>
-T& py_convert_type(PyObject* in, const std::string& attr)
-// interface
-// py_convert_type<PointsSelection>(in, "psel")
-// py_convert_type<FieldSelection>(in, "fsel")
-// py_convert_type<Geometry>(in, "geo")
-{
-  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
-  T& x = py_convert_type<T>(p_obj);
-  Py_DECREF(p_obj);
-  return x;
-}
-
-template <class T>
-T& py_convert_type(PyObject* in, const std::string& attr,
-                   const std::string& attr1)
-// interface
-// py_convert_type<Geometry>(in, "psel", "geo")
-{
-  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
-  T& x = py_convert_type<T>(p_obj, attr1);
-  Py_DECREF(p_obj);
-  return x;
 }
 
 // -------------------------------------------------------------
