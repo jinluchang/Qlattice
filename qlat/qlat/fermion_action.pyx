@@ -3,7 +3,8 @@
 """
 Module ``qlat.fermion_action``
 ==============================\n
-Fermion action parameterisation for Mobius and ZMobius domain-wall fermions.\n
+Fermion action parameterisation for Mobius and ZMobius domain-wall fermions.
+``FermionAction`` is a ``cdef class`` that owns its C++ object by value.\n
 Documentation: ``docs/qlat/qlat_fermion_action.md``\n
 .. note:: Update the documentation when updating this source file.
 """
@@ -11,109 +12,82 @@ Documentation: ``docs/qlat/qlat_fermion_action.md``\n
 from qlat_utils.all cimport *
 from . cimport everything as cc
 
-from cpython.long cimport PyLong_FromVoidPtr
-from cpython.long cimport PyLong_AsVoidPtr
-
-cdef inline cc.FermionAction* get_fermion_action_ptr(object fa) except? NULL:
-    return <cc.FermionAction*>PyLong_AsVoidPtr(fa.cdata)
-
 cdef inline cc.ComplexD to_complex_d(object z):
     cdef cc.PyComplexD pz = <cc.PyComplexD>z
     return (<cc.ComplexD*>(&pz))[0]
 
-def mk_fermion_action_mobius(
-        cc.RealD mass, cc.Int ls, cc.RealD m5, cc.RealD mobius_scale):
-    cdef cc.FermionAction* pfa = new cc.FermionAction(
-        mass, ls, m5, mobius_scale, True, False)
-    return PyLong_FromVoidPtr(<void*>pfa)
+cdef class FermionAction:
 
-def mk_fermion_action_zmobius(cc.RealD mass, cc.RealD m5, omega):
-    cdef cc.Int ls = <cc.Int>len(omega)
-    cdef cc.FermionAction* pfa = new cc.FermionAction(
-        mass, ls, m5, 0.0, True, True)
-    cdef Py_ssize_t i
-    cdef object z
-    cdef object b
-    for i in range(ls):
-        z = complex(omega[i])
-        b = 0.5 * (1.0 / z + 1.0)
-        pfa.bs[i] = to_complex_d(b)
-        pfa.cs[i] = to_complex_d(b - 1.0)
-    return PyLong_FromVoidPtr(<void*>pfa)
+    def __cinit__(self):
+        self.xx = cc.FermionAction()
 
-def get_mass_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    return pfa.mass
-
-def get_m5_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    return pfa.m5
-
-def free_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    del pfa
-
-def set_fermion_action(fa_new, fa):
-    cdef cc.FermionAction* p_fa_new = get_fermion_action_ptr(fa_new)
-    cdef cc.FermionAction* p_fa = get_fermion_action_ptr(fa)
-    p_fa_new[0] = p_fa[0]
-
-def get_ls_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    return pfa.ls
-
-def get_omega_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    if not pfa.is_using_zmobius:
-        return None
-    cdef cc.Long i
-    cdef cc.std_vector[cc.RealD] re = cc.py_get_omega_fermion_action_re(pfa[0])
-    cdef cc.std_vector[cc.RealD] im = cc.py_get_omega_fermion_action_im(pfa[0])
-    cdef list omega = []
-    for i in range(re.size()):
-        omega.append(complex(re[i], im[i]))
-    return omega
-
-def get_mobius_scale_fermion_action(fa):
-    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
-    if pfa.is_using_zmobius:
-        assert pfa.mobius_scale == 0.0
-    else:
-        assert pfa.mobius_scale != 0.0
-    return pfa.mobius_scale
-
-class FermionAction:
     def __init__(self, *, mass, ls, m5, mobius_scale=1.0, omega=None):
+        cdef Py_ssize_t i
+        cdef object z
+        cdef object b
         assert isinstance(mass, float)
         assert isinstance(ls, int)
         assert isinstance(m5, float)
         if omega is None:
-            self.cdata = mk_fermion_action_mobius(mass, ls, m5, mobius_scale)
+            self.xx = cc.FermionAction(mass, ls, m5, mobius_scale, True, False)
         else:
             assert isinstance(omega, list)
             assert ls == len(omega)
-            self.cdata = mk_fermion_action_zmobius(mass, m5, omega)
+            self.xx = cc.FermionAction(mass, ls, m5, 0.0, True, True)
+            for i in range(ls):
+                z = complex(omega[i])
+                b = 0.5 * (1.0 / z + 1.0)
+                self.xx.bs[i] = to_complex_d(b)
+                self.xx.cs[i] = to_complex_d(b - 1.0)
 
-    def __del__(self):
-        assert isinstance(self.cdata, int)
-        free_fermion_action(self)
-
-    def __imatmul__(self, v1):
-        assert isinstance(v1, FermionAction)
-        set_fermion_action(self, v1)
+    def __imatmul__(self, FermionAction v1):
+        self.xx = v1.xx
         return self
 
     def mass(self):
-        return get_mass_fermion_action(self)
+        return self.xx.mass
 
     def ls(self):
-        return get_ls_fermion_action(self)
+        return self.xx.ls
 
     def m5(self):
-        return get_m5_fermion_action(self)
+        return self.xx.m5
 
     def omega(self):
         return get_omega_fermion_action(self)
 
     def mobius_scale(self):
-        return get_mobius_scale_fermion_action(self)
+        return self.xx.mobius_scale
+
+### -------------------------------------------------------------------
+### cqlat-compatible entry points
+
+def get_mass_fermion_action(FermionAction fa):
+    return fa.xx.mass
+
+def get_m5_fermion_action(FermionAction fa):
+    return fa.xx.m5
+
+def set_fermion_action(FermionAction fa_new, FermionAction fa):
+    fa_new.xx = fa.xx
+
+def get_ls_fermion_action(FermionAction fa):
+    return fa.xx.ls
+
+def get_omega_fermion_action(FermionAction fa):
+    if not fa.xx.is_using_zmobius:
+        return None
+    cdef cc.Long i
+    cdef cc.std_vector[cc.RealD] re = cc.py_get_omega_fermion_action_re(fa.xx)
+    cdef cc.std_vector[cc.RealD] im = cc.py_get_omega_fermion_action_im(fa.xx)
+    cdef list omega = []
+    for i in range(re.size()):
+        omega.append(complex(re[i], im[i]))
+    return omega
+
+def get_mobius_scale_fermion_action(FermionAction fa):
+    if fa.xx.is_using_zmobius:
+        assert fa.xx.mobius_scale == 0.0
+    else:
+        assert fa.xx.mobius_scale != 0.0
+    return fa.xx.mobius_scale

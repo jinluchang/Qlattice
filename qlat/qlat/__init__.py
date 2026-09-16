@@ -27,6 +27,8 @@ from .fields_io_utils import *
 
 from .scalar_action_utils import *
 
+from .inverter_utils import *
+
 from .hmc_utils import *
 
 from .mpi_utils import *

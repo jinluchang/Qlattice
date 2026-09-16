@@ -24,6 +24,7 @@ py_files = files(
   'wilson_flow_utils.py',
   'fields_io_utils.py',
   'scalar_action_utils.py',
+  'inverter_utils.py',
   'mat_mpi.py',
   'psel_split.py',
   'selected_points_io.py',
@@ -45,6 +46,7 @@ pxd_files = files(
   'fields_io.pxd',
   'hmc.pxd',
   'gauge_action.pxd',
+  'fermion_action.pxd',
   'muon_line.pxd',
   'hlbl_contract.pxd',
   )

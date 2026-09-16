@@ -24,9 +24,10 @@ simulations. The action defines a confining potential `V(x, t)` with
 parameters for barrier strength, finite-volume (FV) offsets, and measurement
 windows.
 
-The C implementation is created via `c.mk_qm_action` and freed on object
-deletion via `c.free_qm_action`. All computation methods (potential, force,
-field evolution) delegate to the corresponding `c.*` functions.
+`QMAction` is a Cython `cdef class` that owns its C++ object by value: the
+object is constructed with the instance and destroyed with it. All
+computation methods (potential, force, field evolution) delegate to the
+corresponding C++ methods.
 
 This module is typically used in the HMC update loop to:
 
@@ -61,7 +62,7 @@ QMAction(
 ```
 
 Create a new `QMAction` instance. All parameters are passed directly to the
-C-level `mk_qm_action`.
+C++ `QMAction` constructor.
 
 | Parameter | Type | Description |
 |---|---|---|

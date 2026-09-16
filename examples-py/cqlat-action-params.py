@@ -2,15 +2,18 @@
 
 # Tests for the cqlat ScalarAction and FermionAction interfaces:
 #   qlat/qlat/scalar_action.pyx:
-#     free_scalar_action, set_scalar_action, get_m_sq_scalar_action,
-#     get_lmbd_scalar_action, get_alpha_scalar_action,
+#     ScalarAction (a cdef class owning its C++ object by value),
+#     set_scalar_action, get_m_sq_scalar_action,
+#     get_lmbd_scalar_action, get_alpha_scalar_action
+#   qlat/qlat/scalar_action_utils.py:
 #     hmc_estimate_mass_scalar_action, to_mass_factor_scalar_action
 #   qlat/qlat/fermion_action.pyx:
-#     free_fermion_action, set_fermion_action, get_ls_fermion_action,
+#     FermionAction (a cdef class owning its C++ object by value),
+#     set_fermion_action, get_ls_fermion_action,
 #     get_omega_fermion_action, get_mobius_scale_fermion_action
 #
 # These are reached through the ``q.ScalarAction`` (``qlat.scalar_action``) and
-# ``q.FermionAction`` (``qlat.fermion_action``) Python classes.
+# ``q.FermionAction`` (``qlat.fermion_action``) classes.
 # ``hmc_estimate_mass_scalar_action`` and ``to_mass_factor_scalar_action`` are
 # checked against independent numpy re-implementations of
 # ``qlat/qlat/include/qlat/scalar-action.h``.
@@ -217,7 +220,9 @@ q.json_results_append(
     1e-10,
 )
 
-# --- free_scalar_action, exercised by __del__
+# --- ScalarAction destruction, exercised by del; the cdef class frees its
+# --- C++ object in __dealloc__.  The historical marker name is kept so that
+# --- the reference cqlat-action-params.log.json stays unchanged.
 del sa
 gc.collect()
 q.json_results_append("cqlat-action-params: free_scalar_action (via __del__)")
@@ -280,7 +285,8 @@ q.json_results_append(
     f" = {fa_z.mobius_scale() == 0.0}"
 )
 
-# --- free_fermion_action, exercised by __del__
+# --- FermionAction destruction (the cdef class owns its C++ object by value);
+# --- the historical marker name is kept for the reference .log.json.
 del fa_z
 gc.collect()
 del fa

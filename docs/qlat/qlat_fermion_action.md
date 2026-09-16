@@ -27,8 +27,8 @@ parameters of a domain-wall fermion action. Two variants are supported:
   Mobius scale, allowing finer control over the approximation to the
   sign function in the fifth dimension.
 
-The class manages the lifetime of a C++ `FermionAction` object through the
-`cdata` attribute and the `qlat.c` backend.
+The class is a Cython `cdef class` that owns its C++ `FermionAction` object by
+value: the object is constructed with the instance and destroyed with it.
 
 ---
 

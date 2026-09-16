@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat ftHMC interface:
-#     qlat/qlat/fthmc.pyx:     add_flow_flow_info, free_flow_info,
-#                               set_gm_force_flowed_no_det
+#     qlat/qlat/fthmc.pyx:     FlowInfo (a cdef class owning its C++ object by
+#                               value), add_flow_flow_info, set_gm_force_flowed_no_det
 #     qlat/qlat/hmc_stats.pyx: get_gm_force_magnitudes
 #
 # They are reached through
-#     q.FlowInfo().add_flow(...)         -> fthmc.pyx add_flow_flow_info
-#     q.FlowInfo.__del__ (via gc.collect) -> fthmc.pyx free_flow_info
+#     q.FlowInfo().add_flow(...)  -> fthmc.pyx FlowInfo.add_flow
+#     q.FlowInfo.__dealloc__      -> fthmc.pyx FlowInfo (C++ object freed by value)
 #     q.c.set_gm_force_flowed_no_det      (no Python wrapper exists)
 #     q.get_gm_force_magnitudes           (qlat.hmc_stats wrapper)
 #
@@ -247,7 +247,8 @@ q.json_results_append(
     f" = {abs(float(mag_flow[0]) - mean_flow_ref) < check_eps}"
 )
 
-# --- free_flow_info is exercised by FlowInfo.__del__ (explicit gc.collect())
+# --- FlowInfo destruction (the cdef class owns its C++ object by value);
+# --- the historical marker name is kept so the reference .log.json stays valid.
 fi_tmp = q.FlowInfo()
 fi_tmp.add_flow(1, 0, 0.1, 1)
 assert len(fi_tmp.show().strip().split("\n")) == 1

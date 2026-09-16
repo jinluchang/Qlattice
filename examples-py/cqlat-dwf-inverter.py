@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat InverterDomainWall interface (qlat/qlat/inverter.pyx):
-#     free_inverter_domain_wall,
+#     InverterDomainWall (a cdef class owning its C++ object by value),
 #     get_stop_rsd_inverter_domain_wall, set_stop_rsd_inverter_domain_wall,
 #     get_max_num_iter_inverter_domain_wall, set_max_num_iter_inverter_domain_wall,
 #     get_max_mixed_precision_cycle_inverter_domain_wall,
@@ -166,7 +166,8 @@ err_inv = sol_diff_qnorm(sol, sol_free)
 assert np.isfinite(err_inv) and err_inv < 1e-5, err_inv
 q.json_results_append(f"cqlat-dwf-inverter: inversion matches free field = {err_inv < 1e-5}")
 
-# --- free_inverter_domain_wall: exercised by __del__ + gc.collect()
+# --- InverterDomainWall destruction (the cdef class owns its C++ object by
+# --- value); the historical marker name is kept for the reference .log.json.
 inv_tmp = q.InverterDomainWall(gf=gf, fa=fa)
 inv_tmp.set_stop_rsd(1e-4)
 assert inv_tmp.stop_rsd() == 1e-4

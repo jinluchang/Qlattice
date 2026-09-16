@@ -44,7 +44,10 @@ struct QMAction {
     dt = 1.0;
     measure_offset_L = false;
     measure_offset_M = false;
+    vtype = GET_L;
   }
+  //
+  qacc QMAction() { init(); }
   //
   qacc QMAction(const RealD alpha_, const RealD beta_, const RealD V_FV_min_,
                 const RealD FV_offset_, const RealD TV_offset_,

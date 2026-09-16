@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat QMAction interface (qlat/qlat/qm_action.pyx):
-#     mk_qm_action, free_qm_action, set_qm_action,
+#     QMAction (a cdef class owning its C++ object by value),
+#     set_qm_action,
 #     get_alpha_qm_action, get_beta_qm_action, get_barrier_strength_qm_action,
 #     get_M_qm_action, get_L_qm_action, get_t_FV_out_qm_action,
 #     get_t_FV_mid_qm_action, get_dt_qm_action,
@@ -385,7 +386,8 @@ q.json_results_append(
 assert abs(mean_g) < 0.05
 assert abs(var_g**0.5 - 1.0) < 0.05
 
-# --- free_qm_action: exercised by __del__ (with an explicit gc.collect())
+# --- QMAction destruction (the cdef class owns its C++ object by value);
+# --- the historical marker name is kept for the reference .log.json.
 qma_tmp = q.QMAction(
     qm_args["alpha"],
     qm_args["beta"],
