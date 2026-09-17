@@ -46,6 +46,7 @@ tests_gpt = \
 			qtopo-measure-dwf.log \
 			hlbl-muon-line.log \
 			grid-qlat-io-test.log \
+			jackknife-sync-node-grid.log \
 			gpt-qlat-auto-simple.log \
 			gpt-qlat-data-gen-pi0-decay.log \
 			gpt-qlat-data-gen-auto.log \

@@ -1,0 +1,20 @@
+[
+ [
+  "get_comm is not None = True"
+ ],
+ [
+  "get_comm().rank == get_id_node() = True"
+ ],
+ [
+  "get_comm().size == get_num_node() = True"
+ ],
+ [
+  "id_node != world.rank = True"
+ ],
+ [
+  "reorder: sync == sequential = True"
+ ],
+ [
+  "reorder: sync shape = (1024, 2)"
+ ]
+]

@@ -85,6 +85,8 @@ tests = \
 		jackknife-random-old.log \
 		jackknife-super-old.log \
 		jackknife-test.log \
+		jackknife-sync-node.log \
+		jackknife-sync-node-reorder.log \
 		interp.log \
 		field-utils.log \
 		field-analysis.log \

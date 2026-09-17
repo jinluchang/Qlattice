@@ -1,0 +1,166 @@
+[
+ [
+  "g_mk_jk has is_sync_node (default False) = True"
+ ],
+ [
+  "rjackknife has is_sync_node (default False) = True"
+ ],
+ [
+  "get_comm is not None = True"
+ ],
+ [
+  "get_comm().rank == get_id_node() = True"
+ ],
+ [
+  "get_comm().size == get_num_node() = True"
+ ],
+ [
+  "bs1: sync == sequential = True"
+ ],
+ [
+  "bs1: sync shape = (1024, 3)"
+ ],
+ [
+  "bs1 avg",
+  {
+   "value": [
+    -0.1843370303828342,
+    0.16035996556071344,
+    0.08353905114970142
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "bs1 err",
+  {
+   "value": [
+    0.1506935791080089,
+    0.1288177313623263,
+    0.10597589161446432
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "global default is_sync_node: sync == sequential = True"
+ ],
+ [
+  "bs4: sync == sequential = True"
+ ],
+ [
+  "bs4: sync shape = (1024, 3)"
+ ],
+ [
+  "bs4 avg",
+  {
+   "value": [
+    -0.0029663822652861295,
+    -0.030917890181765727,
+    0.054866244243268004
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "bs4 err",
+  {
+   "value": [
+    0.09559120746733213,
+    0.07763756063508317,
+    0.12285106912569611
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "mixed: sync == sequential = True"
+ ],
+ [
+  "mixed: sync shape = (1024, 3)"
+ ],
+ [
+  "mixed avg",
+  {
+   "value": [
+    -0.07374517177457324,
+    0.04372712669334808,
+    0.06605563230431523
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "mixed err",
+  {
+   "value": [
+    0.08354690365769814,
+    0.06918157292723885,
+    0.08553183994505312
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "normalizing: sync == sequential = True"
+ ],
+ [
+  "normalizing: sync shape = (1024, 3)"
+ ],
+ [
+  "normalizing avg",
+  {
+   "value": [
+    -0.1843370303828342,
+    0.16035996556071344,
+    0.08353905114970142
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "normalizing err",
+  {
+   "value": [
+    0.15145375118737833,
+    0.12863031265946384,
+    0.10634696515298464
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "n_rand_sample=0: sync == sequential = True"
+ ],
+ [
+  "n_rand_sample=0: sync shape = (1, 3)"
+ ],
+ [
+  "n_rand_sample=0 avg",
+  {
+   "value": [
+    -0.1843370303828342,
+    0.16035996556071344,
+    0.08353905114970142
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "n_rand_sample=0 err",
+  {
+   "value": [
+    -0.1843370303828342,
+    0.16035996556071344,
+    0.08353905114970142
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "super + is_sync_node raises = True"
+ ],
+ [
+  "is_sync_node without get_comm raises = True"
+ ]
+]
