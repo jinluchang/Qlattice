@@ -73,11 +73,29 @@ end_with_mpi(is_preserving_cache=False)
 
 ### `get_comm() -> mpi4py.MPI.Intracomm`
 
-Return the module-level MPI communicator set by `begin_with_mpi`.
+Return the module-level MPI communicator, or `None` before `q.begin(...)`.
+
+Its rank ordering always matches the qlat node numbering
+(`q.get_comm().rank == q.get_id_node()` and
+`q.get_comm().size == q.get_num_node()`):
+
+- `begin_with_mpi` sets it to `MPI.COMM_WORLD` (where the qlat `id_node` is the
+  `MPI_COMM_WORLD` rank);
+- `begin_with_gpt` and `begin_with_grid` set it to
+  `MPI.COMM_WORLD.Split(color=0, key=id_node)`, because these derive the qlat
+  `id_node` from the Grid processor coordinates, which do not always follow the
+  `MPI_COMM_WORLD` rank order. Do not assume `q.get_id_node()` equals the
+  `MPI_COMM_WORLD` rank; use `q.get_comm()` when a communicator consistent with
+  the qlat node numbering is needed.
+
+`end_with_gpt` / `end_with_grid` free the split communicator and reset it to
+`None`.
 
 ### `set_comm(x)`
 
-Set the module-level MPI communicator. Rarely called directly.
+Set the module-level MPI communicator. Rarely called directly (the `begin_*`
+functions set it); a custom `q.begin(...)` user must set it explicitly if
+`q.get_comm()` is needed.
 
 ### `show_machine()`
 

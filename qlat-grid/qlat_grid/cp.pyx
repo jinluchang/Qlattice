@@ -7,6 +7,7 @@ import sys
 import qlat as q
 
 def begin_with_grid(size_node_list = None):
+    assert q.get_comm() is None
     if size_node_list is None:
         size_node_list = []
     else:
@@ -21,8 +22,20 @@ def begin_with_grid(size_node_list = None):
         size_node = Coordinate(size_node_list[i])
         size_node_vec[i] = size_node.xx
     cc.begin_with_grid(sys.argv, size_node_vec)
+    #
+    # Set the qlat communicator the same way as ``qlat_gpt.begin_with_gpt``, so
+    # that ``q.get_comm().rank == q.get_id_node()``.  The C++ ``grid_begin``
+    # derives ``id_node`` from the Grid processor coordinates, which does not
+    # necessarily coincide with the ``MPI_COMM_WORLD`` rank.
+    from mpi4py import MPI
+    #
+    id_node = q.get_id_node()
+    q.set_comm(MPI.COMM_WORLD.Split(color=0, key=id_node))
 
 def end_with_grid(is_preserving_cache = False):
+    if q.get_comm() is not None:
+        q.get_comm().Free()
+        q.set_comm(None)
     if not is_preserving_cache:
         q.clean_cache()
     cc.end_with_grid(is_preserving_cache)
