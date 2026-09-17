@@ -799,27 +799,43 @@ def mk_r_i_j_mat(
     is_normalizing_rand_sample,
     is_apply_rand_sample_jk_idx_blocking_shift,
     is_use_old_rand_alg,
+    i_range=None,
 ):
+    """
+    Return ``(r_arr, b_arr)``.\n
+    ``r_arr`` and ``b_arr`` have shape ``(n_sample, n)`` with
+    ``n_sample = i_end - i_start``, where ``i_range = (i_start, i_end,)``
+    (default ``None`` means the full range ``(0, n_rand_sample,)``).
+    Only the rows in ``i_range`` are computed; the per-block random streams
+    do not depend on ``i_range``, so every returned row is identical to the
+    corresponding row of a full-range call.
+    """
     assert n_rand_sample >= 0
+    if i_range is None:
+        i_start, i_end = 0, n_rand_sample
+    else:
+        i_start, i_end = i_range
+        assert 0 <= i_start <= i_end <= n_rand_sample
+    n_sample = i_end - i_start
     rs = rng_state
     n = len(jk_idx_list)
     r_arr = np.empty(
         (
-            n_rand_sample,
+            n_sample,
             n,
         ),
         dtype=np.float64,
     )
     b_arr = np.empty(
         (
-            n_rand_sample,
+            n_sample,
             n,
         ),
         dtype=np.int32,
     )
     jk_idx_str_arr = np.empty(
         (
-            n_rand_sample,
+            n_sample,
             n,
         ),
         dtype=object,
@@ -831,20 +847,21 @@ def mk_r_i_j_mat(
     @q.timer
     def set_jk_idx():
         if is_apply_rand_sample_jk_idx_blocking_shift:
-            for i in range(n_rand_sample):
+            for i_local in range(n_sample):
+                i = i_start + i_local
                 count_dict = dict()
                 for j in range(n):
                     jk_idx = jk_blocking_func(i + 1, jk_idx_list[j])
                     jk_idx_str = str(jk_idx)
-                    jk_idx_str_arr[i, j] = jk_idx_str
+                    jk_idx_str_arr[i_local, j] = jk_idx_str
                     jk_idx_str_set.add(jk_idx_str)
                     if jk_idx_str in count_dict:
                         count_dict[jk_idx_str] += 1
                     else:
                         count_dict[jk_idx_str] = 1
                 for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[i, j]
-                    b_arr[i, j] = count_dict[jk_idx_str]
+                    jk_idx_str = jk_idx_str_arr[i_local, j]
+                    b_arr[i_local, j] = count_dict[jk_idx_str]
         else:
             count_dict = dict()
             for j in range(n):
@@ -865,11 +882,15 @@ def mk_r_i_j_mat(
     set_jk_idx()
     if is_use_old_rand_alg == "v1":
         assert not is_normalizing_rand_sample
-        for i in range(n_rand_sample):
+        for i_local in range(n_sample):
+            i = i_start + i_local
             rsi = rs.split(str(i))
-            r = [rsi.split(jk_idx_str).g_rand_gen() for jk_idx_str in jk_idx_str_arr[i]]
+            r = [
+                rsi.split(jk_idx_str).g_rand_gen()
+                for jk_idx_str in jk_idx_str_arr[i_local]
+            ]
             for j in range(n):
-                r_arr[i, j] = r[j]
+                r_arr[i_local, j] = r[j]
         return r_arr, b_arr
     assert not is_use_old_rand_alg
     r_arr_dict = dict()
@@ -891,11 +912,12 @@ def mk_r_i_j_mat(
     @q.timer
     def set_r_arr():
         if is_apply_rand_sample_jk_idx_blocking_shift:
-            for i in range(n_rand_sample):
+            for i_local in range(n_sample):
+                i = i_start + i_local
                 for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[i, j]
+                    jk_idx_str = jk_idx_str_arr[i_local, j]
                     garr = r_arr_dict[jk_idx_str]
-                    r_arr[i, j] = garr[i]
+                    r_arr[i_local, j] = garr[i]
         else:
             for j in range(n):
                 jk_idx_str = jk_idx_str_arr[0, j]
@@ -918,6 +940,7 @@ def rjackknife(
     is_apply_rand_sample_jk_idx_blocking_shift=True,
     is_use_old_rand_alg=False,
     eps=1,
+    is_sync_node=False,
 ):
     r"""
     Jackknife-bootstrap hybrid resampling.
@@ -939,7 +962,15 @@ def rjackknife(
     if ``jk_blocking_func`` is provided::\n
         ``jk_blocking_func(i, jk_idx) => blocked jk_idx``\n
     ::\n
-        jk_arr[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_arr[j] - avg)
+        jk_arr[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_arr[j] - avg)\n
+    If ``is_sync_node`` is True:\n
+        Assume this is a collective operation in a MPI program where every
+        node have the same input.  The ``n_rand_sample`` samples are split
+        between the nodes and the partial results are summed with
+        ``mpi4py``'s ``Allreduce``, so that every node obtains the complete
+        ``jk_arr``.  The returned array is identical to the one obtained
+        with ``is_sync_node=False``.  ``qlat`` (used for ``q.get_comm()``)
+        and ``mpi4py`` are imported only when ``is_sync_node`` is True.
     """
     if n_rand_sample is None:
         n_rand_sample = 1024
@@ -960,6 +991,32 @@ def rjackknife(
     dtype = data_arr.dtype
     jk_idx_list = [jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None]
     n = len(data_arr)
+    #
+    if is_sync_node:
+        # Collective MPI operation: every node must call this function with the
+        # same input.  ``qlat`` and ``mpi4py`` are imported only here.
+        import qlat
+        from mpi4py import MPI
+        #
+        comm = qlat.get_comm()
+        if comm is None:
+            raise Exception(
+                "rjackknife: is_sync_node=True requires the qlat communicator;"
+                " use q.begin_with_mpi(), q.begin_with_gpt() or"
+                " q.begin_with_grid() (or set it with q.set_comm(...))"
+            )
+        if comm.size != qlat.get_num_node():
+            raise Exception(
+                f"rjackknife: is_sync_node=True requires qlat to be initialized"
+                f" on the whole MPI communicator, but comm.size={comm.size} and"
+                f" q.get_num_node()={qlat.get_num_node()}"
+            )
+        id_node, num_node = comm.rank, comm.size
+    else:
+        comm = None
+        id_node, num_node = 0, 1
+    i_start = (n_rand_sample * id_node) // num_node
+    i_end = (n_rand_sample * (id_node + 1)) // num_node
     r_arr, b_arr = mk_r_i_j_mat(
         n_rand_sample,
         jk_idx_list,
@@ -968,6 +1025,7 @@ def rjackknife(
         is_normalizing_rand_sample=is_normalizing_rand_sample,
         is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg=is_use_old_rand_alg,
+        i_range=(i_start, i_end),
     )
     n_b_arr = n - b_arr
     n_b_arr[n <= b_arr] = 1
@@ -977,15 +1035,29 @@ def rjackknife(
     pad_shape = (1,) * len(data_arr[0].shape)
     fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
     data_diff = data_arr - avg
-    jk_arr = np.empty(
-        (
-            1 + n_rand_sample,
-            *data_arr[0].shape,
-        ),
-        dtype=dtype,
-    )
-    jk_arr[0] = avg
-    jk_arr[1:] = avg + np.sum(fac_r_arr * data_diff, axis=1)
+    jk_rows = avg + np.sum(fac_r_arr * data_diff, axis=1)
+    if is_sync_node:
+        jk_arr = np.zeros(
+            (
+                1 + n_rand_sample,
+                *data_arr[0].shape,
+            ),
+            dtype=dtype,
+        )
+        if id_node == 0:
+            jk_arr[0] = avg
+        jk_arr[1 + i_start : 1 + i_end] = jk_rows
+        comm.Allreduce(MPI.IN_PLACE, jk_arr, op=MPI.SUM)
+    else:
+        jk_arr = np.empty(
+            (
+                1 + n_rand_sample,
+                *data_arr[0].shape,
+            ),
+            dtype=dtype,
+        )
+        jk_arr[0] = avg
+        jk_arr[1:] = jk_rows
     return jk_arr
 
 @q.timer
@@ -1095,6 +1167,12 @@ def mk_g_jk_kwargs():
     g_jk_kwargs["get_all_jk_idx"] = None
     #
     g_jk_kwargs["all_jk_idx_set"] = set()
+    #
+    # ``is_sync_node`` runs ``g_mk_jk`` as a collective MPI operation (only
+    # supported for ``jk_type == "rjk"``).  It only changes how the result is
+    # computed, not its value, so it is deliberately not touched in
+    # ``get_jk_state`` or ``set_jk_state`` (and hence not part of the cache key).
+    g_jk_kwargs["is_sync_node"] = False
     #
     # jk_blocking_func(i, jk_idx) => blocked_jk_idx
     g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
@@ -1250,12 +1328,18 @@ def g_mk_jk(
     is_hash_jk_idx,
     jk_idx_hash_size,
     eps,
+    is_sync_node=False,
     **_kwargs,
 ):
     """
     Perform (randomized) Super-Jackknife for the Jackknife data set.\n
     :param data_list: initial un-jackknifed data.
     :param jk_idx_list: should be list of indices that names the ``data_list``.
+    :param is_sync_node: if True, assume this is a collective operation in a
+        MPI program where every node have the same input.  The operation is
+        then parallelized over the MPI nodes (only supported for
+        ``jk_type == "rjk"``; using it with ``jk_type == "super"`` raises an
+        exception).  Every node obtains the same complete result.
     :return: (randomized) Super-Jackknife data set.\n
     Note that::\n
         ``len(data_list) == len(jk_idx_list)``
@@ -1264,6 +1348,10 @@ def g_mk_jk(
     we can set ``eps`` to be factor ``len(data_list)`` larger.
     """
     if jk_type == "super":
+        if is_sync_node:
+            raise Exception(
+                "g_mk_jk: is_sync_node=True is not supported for jk_type='super'"
+            )
         jk_arr = sjackknife(
             data_list,
             jk_idx_list,
@@ -1288,6 +1376,7 @@ def g_mk_jk(
             is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
             is_use_old_rand_alg=is_use_old_rand_alg,
             eps=eps,
+            is_sync_node=is_sync_node,
         )
     else:
         assert False

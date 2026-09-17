@@ -306,12 +306,28 @@ distribution of the average.
 | `is_normalizing_rand_sample` | bool | `False` | Normalize random vectors |
 | `is_apply_rand_sample_jk_idx_blocking_shift` | bool | `True` | Shift blocking per sample |
 | `eps` | float | `1` | Scaling factor |
+| `is_sync_node` | bool | `False` | Collective MPI operation (see below) |
 
 The formula is:
 
 $$jk\_arr[i] = \text{avg} + \sum_{j=1}^{N} \frac{-\text{eps}}{\sqrt{N(N - b(i,j))}} r_{i,j} (d_j - \text{avg})$$
 
 where $r_{i,j} \sim \mathcal{N}(0, 1)$ and $b(i,j)$ is the block size.
+
+If `is_sync_node` is `True`, the operation is assumed to be a collective
+operation in a MPI program where every node has the same input: the
+`n_rand_sample` samples are split between the nodes, each node computes only
+its own rows, and the partial results are summed with `mpi4py`'s `Allreduce`
+on the communicator returned by `q.get_comm()`. Every node then obtains the
+complete `jk_arr`, bit-for-bit identical to the `is_sync_node=False` result
+(so it does not depend on the number of nodes). The rows are split using the
+qlat node numbering (`q.get_id_node()`), which for some Grid processor
+layouts differs from the `MPI_COMM_WORLD` rank — `q.get_comm()` is the
+communicator that matches it. `qlat` and `mpi4py` are imported only when
+`is_sync_node` is `True`. This requires qlat to be initialized on the whole
+MPI communicator (`q.begin_with_mpi()`, `q.begin_with_gpt()` or
+`q.begin_with_grid()`), and the data must have a numeric dtype supported by
+MPI.
 
 ### `rjk_avg(jk_arr)` / `rjk_err(jk_arr, eps=1)` / `rjk_avg_err(rjk_list, eps=1)`
 
@@ -343,11 +359,21 @@ Global dictionary controlling jackknife behavior. Key settings:
 | `block_size` | `1` | Default blocking size |
 | `block_size_dict` | `{}` | Per-`job_tag` blocking sizes |
 | `rng_state` | `RngState("rejk")` | RNG state |
+| `is_sync_node` | `False` | Run as a collective MPI operation (`"rjk"` only) |
+
+`is_sync_node` is not part of `get_jk_state` / `set_jk_state`: it changes only
+how the result is computed, not its value, so it is deliberately excluded from
+the `q.cache_call` cache key.
 
 ### `g_mk_jk(data_list, jk_idx_list, *, avg=None, ...)`
 
 Create a (randomized) super-jackknife dataset from un-jackknifed data.
 Dispatches to `sjackknife` or `rjackknife` based on `jk_type`.
+
+With `is_sync_node=True` the operation is parallelized over the MPI nodes as
+described for `rjackknife` above. This is only supported for
+`jk_type == "rjk"`; using `is_sync_node=True` together with
+`jk_type == "super"` raises an `Exception`.
 
 ### `g_mk_jk_val(rs_tag, val, err, *, ...)`
 
