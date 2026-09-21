@@ -211,6 +211,19 @@ import qlat_utils as qu   # if needed
 ```
 `qlat_gpt` must be imported before all other packages when it is used, as it initializes the GPT/Grid runtime environment. After that, standard library, then `qlat` (aliased as `q`). Avoid `import *`; use explicit imports instead.
 
+Inside the packages themselves a module keeps its Python level qlat imports in
+a module local `class q` block (as in `qlat_utils/data.py` and
+`qlat_utils/jackknife_utils.py`) and refers to them as `q.<name>`, so that a
+module does not re-export what it merely imports; non qlat imports
+(`import numpy as np`, `import sys`, ...) stay at module level, and the same
+holds for `cimport` in a `.pyx`. The exception is a module whose whole purpose
+is to re-export — `qlat_utils/c.py`, the `qlat_grid`/`qlat_cps` `c.py`
+aggregators and their `init.py`/`prop.py` facades — which keep their
+`from .x import *` / re-export list, and imports deliberately placed after the
+definitions to break an import cycle, which keep their position. When moving
+such an import, keep the package `__init__` and the `__all__` lists in mind:
+they must not lose a name.
+
 ### Conventions
 - Shebang: `#!/usr/bin/env python3` for executable scripts
 - `snake_case` for functions/variables, `PascalCase` for classes
