@@ -315,6 +315,8 @@ ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
 from .utils_io import *
 from .mpi import *
 from .geometry import *
+from .field_type_dict import *
+
 from .field_base import *
 from .field_base_utils import *
 from .field_types import *
