@@ -17,7 +17,11 @@ from .field_selection cimport FieldSelection
 from .field_types cimport FieldChar
 from .selected_field_types cimport SelectedFieldChar
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        mk_cache,
+        timer,
+    )
 
 cache_fields_io = q.mk_cache("fields_io")
 
