@@ -11,7 +11,18 @@ set_verbose_level(-1)
 
 from .c import *
 
+from .field_type_dict import (
+    selected_field_type_dict,
+    selected_points_type_dict,
+)
+
 from .field_base_utils import *
+
+from .field_utils import (
+    sqrt_field_real_d,
+    sqrt_selected_field_real_d,
+    sqrt_selected_points_real_d,
+)
 
 from .field_utils_utils import *
 
