@@ -33,7 +33,11 @@ import jax.numpy as jnp
 import numpy as np
 import scipy.integrate as integrate
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+        q_fit_corr,
+    )
 
 if jnp.zeros(2, dtype=jnp.float64).dtype != jnp.float64:
     raise Exception(
