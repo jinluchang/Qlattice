@@ -8,10 +8,26 @@ Documentation: ``docs/qlat-utils/qlat_utils_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from .timer import *
-from .cache import *
-from .c import *
-from .json import *
+class q:
+    from .c import (
+        Coordinate,
+        RngState,
+        displayln,
+        displayln_info,
+        displayln_malloc_stats,
+        does_file_exist_qar,
+        get_data_sig,
+        get_id_node,
+        qcat,
+        qtouch,
+        random_permute,
+        timer,
+        timer_verbose,
+    )
+    from .json import (
+        json_dumps,
+        json_loads,
+    )
 
 import math
 import sys
@@ -26,10 +42,10 @@ def getenv(*names, default=None):
     for name in names:
         val = os.getenv(name)
         if val is not None:
-            displayln_info(0, f"{name}='{val}'")
+            q.displayln_info(0, f"{name}='{val}'")
             return val
     val = default
-    displayln_info(0, f"{names[0]}='{val}' (default)")
+    q.displayln_info(0, f"{names[0]}='{val}' (default)")
     return val
 
 def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
@@ -124,10 +140,10 @@ def show_memory_usage():
         import psutil
         #
         rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
-        displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
+        q.displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
         # displayln_info_malloc_stats()
     except:
-        displayln_info("show_memory_usage: no psutil.")
+        q.displayln_info("show_memory_usage: no psutil.")
 
 def import_file(module_name, file_path):
     """
@@ -140,8 +156,8 @@ def import_file(module_name, file_path):
     return module
 
 def displayln_info_malloc_stats():
-    if get_id_node() == 0:
-        return displayln_malloc_stats()
+    if q.get_id_node() == 0:
+        return q.displayln_malloc_stats()
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True
@@ -156,7 +172,7 @@ def lazy_call(f, *args, **kwargs):
     #
     return get
 
-@timer
+@q.timer
 def get_fname():
     """
     Return the function name of the current function ``fname``
@@ -193,8 +209,8 @@ def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=
     assert chunk_size is not None or chunk_number is not None
     chunk_list = []
     if rng_state is not None:
-        assert isinstance(rng_state, RngState)
-        total_list = random_permute(total_list, rng_state)
+        assert isinstance(rng_state, q.RngState)
+        total_list = q.random_permute(total_list, rng_state)
     total = len(total_list)
     if chunk_size is not None:
         assert isinstance(chunk_size, int)
@@ -214,7 +230,7 @@ def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=
 def parse_grid_coordinate_str(x_str):
     x_str_list = x_str.split(".")
     x_list = [int(s) for s in x_str_list]
-    x = Coordinate(x_list)
+    x = q.Coordinate(x_list)
     return x
 
 def mk_epsilon_array():
@@ -433,7 +449,7 @@ def mk_r_sq_interp_idx_coef_list(r_list):
             r_idx += 1
     return r_sq_interp_idx_coef_list
 
-@timer
+@q.timer
 def get_data_sig_arr(x, rs, sig_len):
     """
     Return a signature (an array of floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
@@ -441,11 +457,11 @@ def get_data_sig_arr(x, rs, sig_len):
     Result only depends on the value of the data, not the structure.
     ``x`` can be an instance of ``LatData``, ``np.ndarray``, etc.
     """
-    assert isinstance(rs, RngState)
+    assert isinstance(rs, q.RngState)
     assert isinstance(sig_len, int)
     sig_list = []
     for i in range(sig_len):
-        sig = get_data_sig(x, rs.split(f"{i}"))
+        sig = q.get_data_sig(x, rs.split(f"{i}"))
         sig_list.append(sig)
     sig_arr = np.array(sig_list)
     return sig_arr
@@ -517,16 +533,16 @@ def json_results_append(*args, json_results=None):
         assert isinstance(args[2], float), (
             f"check_eps must be a float, got {type(args[2]).__name__}"
         )
-    displayln_info(
+    q.displayln_info(
         0, r"//------------------------------------------------------------\\"
     )
-    displayln_info(0, *args)
-    displayln_info(
+    q.displayln_info(0, *args)
+    q.displayln_info(
         0, r"\\------------------------------------------------------------//"
     )
     json_results.append(args)
 
-@timer_verbose
+@q.timer_verbose
 def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
     """
     Compare accumulated JSON results against a reference file and exit on mismatch.\n
@@ -584,22 +600,22 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
         json_results = global_json_results
     mismatch = False
     json_fn_name = os.path.splitext(script_file)[0] + ".log.json"
-    if 0 == get_id_node():
-        qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))
-        if not does_file_exist_qar(json_fn_name):
-            displayln(
+    if 0 == q.get_id_node():
+        q.qtouch(json_fn_name + ".new", q.json_dumps(json_results, indent=1))
+        if not q.does_file_exist_qar(json_fn_name):
+            q.displayln(
                 -1, f"{fname}: ERROR: Reference file '{json_fn_name}' does not exist."
             )
             mismatch = True
         else:
-            json_results_load = json_loads(qcat(json_fn_name))
+            json_results_load = q.json_loads(q.qcat(json_fn_name))
             for i, (
                 p,
                 pl,
             ) in enumerate(zip(json_results, json_results_load)):
                 if len(p) != len(pl):
-                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
-                    displayln(
+                    q.displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    q.displayln(
                         -1, f"{fname}: ERROR: JSON results length does not match."
                     )
                     mismatch = True
@@ -620,18 +636,20 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                     n, v, eps = p
                     nl, vl, epsl = pl
                 else:
-                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
-                    displayln(-1, f"{fname}: ERROR: JSON results length not 2 or 3.")
+                    q.displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    q.displayln(-1, f"{fname}: ERROR: JSON results length not 2 or 3.")
                     mismatch = True
                     continue
                 if n != nl:
-                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
-                    displayln(-1, f"{fname}: ERROR: JSON results item does not match.")
+                    q.displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    q.displayln(
+                        -1, f"{fname}: ERROR: JSON results item does not match."
+                    )
                     mismatch = True
                     continue
                 if eps != epsl:
-                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
-                    displayln(-1, f"{fname}: ERROR: JSON results eps does not match.")
+                    q.displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    q.displayln(-1, f"{fname}: ERROR: JSON results eps does not match.")
                     mismatch = True
                     continue
                 actual_eps = 0.0
@@ -641,27 +659,29 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                 if (v_norm + vl_norm) > 0:
                     actual_eps = 2 * diff_norm / (v_norm + vl_norm)
                 if actual_eps > eps:
-                    displayln(-1, f"{fname}: {i} '{n}' actual: {v} ; load: {vl} .")
-                    displayln(
+                    q.displayln(-1, f"{fname}: {i} '{n}' actual: {v} ; load: {vl} .")
+                    q.displayln(
                         -1, f"{fname}: target eps: {eps} ; actual eps: {actual_eps} ."
                     )
-                    displayln(-1, f"{fname}: ERROR: JSON results value does not match.")
+                    q.displayln(
+                        -1, f"{fname}: ERROR: JSON results value does not match."
+                    )
                     mismatch = True
                 elif actual_eps != 0.0:
-                    displayln(-1, f"{fname}: INFO: {i} '{n}'")
-                    displayln(
+                    q.displayln(-1, f"{fname}: INFO: {i} '{n}'")
+                    q.displayln(
                         -1,
                         f"{fname}: INFO: target eps: {eps} ; actual eps: {actual_eps} .",
                     )
             if len(json_results) != len(json_results_load):
-                displayln(
+                q.displayln(
                     -1,
                     f"{fname}: len(json_results)={len(json_results)} load:{len(json_results_load)}",
                 )
-                displayln(-1, f"{fname}: ERROR: JSON results len does not match.")
+                q.displayln(-1, f"{fname}: ERROR: JSON results len does not match.")
                 mismatch = True
     if mismatch:
-        displayln(
+        q.displayln(
             -1,
             f'{fname}: finished with mismatch in "{json_fn_name}". This suggest that the program may have changed, and need to update the reference "{json_fn_name}" file.',
         )
