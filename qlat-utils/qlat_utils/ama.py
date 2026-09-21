@@ -31,7 +31,11 @@ Documentation: ``docs/qlat-utils/qlat_ama.md``\n
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import copy
-from .timer import timer
+
+class q:
+    from .timer import (
+        timer,
+    )
 
 class AmaVal:
     def __init__(self, val=None, corrections=None):
@@ -69,7 +73,7 @@ class AmaVal:
 
 ###
 
-@timer
+@q.timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     """
     source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
@@ -97,7 +101,7 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
         return val
     return AmaVal(val, corrections)
 
-@timer
+@q.timer
 def ama_apply1_corrections(f, x):
     assert isinstance(x, AmaVal)
     corrections = [
@@ -137,7 +141,7 @@ def merge_description_dict(d1, d2):
         d[key] = d2[key]
     return d
 
-@timer
+@q.timer
 def ama_apply2_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
     assert isinstance(y, AmaVal)
@@ -154,7 +158,7 @@ def ama_apply2_ama_val(f, x, y):
                 )
     return AmaVal(None, corrections)
 
-@timer
+@q.timer
 def ama_apply2_r_ama_val(f, x, y):
     assert isinstance(y, AmaVal)
     corrections = [
@@ -166,7 +170,7 @@ def ama_apply2_r_ama_val(f, x, y):
     ]
     return AmaVal(None, corrections)
 
-@timer
+@q.timer
 def ama_apply2_l_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
     corrections = [
@@ -200,7 +204,7 @@ def ama_apply2(f, x, y):
     else:
         return ama_apply2_ama_val(f, x, y)
 
-@timer
+@q.timer
 def ama_list(*args):
     l = len(args)
     assert l >= 0
@@ -223,7 +227,7 @@ def ama_apply(f, *args):
     #
     return ama_apply1(f_list, res)
 
-@timer
+@q.timer
 def ama_extract_ama_val(x, *, is_sloppy=False):
     corrections = x.corrections
     assert isinstance(corrections, list)
