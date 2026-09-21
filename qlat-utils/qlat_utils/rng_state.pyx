@@ -18,7 +18,10 @@ from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 cimport numpy
 
-from .timer import timer
+class q:
+    from .timer import (
+        timer,
+    )
 
 import numpy as np
 import functools
@@ -154,7 +157,7 @@ cdef class RngState:
 
 ### -------------------------------------------------------------------
 
-@timer
+@q.timer
 def get_data_sig(x, RngState rs):
     """
     Return a signature (a floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
@@ -179,7 +182,7 @@ def get_data_sig(x, RngState rs):
     else:
         return None
 
-@timer
+@q.timer
 def random_permute(list l, RngState rs):
     """
     Do not change `l`.
