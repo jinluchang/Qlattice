@@ -10,19 +10,28 @@ Documentation: ``docs/qlat-utils/qlat_q_fit_corr_2.md``\n
 
 import numpy as np
 
-from .c import *
-from .utils import *
-from .data import *
-from .jackknife_utils import *
-from .parallel import *
+class q:
+    from .c import (
+        RngState,
+        displayln_info,
+        get_verbose_level,
+        set_verbose_level,
+        timer,
+        timer_verbose,
+    )
+    from .utils import (
+        get_fname,
+    )
+    from .jackknife_utils import (
+        g_jk_avg_err,
+    )
+    from .q_fit_corr import (
+        minimize_scipy,
+        mk_mp_pool,
+        close_mp_pool,
+    )
 
-from .q_fit_corr import (
-    minimize_scipy,
-    mk_mp_pool,
-    close_mp_pool,
-)
-
-@timer
+@q.timer
 def build_corr_from_param_arr(
     param_arr,
     *,
@@ -147,7 +156,7 @@ def build_corr_from_param_arr(
         ).sum(0)
     return corr_data
 
-@timer
+@q.timer
 def mk_data_set(
     *,
     n_jk=10,
@@ -173,7 +182,7 @@ def mk_data_set(
     ``t_arr``, ``t_size``, ``t_start_arr``, ``atw_factor_arr``: see ``build_corr_from_param_arr``
     """
     if rng is None:
-        rng = RngState("mk_data_set-seed")
+        rng = q.RngState("mk_data_set-seed")
     #
     es = rng.u_rand_arr((n_eigs,)) * 1.2 - 0.3
     cs = rng.u_rand_arr((n_eigs, n_ops)) * 2.0 - 1.0
@@ -207,7 +216,7 @@ def mk_data_set(
     #
     return param_arr, jk_corr_data, corr_data_sigma, t_arr
 
-@timer
+@q.timer
 def sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr):
     """
     Adjust order of states with free eig parameter
@@ -234,7 +243,7 @@ def sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr):
     )
     return new_param_arr
 
-@timer
+@q.timer
 def apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None):
     """
     return new param_arr (does not change original param_arr)
@@ -262,7 +271,7 @@ def apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None):
     new_param_arr[..., free_eig_idx_arr] = new_es
     return new_param_arr
 
-@timer
+@q.timer
 def mk_fcn(
     corr_data,
     corr_data_sigma,
@@ -370,7 +379,7 @@ def mk_fcn(
     fcn_f_jit = jax.jit(fcn_f)
     fcn_fg_jit = jax.jit(jax.value_and_grad(fcn_f))
     #
-    @timer
+    @q.timer
     def fcn(param_arr, requires_grad=True):
         param_arr = jnp.array(param_arr, dtype=jnp.float64)
         if requires_grad:
@@ -385,7 +394,7 @@ def mk_fcn(
 ### -------------------
 
 def jk_mini_task_in_fit_eig_coef(kwargs):
-    fname = get_fname()
+    fname = q.get_fname()
     #
     def f(
         *,
@@ -412,8 +421,8 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         rng_seed,
         verbose_level,
     ):
-        set_verbose_level(verbose_level)
-        rng = RngState(rng_seed)
+        q.set_verbose_level(verbose_level)
+        rng = q.RngState(rng_seed)
         n_params = len(param_arr_mini)
         n_ops = corr_data.shape[0]
         fcn = mk_fcn(
@@ -438,7 +447,7 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
             else:
                 grad_masked = grad
             grad_norm_masked = np.linalg.norm(grad_masked)
-            displayln_info(
+            q.displayln_info(
                 verbose_level,
                 f"{fname}: fcn={fcn_v:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}",
             )
@@ -452,7 +461,7 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
                 ]
             ).T
             important_eg_arr = eg_arr[abs(grad_eigs) > grad_eigs_norm / 10]
-            displayln_info(
+            q.displayln_info(
                 verbose_level, f"{fname}: eigs and grad arr=\n{important_eg_arr}"
             )
         #
@@ -466,10 +475,10 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         #
         param_arr = param_arr_mini.copy()
         display_param_arr(param_arr, mask=fixed_eig_mask, verbose_level=0)
-        displayln_info(0, f"{fname}: mini fcn (fixed all eigs)")
+        q.displayln_info(0, f"{fname}: mini fcn (fixed all eigs)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
-            param_arr = minimize_scipy(
+            param_arr = q.minimize_scipy(
                 fcn,
                 param_arr=param_arr,
                 fixed_param_mask=all_eig_mask | fixed_coef_eig_mask,
@@ -479,13 +488,15 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
             if i == n_step_mini_jk - 1:
                 vl = 0
             display_param_arr(param_arr, mask=all_eig_mask, verbose_level=vl)
-        displayln_info(
+        q.displayln_info(
             0, f"{fname}: initial free_eig_arr={param_arr[free_eig_mask].tolist()}"
         )
-        displayln_info(0, f"{fname}: mini fcn (free eigs selected by free_eig_idx_arr)")
+        q.displayln_info(
+            0, f"{fname}: mini fcn (free eigs selected by free_eig_idx_arr)"
+        )
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
-            param_arr = minimize_scipy(
+            param_arr = q.minimize_scipy(
                 fcn,
                 param_arr=param_arr,
                 fixed_param_mask=fixed_eig_mask | fixed_coef_eig_mask,
@@ -497,7 +508,7 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
             if is_sorting_eig_state:
                 # Assuming ``eig_maximum_arr`` is sorted.
                 param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
-            displayln_info(
+            q.displayln_info(
                 0, f"{fname}: iter={i} free_eig_arr={param_arr[free_eig_mask].tolist()}"
             )
             vl = 1
@@ -505,12 +516,12 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
                 vl = 0
             display_param_arr(param_arr, mask=fixed_eig_mask, verbose_level=vl)
         chisq, param_grad = fcn(param_arr)
-        set_verbose_level(-1)
+        q.set_verbose_level(-1)
         return chisq, param_arr, param_grad
     #
     return f(**kwargs)
 
-@timer_verbose
+@q.timer_verbose
 def fit_eig_coef(
     jk_corr_data,
     *,
@@ -570,9 +581,9 @@ def fit_eig_coef(
     rng_seed_list=[ f"fit-eig-coef-seed-{i}" for i in range(32) ]
     mp_pool = mk_mp_pool(n_proc)
     """
-    fname = get_fname()
+    fname = q.get_fname()
     #
-    verbose_level = get_verbose_level()
+    verbose_level = q.get_verbose_level()
     #
     assert len(jk_corr_data.shape) == 4
     t_arr = np.array(t_arr, dtype=np.int32)
@@ -680,13 +691,13 @@ def fit_eig_coef(
         mp_pool_n_proc = 1
     elif isinstance(mp_pool, int):
         mp_pool_n_proc = mp_pool
-        mp_pool = mk_mp_pool(mp_pool_n_proc)
+        mp_pool = q.mk_mp_pool(mp_pool_n_proc)
         is_close_pool = True
         mp_map = mp_pool.imap
     else:
         mp_map = mp_pool.imap
     #
-    corr_data, corr_data_err = g_jk_avg_err(jk_corr_data)
+    corr_data, corr_data_err = q.g_jk_avg_err(jk_corr_data)
     #
     is_finite_sel = np.isfinite(corr_data)
     jk_corr_data[:, ~is_finite_sel] = 0.0
@@ -762,10 +773,10 @@ def fit_eig_coef(
         )
         return kwargs
     #
-    displayln_info(
+    q.displayln_info(
         0, f"{fname}: initial free_eig_arr={param_arr_mini[free_eig_mask].tolist()}"
     )
-    displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
+    q.displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
     for idx, v in enumerate(
         mp_map(
@@ -781,19 +792,19 @@ def fit_eig_coef(
             ],
         )
     ):
-        set_verbose_level(verbose_level)
+        q.set_verbose_level(verbose_level)
         v_list.append(v)
         (
             chisq,
             param_arr,
             param_grad_arr,
         ) = v
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: map: rs_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'",
         )
         if eig_maximum_arr is not None:
-            displayln_info(
+            q.displayln_info(
                 0,
                 f"{fname}: map: rs_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr] / eig_maximum_arr).tolist()}",
             )
@@ -810,19 +821,19 @@ def fit_eig_coef(
             rng_seed_mini = rng_seed_list[idx]
             param_arr_mini = param_arr
     #
-    displayln_info(
+    q.displayln_info(
         0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'"
     )
-    displayln_info(
+    q.displayln_info(
         0, f"{fname}: avg mini free_eig_arr={param_arr_mini[free_eig_mask].tolist()}"
     )
     if eig_maximum_arr is not None:
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: map: rs_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr_mini[free_eig_idx_arr] / eig_maximum_arr).tolist()}",
         )
     #
-    displayln_info(0, f"{fname}: mini all jk samples")
+    q.displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
     jk_param_arr = []
     jk_param_grad_arr = []
@@ -840,7 +851,7 @@ def fit_eig_coef(
             ],
         )
     ):
-        set_verbose_level(verbose_level)
+        q.set_verbose_level(verbose_level)
         (
             chisq,
             param_arr,
@@ -850,17 +861,17 @@ def fit_eig_coef(
         jk_param_grad_arr.append(param_grad_arr)
         jk_param_arr.append(param_arr)
         if n_step_mini_jk != 0:
-            displayln_info(
+            q.displayln_info(
                 0,
                 f"{fname}: map: jk_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()}",
             )
             if eig_maximum_arr is not None:
-                displayln_info(
+                q.displayln_info(
                     0,
                     f"{fname}: map: jk_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr] / eig_maximum_arr).tolist()}",
                 )
     if is_close_pool:
-        close_mp_pool(mp_pool)
+        q.close_mp_pool(mp_pool)
     #
     jk_chisq = np.array(jk_chisq, dtype=np.float64)
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)
@@ -918,5 +929,5 @@ def fit_eig_coef(
         extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
     )
     #
-    displayln_info(0, f"{fname} finished")
+    q.displayln_info(0, f"{fname} finished")
     return res
