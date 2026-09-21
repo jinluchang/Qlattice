@@ -8,8 +8,14 @@ Documentation: ``docs/qlat-utils/qlat_cache.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from .timer import *
-from . import c
+class q:
+    from .timer import (
+        displayln_info,
+        timer,
+    )
+    from . import (
+        c,
+    )
 
 class Cache(dict):
     """
@@ -31,7 +37,7 @@ class Cache(dict):
 
 cache = Cache()
 
-@timer
+@q.timer
 def list_cache(ca=cache):
     l = dict()
     for key, val in ca.items():
@@ -45,14 +51,14 @@ def show_cache_keys(keys):
     else:
         return "['" + "']['".join(keys) + "']"
 
-@timer
+@q.timer
 def clean_cache(ca=cache):
     """
     Remove values of cache, but keep all the structures
     """
     info_str = show_cache_keys(ca.cache_keys)
     items = list(ca.items())
-    displayln_info(0, f"clean_cache: cache{info_str}: len={len(items)}")
+    q.displayln_info(0, f"clean_cache: cache{info_str}: len={len(items)}")
     for key, val in items:
         if isinstance(val, Cache):
             clean_cache(val)
@@ -74,7 +80,7 @@ def mk_cache(*keys, ca=cache):
             ca = ca[key]
     return ca
 
-@timer
+@q.timer
 def rm_cache(*keys, ca=cache):
     """
     remove cache if it exist
@@ -91,11 +97,11 @@ def rm_cache(*keys, ca=cache):
     assert isinstance(ca[key], Cache)
     ca.pop(key)
 
-@timer
+@q.timer
 def clear_all_caches():
     """
     clean python level cache and then C++ level cache
     """
     clean_cache()
     cache.clear()
-    c.clear_all_caches()
+    q.c.clear_all_caches()
