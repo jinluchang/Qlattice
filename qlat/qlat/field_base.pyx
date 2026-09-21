@@ -49,18 +49,24 @@ from .selected_points_types cimport (
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import qlat_utils as q
-import numpy as np
-
-from .mpi_utils import glb_sum
-from .field_type_dict import (
+class q:
+    from qlat_utils import (
+        timer,
+        displayln_info,
+    )
+    from .mpi_utils import (
+        glb_sum,
+    )
+    from .field_type_dict import (
         field_ctypes_complex,
         field_ctypes_complex_f,
         field_ctypes_double,
         field_ctypes_float,
         field_ctypes_long,
         field_ctypes_char,
-        )
+    )
+
+import numpy as np
 
 ### -------------------------------------------------------------------
 
@@ -105,25 +111,25 @@ cdef class FieldBase:
         cdef FieldRealD fr
         cdef FieldRealF frf
         cdef FieldRealD fu
-        if self.ctype in field_ctypes_complex:
+        if self.ctype in q.field_ctypes_complex:
             fc = FieldComplexD()
             fc.cast_from(self)
             fu = FieldRealD(fc.geo, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fc[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_complex_f:
+        elif self.ctype in q.field_ctypes_complex_f:
             fcf = FieldComplexF()
             fcf.cast_from(self)
             fu = FieldRealD(fcf.geo, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fcf[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_double:
+        elif self.ctype in q.field_ctypes_double:
             fr = FieldRealD()
             fr.cast_from(self)
             fu = FieldRealD(fr.geo, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fr[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_float:
+        elif self.ctype in q.field_ctypes_float:
             frf = FieldRealF()
             frf.cast_from(self)
             fu = FieldRealD(frf.geo, frf.multiplicity)
@@ -131,7 +137,7 @@ cdef class FieldBase:
             sig = (frf[:] * fu[:]).sum()
         else:
             raise Exception(f"get_data_sig: {self.ctype}")
-        return glb_sum(sig)
+        return q.glb_sum(sig)
 
     def mview(self):
         return memoryview(np.asarray(self).reshape(-1))
@@ -182,7 +188,7 @@ cdef class FieldBase:
         if isinstance(factor, (int, float,)):
             self._cc_imul_double(float(factor))
         elif isinstance(factor, complex):
-            if self.ctype in field_ctypes_complex:
+            if self.ctype in q.field_ctypes_complex:
                 self._cc_imul_complex(factor)
             elif factor.imag == 0.0:
                 # a real valued factor is well defined for any ctype
@@ -492,25 +498,25 @@ cdef class SelectedFieldBase:
         cdef SelectedFieldRealD fr
         cdef SelectedFieldRealF frf
         cdef SelectedFieldRealD fu
-        if self.ctype in field_ctypes_complex:
+        if self.ctype in q.field_ctypes_complex:
             fc = SelectedFieldComplexD()
             fc.cast_from(self)
             fu = SelectedFieldRealD(fc.fsel, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fc[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_complex_f:
+        elif self.ctype in q.field_ctypes_complex_f:
             fcf = SelectedFieldComplexF()
             fcf.cast_from(self)
             fu = SelectedFieldRealD(fcf.fsel, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fcf[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_double:
+        elif self.ctype in q.field_ctypes_double:
             fr = SelectedFieldRealD()
             fr.cast_from(self)
             fu = SelectedFieldRealD(fr.fsel, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fr[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_float:
+        elif self.ctype in q.field_ctypes_float:
             frf = SelectedFieldRealF()
             frf.cast_from(self)
             fu = SelectedFieldRealD(frf.fsel, frf.multiplicity)
@@ -518,7 +524,7 @@ cdef class SelectedFieldBase:
             sig = (frf[:] * fu[:]).sum()
         else:
             raise Exception(f"get_data_sig: {self.ctype}")
-        return glb_sum(sig)
+        return q.glb_sum(sig)
 
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedFieldBase)
@@ -715,9 +721,9 @@ cdef class SelectedFieldBase:
         from .c import get_psel_tslice
         cdef PointsSelection psel = get_psel_tslice(self.total_site, t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
-        if self.ctype in field_ctypes_double:
+        if self.ctype in q.field_ctypes_double:
             self._cc_glb_sum_tslice(sp, self.fsel, t_dir)
-        elif self.ctype in field_ctypes_long:
+        elif self.ctype in q.field_ctypes_long:
             self._cc_glb_sum_tslice(sp, self.fsel, t_dir)
         else:
             assert False
@@ -784,37 +790,37 @@ cdef class SelectedPointsBase:
         cdef SelectedPointsLong fl
         cdef SelectedPointsChar fch
         cdef SelectedPointsRealD fu
-        if self.ctype in field_ctypes_complex:
+        if self.ctype in q.field_ctypes_complex:
             fc = SelectedPointsComplexD()
             fc.cast_from(self)
             fu = SelectedPointsRealD(fc.psel, fc.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fc[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_complex_f:
+        elif self.ctype in q.field_ctypes_complex_f:
             fcf = SelectedPointsComplexF()
             fcf.cast_from(self)
             fu = SelectedPointsRealD(fcf.psel, fcf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fcf[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_double:
+        elif self.ctype in q.field_ctypes_double:
             fr = SelectedPointsRealD()
             fr.cast_from(self)
             fu = SelectedPointsRealD(fr.psel, fr.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fr[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_float:
+        elif self.ctype in q.field_ctypes_float:
             frf = SelectedPointsRealF()
             frf.cast_from(self)
             fu = SelectedPointsRealD(frf.psel, frf.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (frf[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_long:
+        elif self.ctype in q.field_ctypes_long:
             fl = SelectedPointsLong()
             fl.cast_from(self)
             fu = SelectedPointsRealD(fl.psel, fl.multiplicity)
             fu.set_rand(rng, 1.0, -1.0)
             sig = (fl[:] * fu[:]).sum()
-        elif self.ctype in field_ctypes_char:
+        elif self.ctype in q.field_ctypes_char:
             fch = SelectedPointsChar()
             fch.cast_from(self)
             fu = SelectedPointsRealD(fch.psel, fch.multiplicity)
@@ -822,7 +828,7 @@ cdef class SelectedPointsBase:
             sig = (fch[:] * fu[:]).sum()
         else:
             raise Exception(f"get_data_sig: {self.ctype}")
-        sig = glb_sum(sig)
+        sig = q.glb_sum(sig)
         if self.points_dist_type == "g":
             return sig / self.geo.num_node
         else:
