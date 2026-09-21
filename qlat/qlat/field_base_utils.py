@@ -7,24 +7,27 @@ and the split/merge/accumulate helpers that delegate to the ``_cc_*``
 methods of the Cython field classes.\n
 """
 
-import qlat_utils as q
-
-from .field_base import (
+class q:
+    from qlat_utils import (
+        Coordinate,
+        CoordinateD,
+    )
+    from .field_base import (
         FieldBase,
         SelectedFieldBase,
         SelectedPointsBase,
-        )
-from .field_type_dict import (
+    )
+    from .field_type_dict import (
         field_type_dict,
         selected_field_type_dict,
         selected_points_type_dict,
-        )
+    )
 
 ### -------------------------------------------------------------------
 
 def Field(ctype, geo=None, multiplicity=0):
-    assert ctype in field_type_dict
-    FieldType = field_type_dict[ctype]
+    assert ctype in q.field_type_dict
+    FieldType = q.field_type_dict[ctype]
     field = FieldType(geo, multiplicity)
     return field
 
@@ -35,8 +38,8 @@ def SelectedField(ctype, fsel, multiplicity=0):
     later, e.g. with load_double / float_from_double (see examples-py
     selected-convert-io.py).  Pass a positive multiplicity to allocate now.
     """
-    assert ctype in field_type_dict
-    FieldType = selected_field_type_dict[ctype]
+    assert ctype in q.field_type_dict
+    FieldType = q.selected_field_type_dict[ctype]
     field = FieldType(fsel, multiplicity)
     return field
 
@@ -46,19 +49,17 @@ def SelectedPoints(ctype, psel, multiplicity=0):
     *empty*, uninitialized field that keeps psel; pass a positive multiplicity
     to allocate now.
     """
-    assert ctype in field_type_dict
-    FieldType = selected_points_type_dict[ctype]
+    assert ctype in q.field_type_dict
+    FieldType = q.selected_points_type_dict[ctype]
     field = FieldType(psel, multiplicity)
     return field
 
 def field_check_key(idx):
     """
-    Validate a field index and return the NumPy index to use.
-
+    Validate a field index and return the NumPy index to use.\n
     Field buffers are ``(local_volume, multiplicity, *elem_shape)``,
     C-contiguous, indexed by the **flat local site index** with the first
-    coordinate varying fastest, matching ``geo.coordinate_from_index``.
-
+    coordinate varying fastest, matching ``geo.coordinate_from_index``.\n
     A ``Coordinate`` (or a tuple/list containing one) is a common mistake
     because it looks like the C++ ``get_elem`` API; reject it with an
     actionable message instead of silently doing the wrong thing.
@@ -68,7 +69,8 @@ def field_check_key(idx):
             f"field indices are flat local site indices, not {type(idx).__name__}"
             "; use get_elem_xg(xg, m) for global coordinates, or "
             "geo.index_from_coordinate(xl) to convert a local coordinate to a "
-            "flat local index")
+            "flat local index"
+        )
     if isinstance(idx, (tuple, list)):
         for key in idx:
             if isinstance(key, (q.Coordinate, q.CoordinateD)):
@@ -77,7 +79,8 @@ def field_check_key(idx):
                     "containing a Coordinate would be interpreted by NumPy as a "
                     "fancy index over the site axis. Use "
                     "get_elem_xg(xg, m) for global coordinates, or "
-                    "geo.index_from_coordinate(xl)")
+                    "geo.index_from_coordinate(xl)"
+                )
     return idx
 
 ### -------------------------------------------------------------------
@@ -87,7 +90,7 @@ def split_fields(fs, f):
     assert nf >= 1
     ctype = f.ctype
     for i in range(nf):
-        if not isinstance(fs[i], FieldBase):
+        if not isinstance(fs[i], q.FieldBase):
             fs[i] = Field(ctype)
         else:
             assert fs[i].ctype is ctype
@@ -96,7 +99,7 @@ def split_fields(fs, f):
 def merge_fields(f, fs):
     nf = len(fs)
     assert nf >= 1
-    assert isinstance(f, FieldBase)
+    assert isinstance(f, q.FieldBase)
     assert f.ctype is fs[0].ctype
     f._cc_merge_fields(fs)
 
@@ -107,7 +110,7 @@ def merge_fields_ms(f, fms):
     """
     multiplicity = len(fms)
     assert multiplicity >= 1
-    assert isinstance(f, FieldBase)
+    assert isinstance(f, q.FieldBase)
     assert f.ctype is fms[0][0].ctype
     fs, ms = zip(*fms)
     f._cc_merge_fields_ms(fs, ms)
@@ -121,7 +124,7 @@ def mk_merged_fields_ms(fms):
     multiplicity = len(fms)
     assert multiplicity >= 1
     for m in range(multiplicity):
-        assert isinstance(fms[m][0], FieldBase)
+        assert isinstance(fms[m][0], q.FieldBase)
         assert isinstance(fms[m][1], int)
     ctype = fms[0][0].ctype
     for m in range(multiplicity):
@@ -137,30 +140,30 @@ def get_mview_field(field):
     """
     Return a flat, writable memoryview of the field data.
     """
-    assert isinstance(field, FieldBase)
+    assert isinstance(field, q.FieldBase)
     return field.mview()
 
 def set_add_sfield(f_new, f):
     """
     ``f_new += f`` for two SelectedField objects with the same FieldSelection.
     """
-    assert isinstance(f_new, SelectedFieldBase)
-    assert isinstance(f, SelectedFieldBase)
+    assert isinstance(f_new, q.SelectedFieldBase)
+    assert isinstance(f, q.SelectedFieldBase)
     f_new._cc_iadd(f)
 
 def set_mul_double_sfield(f, factor):
     """
     ``f *= factor`` for a SelectedField.
     """
-    assert isinstance(f, SelectedFieldBase)
+    assert isinstance(f, q.SelectedFieldBase)
     f._cc_imul_double(float(factor))
 
 def acc_field_sfield(f, f1):
     """
     Accumulate a SelectedField into a Field: ``f += f1``.
     """
-    assert isinstance(f, FieldBase)
-    assert isinstance(f1, SelectedFieldBase)
+    assert isinstance(f, q.FieldBase)
+    assert isinstance(f1, q.SelectedFieldBase)
     assert f1.ctype is f.ctype
     f._cc_acc_field_sfield(f1, f1.fsel)
 
@@ -168,8 +171,8 @@ def acc_field_spfield(f, f1, geo=None, psel=None):
     """
     Accumulate a SelectedPoints into a Field: ``f += f1``.
     """
-    assert isinstance(f, FieldBase)
-    assert isinstance(f1, SelectedPointsBase)
+    assert isinstance(f, q.FieldBase)
+    assert isinstance(f1, q.SelectedPointsBase)
     assert f1.ctype is f.ctype
     if psel is None:
         psel = f1.psel
@@ -182,5 +185,5 @@ def glb_sum_tslice_long_sfield(sp, f, t_dir=3):
     Global-sum a SelectedField over the spatial sites of each time slice
     into the SelectedPoints ``sp``.
     """
-    assert isinstance(f, SelectedFieldBase)
+    assert isinstance(f, q.SelectedFieldBase)
     f._cc_glb_sum_tslice(sp, f.fsel, t_dir)
