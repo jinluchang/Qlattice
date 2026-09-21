@@ -20,7 +20,25 @@ Functions:
 import math
 
 import numpy as np
-import qlat as q
+
+class q:
+    from qlat import (
+        timer,
+        Coordinate,
+        Geometry,
+        mk_xg_field,
+        PointsSelection,
+        GaugeField,
+        gf_evolve,
+        GaugeMomentum,
+        set_gm_force,
+        glb_sum_double,
+        get_fname,
+        metropolis_accept,
+        displayln_info,
+        gm_hamilton_node,
+        gf_hamilton_node,
+    )
 
 ### -------------------------------------------------------------------
 ### Field truncation functions
