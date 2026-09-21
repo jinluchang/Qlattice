@@ -262,7 +262,8 @@ in `q.default_g_jk_kwargs` (or the `q.JkKwargs(...)` context manager) instead
 of hand-rolling jackknife code. Collective MPI variants are
 `q.g_mk_jk(..., is_sync_node=True)` (same input on every node) and
 `q.g_mk_jk_distributed()` (input split between the nodes). See
-`docs/qlat-utils/qlat_data.md` and `docs/contents/how_to_analysis.md`.
+`docs/qlat-utils/qlat_jackknife_utils.md` and
+`docs/contents/how_to_analysis.md`.
 
 ## Code Style — Cython
 
@@ -305,7 +306,7 @@ Documentation: ``docs/qlat-utils/qlat_data.md``
 .. note:: Update the documentation when updating this source file.
 ```
 
-84 modules currently follow this convention. The mapping is `docs/<package>/qlat_<module>.md`
+85 modules currently follow this convention. The mapping is `docs/<package>/qlat_<module>.md`
 (e.g. `qlat-utils/qlat_utils/data.py` → `docs/qlat-utils/qlat_data.md`,
 `qlat/qlat/hmc.pyx` → `docs/qlat/qlat_hmc.md`); when in doubt, follow the path
 in the docstring. `docs/contents/` holds the prose guides (installation,
