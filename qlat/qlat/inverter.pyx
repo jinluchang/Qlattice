@@ -13,13 +13,18 @@ Documentation: ``docs/qlat/qlat_inverter.md``\n
 """
 
 from qlat_utils.all cimport *
-from qlat_utils import mk_cache
+
+class q:
+    from qlat_utils import (
+        mk_cache,
+    )
+
 from . cimport everything as cc
 from .qcd cimport GaugeField
 from .propagator cimport Prop
 from .fermion_action cimport FermionAction
 
-cache_inv = mk_cache("inv")
+cache_inv = q.mk_cache("inv")
 
 cdef class Inverter:
     pass
