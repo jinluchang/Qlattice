@@ -15,7 +15,12 @@ from .geometry cimport Geometry
 from .qcd cimport GaugeField
 from .propagator cimport Prop, FermionField4d
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+        CoordinateD,
+    )
+
 import numpy as np
 
 def gf_ape_smear(GaugeField gf, double alpha, int steps=1):
