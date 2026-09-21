@@ -10,16 +10,18 @@ Documentation: ``docs/qlat-utils/qlat_parallel.md``\n
 """
 
 class q:
-    from .utils import (
+    from .timer import (
         Timer,
         displayln_info,
-        get_fname,
-        getenv,
         set_verbose_level,
-        show_memory_usage,
         timer,
         timer_display,
         timer_reset,
+    )
+    from .utils import (
+        get_fname,
+        getenv,
+        show_memory_usage,
     )
 
 import multiprocessing as mp
