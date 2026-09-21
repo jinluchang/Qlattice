@@ -24,7 +24,23 @@ __all__ = [
 
 ### -------------------------------------------------------------------
 
-from qlat_utils import *
+class q:
+    from qlat_utils import (
+        ElemTypeChar,
+        ElemTypeColorMatrix,
+        ElemTypeComplexD,
+        ElemTypeComplexF,
+        ElemTypeInt64t,
+        ElemTypeInt8t,
+        ElemTypeIsospinMatrix,
+        ElemTypeLong,
+        ElemTypeNonRelWilsonMatrix,
+        ElemTypeRealD,
+        ElemTypeRealF,
+        ElemTypeSpinMatrix,
+        ElemTypeWilsonMatrix,
+        ElemTypeWilsonVector,
+    )
 
 ### -------------------------------------------------------------------
 
@@ -37,45 +53,45 @@ selected_points_type_dict = {}
 ### -------------------------------------------------------------------
 
 field_ctypes_complex = [
-    ElemTypeColorMatrix,
-    ElemTypeWilsonMatrix,
-    ElemTypeNonRelWilsonMatrix,
-    ElemTypeIsospinMatrix,
-    ElemTypeSpinMatrix,
-    ElemTypeWilsonVector,
-    ElemTypeComplexD,
+    q.ElemTypeColorMatrix,
+    q.ElemTypeWilsonMatrix,
+    q.ElemTypeNonRelWilsonMatrix,
+    q.ElemTypeIsospinMatrix,
+    q.ElemTypeSpinMatrix,
+    q.ElemTypeWilsonVector,
+    q.ElemTypeComplexD,
 ]
 
 field_ctypes_complex_f = [
-    ElemTypeComplexF,
+    q.ElemTypeComplexF,
 ]
 
 field_ctypes_complex_or_complex_f = field_ctypes_complex + field_ctypes_complex_f
 
 field_ctypes_double = [
-    ElemTypeColorMatrix,
-    ElemTypeWilsonMatrix,
-    ElemTypeNonRelWilsonMatrix,
-    ElemTypeIsospinMatrix,
-    ElemTypeSpinMatrix,
-    ElemTypeWilsonVector,
-    ElemTypeComplexD,
-    ElemTypeRealD,
+    q.ElemTypeColorMatrix,
+    q.ElemTypeWilsonMatrix,
+    q.ElemTypeNonRelWilsonMatrix,
+    q.ElemTypeIsospinMatrix,
+    q.ElemTypeSpinMatrix,
+    q.ElemTypeWilsonVector,
+    q.ElemTypeComplexD,
+    q.ElemTypeRealD,
 ]
 
 field_ctypes_float = [
-    ElemTypeComplexF,
-    ElemTypeRealF,
+    q.ElemTypeComplexF,
+    q.ElemTypeRealF,
 ]
 
 field_ctypes_double_or_float = field_ctypes_double + field_ctypes_float
 
 field_ctypes_long = [
-    ElemTypeLong,
-    ElemTypeInt64t,
+    q.ElemTypeLong,
+    q.ElemTypeInt64t,
 ]
 
 field_ctypes_char = [
-    ElemTypeChar,
-    ElemTypeInt8t,
+    q.ElemTypeChar,
+    q.ElemTypeInt8t,
 ]
