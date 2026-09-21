@@ -24,15 +24,22 @@ from .qcd cimport (
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
-import qlat_utils as q
-from .hmc import gf_evolve
-from .field_utils import (
-    shuffle_field,
-    shuffle_field_back,
-)
-from .mpi_utils import (
-    glb_sum,
-)
+class q:
+    from qlat_utils import (
+        timer,
+        get_fname,
+        displayln_info,
+    )
+    from .hmc import (
+        gf_evolve,
+    )
+    from .field_utils import (
+        shuffle_field,
+        shuffle_field_back,
+    )
+    from .mpi_utils import (
+        glb_sum,
+    )
 
 @q.timer
 def gf_energy_density(GaugeField gf):
@@ -206,7 +213,7 @@ def gt_block_tree_gauge(
     cdef cc.Bool is_shuffle = size_node != new_size_node
     cdef list gf_list
     if is_shuffle:
-        gf_list = shuffle_field(gf, new_size_node)
+        gf_list = q.shuffle_field(gf, new_size_node)
     else:
         gf_list = [ gf.copy(), ]
     cdef list geo_list = [ gf_local.geo for gf_local in gf_list ]
@@ -230,9 +237,9 @@ def gt_block_tree_gauge(
         gt_inv_list.append(gt_inv)
     gt_inv = GaugeTransform(geo)
     if is_shuffle:
-        shuffle_field_back(gt_inv, gt_inv_list, new_size_node)
+        q.shuffle_field_back(gt_inv, gt_inv_list, new_size_node)
     else:
         [ gt_inv, ] = gt_inv_list
-    avg_plaq = glb_sum(avg_plaq_sum) / glb_sum(avg_plaq_count)
+    avg_plaq = q.glb_sum(avg_plaq_sum) / q.glb_sum(avg_plaq_count)
     q.displayln_info(0, f"{fname}: avg_plaq = {avg_plaq}")
     return (gt_inv, f_dir_list,)
