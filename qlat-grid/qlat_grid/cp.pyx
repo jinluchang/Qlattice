@@ -4,7 +4,17 @@ from qlat.all cimport *
 from . cimport everything as cc
 
 import sys
-import qlat as q
+
+class q:
+    from qlat import (
+        get_comm,
+        Coordinate,
+        default_size_node_list,
+        get_id_node,
+        set_comm,
+        clean_cache,
+        Prop,
+    )
 
 def begin_with_grid(size_node_list = None):
     assert q.get_comm() is None
