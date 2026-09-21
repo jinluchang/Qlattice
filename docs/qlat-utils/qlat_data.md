@@ -404,13 +404,18 @@ Global dictionary controlling jackknife behavior. Key settings:
 |---|---|---|
 | `jk_type` | `"rjk"` | `"rjk"` or `"super"` |
 | `eps` | `1` | Scaling factor |
-| `n_rand_sample` | `1024` | Number of random samples (RJK only) |
-| `is_normalizing_rand_sample` | `False` | Normalize random vectors (RJK only) |
-| `is_hash_jk_idx` | `True` | Hash unknown jk indices (super only) |
-| `jk_idx_hash_size` | `1024` | Hash table size (super only) |
+| `n_rand_sample` | `1024` | Number of random samples (`"rjk"` only) |
+| `is_normalizing_rand_sample` | `False` | Normalize the random vectors (`"rjk"` only) |
+| `is_apply_rand_sample_jk_idx_blocking_shift` | `True` | Shift the blocking for every random sample (`"rjk"` only) |
+| `is_use_old_rand_alg` | `False` | Reproduce the old random numbers (`"v1"`, `"rjk"` only) |
+| `is_hash_jk_idx` | `True` | Hash the `jk_idx` which are not in `all_jk_idx` (`"super"` only) |
+| `jk_idx_hash_size` | `1024` | Number of hash based samples (`"super"` only) |
+| `all_jk_idx` | `None` | The samples of `"super"`; `None` means the `jk_idx_hash_size` hash samples |
+| `get_all_jk_idx` | `None` | Callable returning `all_jk_idx` |
 | `block_size` | `1` | Default blocking size |
-| `block_size_dict` | `{}` | Per-`job_tag` blocking sizes |
-| `rng_state` | `RngState("rejk")` | RNG state |
+| `block_size_dict` | `{"job_tag": 1}` | Per-`job_tag` blocking sizes |
+| `jk_blocking_func` | `jk_blocking_func_default` | `(i, jk_idx) -> blocked_jk_idx` |
+| `rng_state` | `RngState("rejk")` | RNG state (random numbers of `"rjk"`) |
 | `is_sync_node` | `False` | Run as a collective MPI operation |
 
 `is_sync_node` is not part of `get_jk_state` / `set_jk_state`: it changes only
