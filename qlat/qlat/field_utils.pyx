@@ -27,9 +27,13 @@ from .selected_points_types cimport SelectedPointsRealD
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import qlat_utils as q
-
-from .field_base_utils import Field
+class q:
+    from qlat_utils import (
+        timer,
+    )
+    from .field_base_utils import (
+        Field,
+    )
 
 cdef class CommMarks(FieldInt8t):
 
@@ -79,7 +83,7 @@ def mk_phase_field(Geometry geo, lmom):
     exp(i * 2*pi/L * lmom \cdot xg )
     """
     cdef CoordinateD lmom_d = CoordinateD(lmom)
-    cdef FieldComplexD f = Field(ElemTypeComplexD, geo, 1)
+    cdef FieldComplexD f = q.Field(ElemTypeComplexD, geo, 1)
     cc.py_set_phase_field(f.xx, lmom_d.xx)
     return f
 
