@@ -9,9 +9,18 @@ Documentation: ``docs/qlat-utils/qlat_parallel.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from .cache import *
-from .rng_state import *
-from .utils import *
+class q:
+    from .utils import (
+        Timer,
+        displayln_info,
+        get_fname,
+        getenv,
+        set_verbose_level,
+        show_memory_usage,
+        timer,
+        timer_display,
+        timer_reset,
+    )
 
 import multiprocessing as mp
 import gc
@@ -22,21 +31,21 @@ def call_pool_function(*args, **kwargs):
     assert pool_function is not None
     return pool_function(*args, **kwargs)
 
-@timer
+@q.timer
 def gc_collect():
     gc.collect()
 
-@timer
+@q.timer
 def gc_freeze():
     gc.freeze()
 
-@timer
+@q.timer
 def gc_unfreeze():
     gc.unfreeze()
 
 def process_initialization():
-    set_verbose_level(-2)
-    timer_reset(0)
+    q.set_verbose_level(-2)
+    q.timer_reset(0)
     # gc_unfreeze()
     # clean_cache()
     # gc_collect()
@@ -49,7 +58,7 @@ def get_q_num_mp_processes():
     global q_num_mp_processes
     if q_num_mp_processes is not None:
         return q_num_mp_processes
-    s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default="2")
+    s = q.getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default="2")
     v = int(s)
     q_num_mp_processes = v
     return v
@@ -64,7 +73,7 @@ def get_q_verbose_parallel_map():
     global q_verbose_parallel_map
     if q_verbose_parallel_map is not None:
         return q_verbose_parallel_map
-    s = getenv("q_verbose_parallel_map", default="2")
+    s = q.getenv("q_verbose_parallel_map", default="2")
     v = int(s)
     q_verbose_parallel_map = v
     return v
@@ -73,7 +82,7 @@ def set_q_verbose_parallel_map(v):
     global q_verbose_parallel_map
     q_verbose_parallel_map = v
 
-@timer
+@q.timer
 def parallel_map(
     func,
     iterable,
@@ -95,13 +104,13 @@ def parallel_map(
     if verbose is None:
         verbose = get_q_verbose_parallel_map()
     if verbose > 0:
-        displayln_info(f"parallel_map(n_proc={n_proc})")
+        q.displayln_info(f"parallel_map(n_proc={n_proc})")
     if n_proc == 0:
         res = map(func, iterable)
         ret = []
         for idx, v in enumerate(res):
             if verbose > 0 and idx % chunksize == 0:
-                displayln_info(-2, f"parallel_map: idx={idx} done")
+                q.displayln_info(-2, f"parallel_map: idx={idx} done")
             ret.append(v)
         return ret
     assert n_proc >= 1
@@ -113,34 +122,34 @@ def parallel_map(
         gc_freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
-                p.apply(show_memory_usage)
-            timer = Timer("parallel_map.p.imap")
+                p.apply(q.show_memory_usage)
+            timer = q.Timer("parallel_map.p.imap")
             try:
                 timer.start()
                 res = p.imap(call_pool_function, iterable, chunksize=chunksize)
             finally:
                 timer.stop()
-            timer = Timer("parallel_map.mk_list")
+            timer = q.Timer("parallel_map.mk_list")
             try:
                 timer.start()
                 ret = []
                 for idx, v in enumerate(res):
                     if verbose > 0 and idx % chunksize == 0:
-                        displayln_info(-2, f"parallel_map: idx={idx} done")
+                        q.displayln_info(-2, f"parallel_map: idx={idx} done")
                     ret.append(v)
             finally:
                 timer.stop()
             if verbose > 0:
-                p.apply(show_memory_usage)
+                p.apply(q.show_memory_usage)
                 if verbose > 1:
-                    p.apply(timer_display)
+                    p.apply(q.timer_display)
     finally:
         gc_unfreeze()
         gc_collect()
         pool_function = None
     return ret
 
-@timer
+@q.timer
 def parallel_map_sum(
     func,
     iterable,
@@ -164,7 +173,7 @@ def parallel_map_sum(
     if verbose is None:
         verbose = get_q_verbose_parallel_map()
     if verbose > 0:
-        displayln_info(f"parallel_map_sum(n_proc={n_proc})")
+        q.displayln_info(f"parallel_map_sum(n_proc={n_proc})")
     if sum_function is None:
         sum_function = sum
     if n_proc == 0:
@@ -181,14 +190,14 @@ def parallel_map_sum(
         gc_freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
-                p.apply(show_memory_usage)
-            timer = Timer("parallel_map_sum.p.imap")
+                p.apply(q.show_memory_usage)
+            timer = q.Timer("parallel_map_sum.p.imap")
             try:
                 timer.start()
                 res = p.imap(call_pool_function, iterable, chunksize=chunksize)
             finally:
                 timer.stop()
-            timer = Timer("parallel_map_sum.sum_function")
+            timer = q.Timer("parallel_map_sum.sum_function")
             try:
                 timer.start()
                 if sum_start is None:
@@ -198,9 +207,9 @@ def parallel_map_sum(
             finally:
                 timer.stop()
             if verbose > 0:
-                p.apply(show_memory_usage)
+                p.apply(q.show_memory_usage)
                 if verbose > 1:
-                    p.apply(timer_display)
+                    p.apply(q.timer_display)
     finally:
         gc_unfreeze()
         gc_collect()
@@ -224,9 +233,9 @@ def sum_list(res, start=None):
             ret[i] += v
     return ret
 
-@timer
+@q.timer
 def trace_iter(iterable, *, tag=None, step_size=None, max_idx=None, verbose_level=0):
-    fname = get_fname()
+    fname = q.get_fname()
     if tag is None:
         tag = fname
     if step_size is None:
@@ -237,5 +246,5 @@ def trace_iter(iterable, *, tag=None, step_size=None, max_idx=None, verbose_leve
         max_idx_str = f"/{max_idx}"
     for idx, v in enumerate(iterable):
         if (idx % step_size == 0) or (idx + 1 == max_idx):
-            displayln_info(verbose_level, f"{tag}: idx={idx + 1}{max_idx_str}")
+            q.displayln_info(verbose_level, f"{tag}: idx={idx + 1}{max_idx_str}")
         yield v
