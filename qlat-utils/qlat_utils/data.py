@@ -710,6 +710,150 @@ def sjackknife(
     return jk_arr
 
 @q.timer
+def sjackknife_distributed(
+    data_list,
+    jk_idx_list,
+    *,
+    avg=None,
+    is_hash_jk_idx=True,
+    jk_idx_hash_size=None,
+    rng_state=None,
+    all_jk_idx=None,
+    get_all_jk_idx=None,
+    jk_blocking_func=None,
+    eps=1,
+):
+    r"""
+    ``sjackknife`` with distributed input and distributed output.\n
+    This is a collective MPI operation: every node must call it with the same
+    parameters and with its own disjoint part of the data set (``data_list``
+    and ``jk_idx_list`` are the local parts); every node returns its own part
+    of the ``jk_arr`` of ``sjackknife``.  Node ``r`` out of ``num_node`` nodes
+    holds the samples in ``range(*get_distributed_range(len(all_jk_idx), r,
+    num_node))``, so that::
+        jk_arr = np.concatenate(q.get_comm().allgather(jk_local))
+    is the complete data set, in the same order as the one obtained with
+    ``sjackknife``.  No node needs to hold the whole data set or the whole
+    result; only the small ``jk_idx`` metadata is gathered on every node.\n
+    The result agrees with the one of ``sjackknife`` up to the floating-point
+    roundoff, but not bit-for-bit: the average and the sums over the data set
+    are reduced across the nodes, which changes the order of the
+    floating-point additions.\n
+    ``sjackknife_sync_node`` performs the corresponding collective operation
+    for the case where every node has the whole input; ``g_mk_jk_distributed``
+    dispatches to this function.
+    """
+    fname = "sjackknife_distributed"
+    comm, id_node, num_node = get_collective_comm(fname)
+    if jk_idx_hash_size is None:
+        jk_idx_hash_size = 1024
+    if rng_state is None:
+        rng_state = q.RngState("rejk")
+    (
+        data_arr,
+        jk_idx_list_local,
+        jk_idx_list_glb,
+        n,
+        elem_shape,
+        dtype,
+    ) = get_distributed_jk_input(fname, comm, data_list, jk_idx_list)
+    avg = get_distributed_avg(comm, data_arr, n, avg)
+    if all_jk_idx is None:
+        if get_all_jk_idx is None:
+            assert is_hash_jk_idx
+            all_jk_idx = [
+                "avg",
+            ] + list(range(jk_idx_hash_size))
+        else:
+            all_jk_idx = get_all_jk_idx()
+    assert all_jk_idx[0] == "avg"
+    total_size = len(all_jk_idx)
+    i_start, i_end = get_distributed_range(total_size, id_node, num_node)
+    # ``partial_arr`` holds the contribution of the local data to every sample
+    partial_arr = np.zeros((total_size,) + elem_shape, dtype=dtype)
+    if i_start == 0 and i_end > i_start:
+        # the sample 0 is the average and must be counted only once
+        partial_arr[0] = avg
+    #
+    n_super_sample = total_size - 1
+    if jk_blocking_func is None:
+        b_jk_idx_list_local = jk_idx_list_local
+        b_jk_idx_list_glb = jk_idx_list_glb
+    else:
+        b_jk_idx_list_local = [
+            jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_local
+        ]
+        b_jk_idx_list_glb = [jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_glb]
+    i_dict = dict()
+    for i, jk_idx in enumerate(all_jk_idx):
+        i_dict[str(jk_idx)] = i
+    rs = rng_state
+    #
+    def get_i(jk_idx):
+        jk_idx_str = str(jk_idx)
+        if jk_idx_str in i_dict:
+            i = i_dict[jk_idx_str]
+        else:
+            assert is_hash_jk_idx
+            i = 1 + int(rs.split(jk_idx_str).rand_gen() % n_super_sample)
+        assert i > 0
+        return i
+    #
+    count_dict = dict()
+    for jk_idx in b_jk_idx_list_glb:
+        i = get_i(jk_idx)
+        count_dict[i] = count_dict.get(i, 0) + 1
+    data_diff = data_arr - avg
+    for j in range(len(data_arr)):
+        i = get_i(b_jk_idx_list_local[j])
+        count = count_dict[i]
+        if n > count:
+            fac = -eps * np.sqrt(1 / (n * (n - count)))
+            partial_arr[i] += fac * data_diff[j]
+    return get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg)
+
+@q.timer
+def sjackknife_sync_node(
+    data_list,
+    jk_idx_list,
+    *,
+    avg=None,
+    is_hash_jk_idx=True,
+    jk_idx_hash_size=None,
+    rng_state=None,
+    all_jk_idx=None,
+    get_all_jk_idx=None,
+    jk_blocking_func=None,
+    eps=1,
+):
+    r"""
+    ``sjackknife`` as a collective MPI operation where every node has the same
+    (whole) input and obtains the same complete result.\n
+    This implements the ``is_sync_node=True`` option of ``sjackknife``: the
+    input is split between the nodes in the order of the nodes and
+    ``sjackknife_distributed`` is called on the local parts; the local results
+    are then gathered with ``Allgatherv``, so that every node obtains the
+    complete ``jk_arr`` of ``sjackknife``.  The result agrees with the one of
+    ``sjackknife`` up to the floating-point roundoff, but not bit-for-bit.\n
+    ``g_mk_jk_sync_node`` dispatches to this function.
+    """
+    comm, id_node, num_node = get_collective_comm("sjackknife_sync_node")
+    i_start, i_end = get_distributed_range(len(data_list), id_node, num_node)
+    jk_local = sjackknife_distributed(
+        data_list[i_start:i_end],
+        jk_idx_list[i_start:i_end],
+        avg=avg,
+        is_hash_jk_idx=is_hash_jk_idx,
+        jk_idx_hash_size=jk_idx_hash_size,
+        rng_state=rng_state,
+        all_jk_idx=all_jk_idx,
+        get_all_jk_idx=get_all_jk_idx,
+        jk_blocking_func=jk_blocking_func,
+        eps=eps,
+    )
+    return get_gathered_jk_arr(jk_local, comm, num_node)
+
+@q.timer
 def sjk_mk_jk_val(
     rs_tag,
     val,
@@ -1009,7 +1153,149 @@ def get_collective_comm(tag):
             f" on the whole MPI communicator, but comm.size={comm.size} and"
             f" q.get_num_node()={qlat.get_num_node()}"
         )
+    assert comm.rank == qlat.get_id_node()
     return comm, comm.rank, comm.size
+
+def get_distributed_jk_input(fname, comm, data_list, jk_idx_list):
+    r"""
+    Return ``(data_arr, jk_idx_list_local, jk_idx_list_glb, n, elem_shape, dtype)``
+    for the distributed jackknife functions.\n
+    ``data_list`` and ``jk_idx_list`` are the local parts of the data set and
+    ``comm`` is the communicator from ``get_collective_comm``.  ``data_arr`` is
+    the local data, with shape ``(n_local, *elem_shape)`` (``n_local == 0``
+    when the node holds no data); ``jk_idx_list_local`` are the local
+    ``jk_idx`` and ``jk_idx_list_glb`` is the whole list of ``jk_idx`` gathered
+    on every node; ``n`` is the total number of data points; ``elem_shape`` and
+    ``dtype`` describe a single data point.\n
+    ``fname`` names the caller for the error messages.  The data must have a
+    dtype supported by MPI, so that the results can be summed and gathered.
+    """
+    from mpi4py import MPI
+    #
+    assert len(data_list) == len(jk_idx_list)
+    if isinstance(data_list, np.ndarray):
+        dtype = data_list.dtype
+    else:
+        dtype = None
+    data_list_local = [d for d in data_list if d is not None]
+    jk_idx_list_local = [
+        jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None
+    ]
+    data_arr = np.array(data_list_local, dtype=dtype)
+    n_local = len(data_arr)
+    # the dtype and the element shape of the data; the lowest rank with data
+    # provides them, so that a node without any data still knows them
+    if n_local > 0:
+        elem_info = (data_arr.dtype.str, tuple(data_arr.shape[1:]))
+    else:
+        elem_info = None
+    elem_info = next(
+        (info for info in comm.allgather(elem_info) if info is not None), None
+    )
+    if elem_info is None:
+        raise Exception(f"{fname}: the distributed data set is empty")
+    dtype = np.dtype(elem_info[0])
+    elem_shape = tuple(elem_info[1])
+    if not is_mpi_dtype(dtype):
+        raise Exception(
+            f"{fname}: the data must have a dtype supported by MPI so that the"
+            f" results can be summed, but dtype={dtype}"
+        )
+    if n_local == 0:
+        data_arr = np.zeros((0,) + elem_shape, dtype=dtype)
+    else:
+        data_arr = np.asarray(data_arr, dtype=dtype)
+    n_arr = np.array([n_local], dtype=np.int64)
+    comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
+    n = int(n_arr[0])
+    # only the small ``jk_idx`` metadata is gathered on every node
+    jk_idx_list_glb = [
+        jk_idx
+        for jk_idx_list_node in comm.allgather(jk_idx_list_local)
+        for jk_idx in jk_idx_list_node
+    ]
+    return data_arr, jk_idx_list_local, jk_idx_list_glb, n, elem_shape, dtype
+
+def get_distributed_avg(comm, data_arr, n, avg=None):
+    r"""
+    Return the average of the whole distributed data set.\n
+    When ``avg`` is not ``None``, it is returned as it is; otherwise the local
+    sums of ``data_arr`` are summed over the nodes with ``Allreduce`` and
+    divided by ``n``.  This is the mean over the whole data set, which is
+    needed by the (randomized) Super-Jackknife, and it agrees with the one of
+    the sequential functions up to the floating-point roundoff.
+    """
+    from mpi4py import MPI
+    #
+    if avg is not None:
+        return avg
+    local_sum = np.asarray(np.sum(data_arr, axis=0))
+    glb_sum = np.zeros_like(local_sum)
+    comm.Allreduce(local_sum, glb_sum, op=MPI.SUM)
+    return filter_np_results(glb_sum / n)
+
+def get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg):
+    r"""
+    Return the local part of the (randomized) Super-Jackknife data set.\n
+    ``partial_arr`` has shape ``(total_size, *elem_shape)`` and holds the
+    contribution of the local data to every sample, with the sample 0 equal to
+    ``avg`` on the node which owns it and 0 elsewhere.  The contributions of
+    the nodes are summed with ``Reduce_scatter``, so that every node obtains
+    its own samples; ``avg`` is then added to the samples, since the samples
+    are ``avg + sum_j (...)`` while the sample 0 is ``avg`` itself.
+    """
+    from mpi4py import MPI
+    #
+    total_size = partial_arr.shape[0]
+    elem_shape = partial_arr.shape[1:]
+    elem_size = 1
+    for x in elem_shape:
+        elem_size *= x
+    recvcounts = []
+    for r in range(num_node):
+        r_start, r_end = get_distributed_range(total_size, r, num_node)
+        recvcounts.append((r_end - r_start) * elem_size)
+    i_start, i_end = get_distributed_range(total_size, id_node, num_node)
+    jk_arr = np.empty((i_end - i_start,) + elem_shape, dtype=partial_arr.dtype)
+    comm.Reduce_scatter(
+        partial_arr.reshape(-1),
+        jk_arr.reshape(-1),
+        recvcounts,
+        op=MPI.SUM,
+    )
+    if i_end - i_start > 0 and i_end > 1:
+        jk_arr[max(1 - i_start, 0) :] += avg
+    return jk_arr
+
+def get_gathered_jk_arr(jk_local, comm, num_node):
+    r"""
+    Return the complete (randomized) Super-Jackknife data set.\n
+    ``jk_local`` is the local part of the result of a distributed jackknife
+    function; the parts are gathered with ``Allgatherv``, in the order of the
+    nodes, so that every node obtains the complete ``jk_arr``.
+    """
+    from mpi4py import MPI
+    #
+    n_arr = np.array([len(jk_local)], dtype=np.int64)
+    comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
+    total_size = int(n_arr[0])
+    elem_size = 1
+    for x in jk_local.shape[1:]:
+        elem_size *= x
+    recvcounts = []
+    displs = []
+    displ = 0
+    for r in range(num_node):
+        r_start, r_end = get_distributed_range(total_size, r, num_node)
+        recvcounts.append((r_end - r_start) * elem_size)
+        displs.append(displ)
+        displ += recvcounts[-1]
+    jk_arr = np.empty((total_size,) + jk_local.shape[1:], dtype=jk_local.dtype)
+    comm.Allgatherv(
+        jk_local.reshape(-1),
+        (jk_arr.reshape(-1), (recvcounts, displs)),
+    )
+    return jk_arr
 
 @q.timer
 def rjackknife(
@@ -1050,8 +1336,8 @@ def rjackknife(
     If ``is_sync_node`` is True:\n
         Assume this is a collective operation in a MPI program where every
         node have the same input.  The operation is performed by
-        ``g_mk_jk_sync_node``, which splits the input between the nodes and
-        calls ``g_mk_jk_distributed``; every node obtains the complete
+        ``rjackknife_sync_node``, which splits the input between the nodes and
+        calls ``rjackknife_distributed``; every node obtains the complete
         ``jk_arr``, which agrees with the one obtained with
         ``is_sync_node=False`` up to the floating-point roundoff (not
         bit-for-bit, because the average and the sums over the data set are
@@ -1061,21 +1347,16 @@ def rjackknife(
     if is_sync_node:
         # Collective MPI operation: every node has the same input and obtains
         # the complete result, which is computed distributedly.
-        return g_mk_jk_sync_node(
+        return rjackknife_sync_node(
             data_list,
             jk_idx_list,
             avg=avg,
-            jk_type="rjk",
-            all_jk_idx=None,
-            get_all_jk_idx=None,
-            n_rand_sample=n_rand_sample,
             rng_state=rng_state,
+            n_rand_sample=n_rand_sample,
             jk_blocking_func=jk_blocking_func,
             is_normalizing_rand_sample=is_normalizing_rand_sample,
             is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
             is_use_old_rand_alg=is_use_old_rand_alg,
-            is_hash_jk_idx=True,
-            jk_idx_hash_size=1024,
             eps=eps,
         )
     if n_rand_sample is None:
@@ -1126,6 +1407,128 @@ def rjackknife(
     jk_arr[0] = avg
     jk_arr[1:] = jk_rows
     return jk_arr
+
+@q.timer
+def rjackknife_distributed(
+    data_list,
+    jk_idx_list,
+    *,
+    avg=None,
+    rng_state=None,
+    n_rand_sample=None,
+    jk_blocking_func=None,
+    is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
+    is_use_old_rand_alg=False,
+    eps=1,
+):
+    r"""
+    ``rjackknife`` with distributed input and distributed output.\n
+    This is a collective MPI operation: every node must call it with the same
+    parameters and with its own disjoint part of the data set (``data_list``
+    and ``jk_idx_list`` are the local parts); every node returns its own part
+    of the ``jk_arr`` of ``rjackknife``.  Node ``r`` out of ``num_node`` nodes
+    holds the samples in
+    ``range(*get_distributed_range(1 + n_rand_sample, r, num_node))``, so
+    that::
+        jk_arr = np.concatenate(q.get_comm().allgather(jk_local))
+    is the complete data set, in the same order as the one obtained with
+    ``rjackknife``.  No node needs to hold the whole data set, the whole
+    random matrix or the whole result; only the small ``jk_idx`` metadata is
+    gathered on every node.\n
+    The result agrees with the one of ``rjackknife`` up to the floating-point
+    roundoff, but not bit-for-bit: the average and the sums over the data set
+    are reduced across the nodes, which changes the order of the
+    floating-point additions.\n
+    ``rjackknife_sync_node`` performs the corresponding collective operation
+    for the case where every node has the whole input; ``g_mk_jk_distributed``
+    dispatches to this function.
+    """
+    fname = "rjackknife_distributed"
+    comm, id_node, num_node = get_collective_comm(fname)
+    if n_rand_sample is None:
+        n_rand_sample = 1024
+    if rng_state is None:
+        rng_state = q.RngState("rejk")
+    (
+        data_arr,
+        jk_idx_list_local,
+        jk_idx_list_glb,
+        n,
+        elem_shape,
+        dtype,
+    ) = get_distributed_jk_input(fname, comm, data_list, jk_idx_list)
+    avg = get_distributed_avg(comm, data_arr, n, avg)
+    #
+    total_size = 1 + n_rand_sample
+    i_start, i_end = get_distributed_range(total_size, id_node, num_node)
+    # ``partial_arr`` holds the contribution of the local data to every sample
+    partial_arr = np.zeros((total_size,) + elem_shape, dtype=dtype)
+    if i_start == 0 and i_end > i_start:
+        # the sample 0 is the average and must be counted only once
+        partial_arr[0] = avg
+    #
+    r_arr, b_arr = mk_r_i_j_mat(
+        n_rand_sample,
+        jk_idx_list_local,
+        rng_state,
+        jk_blocking_func=jk_blocking_func,
+        is_normalizing_rand_sample=is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
+        is_use_old_rand_alg=is_use_old_rand_alg,
+        jk_idx_list_for_count=jk_idx_list_glb,
+    )
+    n_b_arr = n - b_arr
+    n_b_arr[n <= b_arr] = 1
+    fac_arr = -eps / np.sqrt(n * n_b_arr)
+    fac_arr[n <= b_arr] = 0
+    fac_r_arr = fac_arr * r_arr
+    pad_shape = (1,) * len(elem_shape)
+    fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
+    data_diff = data_arr - avg
+    partial_arr[1:] = np.sum(fac_r_arr * data_diff, axis=1)
+    return get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg)
+
+@q.timer
+def rjackknife_sync_node(
+    data_list,
+    jk_idx_list,
+    *,
+    avg=None,
+    rng_state=None,
+    n_rand_sample=None,
+    jk_blocking_func=None,
+    is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
+    is_use_old_rand_alg=False,
+    eps=1,
+):
+    r"""
+    ``rjackknife`` as a collective MPI operation where every node has the same
+    (whole) input and obtains the same complete result.\n
+    This implements the ``is_sync_node=True`` option of ``rjackknife``: the
+    input is split between the nodes in the order of the nodes and
+    ``rjackknife_distributed`` is called on the local parts; the local results
+    are then gathered with ``Allgatherv``, so that every node obtains the
+    complete ``jk_arr`` of ``rjackknife``.  The result agrees with the one of
+    ``rjackknife`` up to the floating-point roundoff, but not bit-for-bit.\n
+    ``g_mk_jk_sync_node`` dispatches to this function.
+    """
+    comm, id_node, num_node = get_collective_comm("rjackknife_sync_node")
+    i_start, i_end = get_distributed_range(len(data_list), id_node, num_node)
+    jk_local = rjackknife_distributed(
+        data_list[i_start:i_end],
+        jk_idx_list[i_start:i_end],
+        avg=avg,
+        rng_state=rng_state,
+        n_rand_sample=n_rand_sample,
+        jk_blocking_func=jk_blocking_func,
+        is_normalizing_rand_sample=is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
+        is_use_old_rand_alg=is_use_old_rand_alg,
+        eps=eps,
+    )
+    return get_gathered_jk_arr(jk_local, comm, num_node)
 
 @q.timer
 def rjk_mk_jk_val(
@@ -1512,12 +1915,12 @@ def g_mk_jk_distributed(
     is the complete data set, in the same order as the one obtained with
     ``g_mk_jk``.  A node holds an array with 0 samples when there are more
     nodes than samples.\n
-    ``jk_type == "rjk"``: the ``n_rand_sample`` samples are split between the
-    nodes; every node computes the contribution of its own data to all the
-    samples and the partial results are combined with the ``Reduce_scatter``
-    of ``mpi4py`` on the communicator from ``q.get_comm()``.\n
-    ``jk_type == "super"``: the samples are the ``all_jk_idx`` entries (or the
-    hash based samples), split in the same way.\n
+    ``jk_type == "rjk"``: dispatches to ``rjackknife_distributed``; the
+    ``n_rand_sample`` samples are split between the nodes and every node
+    computes the contribution of its own data to all the samples.\n
+    ``jk_type == "super"``: dispatches to ``sjackknife_distributed``; the
+    samples are the ``all_jk_idx`` entries (or the hash based samples), split
+    in the same way.\n
     The result agrees with the one of ``g_mk_jk`` (and of
     ``g_mk_jk(..., is_sync_node=True)``) up to the floating-point roundoff, but
     not bit-for-bit: the average and the sums over the data set are reduced
@@ -1525,169 +1928,34 @@ def g_mk_jk_distributed(
     The ``is_sync_node`` setting of ``default_g_jk_kwargs`` is ignored: the
     output of this function is always distributed.
     """
-    from mpi4py import MPI
-    #
-    fname = "g_mk_jk_distributed"
-    comm, id_node, num_node = get_collective_comm(fname)
-    if n_rand_sample is None:
-        n_rand_sample = 1024
-    if rng_state is None:
-        rng_state = q.RngState("rejk")
-    assert len(data_list) == len(jk_idx_list)
-    if isinstance(data_list, np.ndarray):
-        dtype = data_list.dtype
-    else:
-        dtype = None
-    data_list_local = [d for d in data_list if d is not None]
-    jk_idx_list_local = [
-        jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None
-    ]
-    data_arr = np.array(data_list_local, dtype=dtype)
-    n_local = len(data_arr)
-    # the dtype and the element shape of the data; the lowest rank with data
-    # provides them, so that a node without any data still knows them
-    if n_local > 0:
-        elem_info = (data_arr.dtype.str, tuple(data_arr.shape[1:]))
-    else:
-        elem_info = None
-    elem_info = next(
-        (info for info in comm.allgather(elem_info) if info is not None), None
-    )
-    if elem_info is None:
-        raise Exception(f"{fname}: the distributed data set is empty")
-    dtype = np.dtype(elem_info[0])
-    elem_shape = tuple(elem_info[1])
-    if not is_mpi_dtype(dtype):
-        raise Exception(
-            f"{fname}: the data must have a dtype supported by MPI so that the"
-            f" partial results can be summed, but dtype={dtype}"
+    if jk_type == "super":
+        jk_arr = sjackknife_distributed(
+            data_list,
+            jk_idx_list,
+            avg=avg,
+            is_hash_jk_idx=is_hash_jk_idx,
+            jk_idx_hash_size=jk_idx_hash_size,
+            rng_state=rng_state,
+            all_jk_idx=all_jk_idx,
+            get_all_jk_idx=get_all_jk_idx,
+            jk_blocking_func=jk_blocking_func,
+            eps=eps,
         )
-    if n_local == 0:
-        data_arr = np.zeros((0,) + elem_shape, dtype=dtype)
-    else:
-        data_arr = np.asarray(data_arr, dtype=dtype)
-    n_arr = np.array([n_local], dtype=np.int64)
-    comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
-    n = int(n_arr[0])
-    #
-    # Only the small ``jk_idx`` metadata is gathered on every node.
-    jk_idx_list_glb = [
-        jk_idx
-        for jk_idx_list_node in comm.allgather(jk_idx_list_local)
-        for jk_idx in jk_idx_list_node
-    ]
-    #
-    if avg is None:
-        local_sum = np.asarray(np.sum(data_arr, axis=0))
-        glb_sum = np.zeros_like(local_sum)
-        comm.Allreduce(local_sum, glb_sum, op=MPI.SUM)
-        avg = filter_np_results(glb_sum / n)
-    #
-    if jk_type == "rjk":
-        total_size = 1 + n_rand_sample
-    elif jk_type == "super":
-        if all_jk_idx is None:
-            if get_all_jk_idx is None:
-                assert is_hash_jk_idx
-                all_jk_idx = [
-                    "avg",
-                ] + list(range(jk_idx_hash_size))
-            else:
-                all_jk_idx = get_all_jk_idx()
-        assert all_jk_idx[0] == "avg"
-        total_size = len(all_jk_idx)
-    else:
-        assert False
-    i_start, i_end = get_distributed_range(total_size, id_node, num_node)
-    n_local_out = i_end - i_start
-    #
-    # ``partial_arr`` holds the contribution of the local data to every sample
-    partial_arr = np.zeros((total_size,) + elem_shape, dtype=dtype)
-    if i_start == 0 and n_local_out > 0:
-        # the sample 0 is the average and must be counted only once
-        partial_arr[0] = avg
-    #
-    if jk_type == "rjk":
-        r_arr, b_arr = mk_r_i_j_mat(
-            n_rand_sample,
-            jk_idx_list_local,
-            rng_state,
+    elif jk_type == "rjk":
+        jk_arr = rjackknife_distributed(
+            data_list,
+            jk_idx_list,
+            avg=avg,
+            rng_state=rng_state,
+            n_rand_sample=n_rand_sample,
             jk_blocking_func=jk_blocking_func,
             is_normalizing_rand_sample=is_normalizing_rand_sample,
             is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
             is_use_old_rand_alg=is_use_old_rand_alg,
-            i_range=(0, n_rand_sample),
-            jk_idx_list_for_count=jk_idx_list_glb,
+            eps=eps,
         )
-        n_b_arr = n - b_arr
-        n_b_arr[n <= b_arr] = 1
-        fac_arr = -eps / np.sqrt(n * n_b_arr)
-        fac_arr[n <= b_arr] = 0
-        fac_r_arr = fac_arr * r_arr
-        pad_shape = (1,) * len(elem_shape)
-        fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
-        data_diff = data_arr - avg
-        partial_arr[1:] = np.sum(fac_r_arr * data_diff, axis=1)
-    elif jk_type == "super":
-        n_super_sample = total_size - 1
-        if jk_blocking_func is None:
-            b_jk_idx_list_local = jk_idx_list_local
-            b_jk_idx_list_glb = jk_idx_list_glb
-        else:
-            b_jk_idx_list_local = [
-                jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_local
-            ]
-            b_jk_idx_list_glb = [
-                jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_glb
-            ]
-        i_dict = dict()
-        for i, jk_idx in enumerate(all_jk_idx):
-            i_dict[str(jk_idx)] = i
-        rs = rng_state
-        #
-        def get_i(jk_idx):
-            jk_idx_str = str(jk_idx)
-            if jk_idx_str in i_dict:
-                i = i_dict[jk_idx_str]
-            else:
-                assert is_hash_jk_idx
-                i = 1 + int(rs.split(jk_idx_str).rand_gen() % n_super_sample)
-            assert i > 0
-            return i
-        #
-        count_dict = dict()
-        for jk_idx in b_jk_idx_list_glb:
-            i = get_i(jk_idx)
-            count_dict[i] = count_dict.get(i, 0) + 1
-        data_diff = data_arr - avg
-        for j in range(n_local):
-            i = get_i(b_jk_idx_list_local[j])
-            count = count_dict[i]
-            if n > count:
-                fac = -eps * np.sqrt(1 / (n * (n - count)))
-                partial_arr[i] += fac * data_diff[j]
     else:
         assert False
-    #
-    # every node keeps its own samples, which are the ``recvcounts[id_node]``
-    # elements of the sum over the nodes
-    elem_size = 1
-    for x in elem_shape:
-        elem_size *= x
-    recvcounts = []
-    for r in range(num_node):
-        r_start, r_end = get_distributed_range(total_size, r, num_node)
-        recvcounts.append((r_end - r_start) * elem_size)
-    jk_arr = np.empty((n_local_out,) + elem_shape, dtype=dtype)
-    comm.Reduce_scatter(
-        partial_arr.reshape(-1),
-        jk_arr.reshape(-1),
-        recvcounts,
-        op=MPI.SUM,
-    )
-    if n_local_out > 0 and i_end > 1:
-        # the samples are ``avg + sum_j (...)``; the sample 0 is ``avg`` itself
-        jk_arr[max(1 - i_start, 0) :] += avg
     return jk_arr
 
 @use_kwargs(default_g_jk_kwargs)
@@ -1715,13 +1983,12 @@ def g_mk_jk_sync_node(
     Perform (randomized) Super-Jackknife as a collective MPI operation where
     every node has the same (whole) input and obtains the same complete
     result.\n
-    This implements the ``is_sync_node=True`` option of ``g_mk_jk`` and
-    ``rjackknife``: the input, which every node holds in full, is split between
-    the nodes in the order of the nodes and each node computes only its own
-    part of the result with ``g_mk_jk_distributed``; the parts are then
-    gathered with the ``Allgatherv`` of ``mpi4py`` on the communicator from
-    ``q.get_comm()``, so that every node obtains the complete ``jk_arr``, in
-    the same order as the one obtained with ``g_mk_jk`` on a single node.\n
+    This implements the ``is_sync_node=True`` option of ``g_mk_jk``: the input,
+    which every node holds in full, is split between the nodes in the order of
+    the nodes and ``rjackknife_sync_node`` or ``sjackknife_sync_node`` is
+    called on the local parts, so that every node obtains the complete
+    ``jk_arr``, in the same order as the one obtained with ``g_mk_jk`` on a
+    single node.\n
     Both ``jk_type == "rjk"`` and ``jk_type == "super"`` are supported.  See
     ``g_mk_jk_distributed`` for the meaning of the parameters.\n
     The result agrees with the one of ``g_mk_jk`` up to the floating-point
@@ -1729,48 +1996,34 @@ def g_mk_jk_sync_node(
     are reduced across the nodes, which changes the order of the
     floating-point additions.
     """
-    from mpi4py import MPI
-    #
-    fname = "g_mk_jk_sync_node"
-    comm, id_node, num_node = get_collective_comm(fname)
-    i_start, i_end = get_distributed_range(len(data_list), id_node, num_node)
-    jk_local = g_mk_jk_distributed(
-        data_list[i_start:i_end],
-        jk_idx_list[i_start:i_end],
-        avg=avg,
-        jk_type=jk_type,
-        all_jk_idx=all_jk_idx,
-        get_all_jk_idx=get_all_jk_idx,
-        n_rand_sample=n_rand_sample,
-        rng_state=rng_state,
-        jk_blocking_func=jk_blocking_func,
-        is_normalizing_rand_sample=is_normalizing_rand_sample,
-        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
-        is_use_old_rand_alg=is_use_old_rand_alg,
-        is_hash_jk_idx=is_hash_jk_idx,
-        jk_idx_hash_size=jk_idx_hash_size,
-        eps=eps,
-    )
-    #
-    n_arr = np.array([len(jk_local)], dtype=np.int64)
-    comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
-    total_size = int(n_arr[0])
-    elem_size = 1
-    for x in jk_local.shape[1:]:
-        elem_size *= x
-    recvcounts = []
-    displs = []
-    displ = 0
-    for r in range(num_node):
-        r_start, r_end = get_distributed_range(total_size, r, num_node)
-        recvcounts.append((r_end - r_start) * elem_size)
-        displs.append(displ)
-        displ += recvcounts[-1]
-    jk_arr = np.empty((total_size,) + jk_local.shape[1:], dtype=jk_local.dtype)
-    comm.Allgatherv(
-        jk_local.reshape(-1),
-        (jk_arr.reshape(-1), (recvcounts, displs)),
-    )
+    if jk_type == "super":
+        jk_arr = sjackknife_sync_node(
+            data_list,
+            jk_idx_list,
+            avg=avg,
+            is_hash_jk_idx=is_hash_jk_idx,
+            jk_idx_hash_size=jk_idx_hash_size,
+            rng_state=rng_state,
+            all_jk_idx=all_jk_idx,
+            get_all_jk_idx=get_all_jk_idx,
+            jk_blocking_func=jk_blocking_func,
+            eps=eps,
+        )
+    elif jk_type == "rjk":
+        jk_arr = rjackknife_sync_node(
+            data_list,
+            jk_idx_list,
+            avg=avg,
+            rng_state=rng_state,
+            n_rand_sample=n_rand_sample,
+            jk_blocking_func=jk_blocking_func,
+            is_normalizing_rand_sample=is_normalizing_rand_sample,
+            is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
+            is_use_old_rand_alg=is_use_old_rand_alg,
+            eps=eps,
+        )
+    else:
+        assert False
     return jk_arr
 
 @use_kwargs(default_g_jk_kwargs)

@@ -211,6 +211,76 @@ setup_g_jk_kwargs(
 )
 check_distributed(data_arr_1, jk_idx_list_1, "super-hash")
 
+# ---- the jk_type specific distributed functions ----
+setup_g_jk_kwargs(
+    n_rand_sample=1023,
+    block_size=1,
+    block_size_dict={"job_tag_1": 1},
+)
+data_local_1 = get_local_part(data_arr_1, comm.rank, comm.size)
+jk_idx_local_1 = get_local_part(jk_idx_list_1, comm.rank, comm.size)
+jk_r_dist = np.concatenate(
+    comm.allgather(
+        q.rjackknife_distributed(
+            data_local_1,
+            jk_idx_local_1,
+            n_rand_sample=1023,
+            rng_state=q.RngState("rejk"),
+            jk_blocking_func=q.jk_blocking_func_default,
+            is_normalizing_rand_sample=False,
+            is_apply_rand_sample_jk_idx_blocking_shift=True,
+            is_use_old_rand_alg=False,
+            eps=1,
+        )
+    )
+)
+jk_r_seq = q.rjackknife(
+    data_arr_1,
+    jk_idx_list_1,
+    n_rand_sample=1023,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
+    is_use_old_rand_alg=False,
+    eps=1,
+)
+rel = get_max_rel_diff(jk_r_dist, jk_r_seq)
+q.json_results_append(f"rjackknife_distributed matches rjackknife = {rel < 1e-9}")
+assert rel < 1e-9, rel
+
+all_jk_idx = ["avg"] + [("job_tag_1", b) for b in range(16)]
+setup_g_jk_kwargs(
+    n_rand_sample=1023,
+    block_size=1,
+    block_size_dict={"job_tag_1": 1},
+    jk_type="super",
+    all_jk_idx=all_jk_idx,
+)
+jk_s_dist = np.concatenate(
+    comm.allgather(
+        q.sjackknife_distributed(
+            data_local_1,
+            jk_idx_local_1,
+            all_jk_idx=all_jk_idx,
+            rng_state=q.RngState("rejk"),
+            jk_blocking_func=q.jk_blocking_func_default,
+            eps=1,
+        )
+    )
+)
+jk_s_seq = q.sjackknife(
+    data_arr_1,
+    jk_idx_list_1,
+    all_jk_idx=all_jk_idx,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    eps=1,
+)
+rel = get_max_rel_diff(jk_s_dist, jk_s_seq)
+q.json_results_append(f"sjackknife_distributed matches sjackknife = {rel < 1e-9}")
+assert rel < 1e-9, rel
+
 # ---- g_mk_jk_distributed without a qlat communicator must raise ----
 setup_g_jk_kwargs(
     n_rand_sample=16,

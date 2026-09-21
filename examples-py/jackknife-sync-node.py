@@ -161,6 +161,70 @@ setup_g_jk_kwargs(
 )
 check_sync(data_arr_1, jk_idx_list_1, "super-hash")
 
+# ---- the jk_type specific sync node functions ----
+setup_g_jk_kwargs(
+    n_rand_sample=1023,
+    block_size=1,
+    block_size_dict={"job_tag_1": 1},
+)
+jk_r_seq = q.rjackknife(
+    data_arr_1,
+    jk_idx_list_1,
+    n_rand_sample=1023,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
+    is_use_old_rand_alg=False,
+    eps=1,
+)
+jk_r_sync = q.rjackknife_sync_node(
+    data_arr_1,
+    jk_idx_list_1,
+    n_rand_sample=1023,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
+    is_use_old_rand_alg=False,
+    eps=1,
+)
+ok = bool(
+    jk_r_sync.shape == jk_r_seq.shape and get_max_rel_diff(jk_r_sync, jk_r_seq) < 1e-9
+)
+q.json_results_append(f"rjackknife_sync_node == rjackknife = {ok}")
+assert ok
+
+all_jk_idx = ["avg"] + [("job_tag_1", b) for b in range(16)]
+setup_g_jk_kwargs(
+    n_rand_sample=1023,
+    block_size=1,
+    block_size_dict={"job_tag_1": 1},
+    jk_type="super",
+    all_jk_idx=all_jk_idx,
+)
+jk_s_seq = q.sjackknife(
+    data_arr_1,
+    jk_idx_list_1,
+    all_jk_idx=all_jk_idx,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    eps=1,
+)
+jk_s_sync = q.sjackknife_sync_node(
+    data_arr_1,
+    jk_idx_list_1,
+    all_jk_idx=all_jk_idx,
+    rng_state=q.RngState("rejk"),
+    jk_blocking_func=q.jk_blocking_func_default,
+    eps=1,
+)
+ok = bool(
+    jk_s_sync.shape == jk_s_seq.shape and get_max_rel_diff(jk_s_sync, jk_s_seq) < 1e-9
+)
+q.json_results_append(f"sjackknife_sync_node == sjackknife = {ok}")
+assert ok
+
 # ---- is_sync_node without a qlat communicator must raise ----
 setup_g_jk_kwargs(
     n_rand_sample=16,

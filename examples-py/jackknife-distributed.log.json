@@ -130,6 +130,12 @@
   "super-hash: distributed matches g_mk_jk = True"
  ],
  [
+  "rjackknife_distributed matches rjackknife = True"
+ ],
+ [
+  "sjackknife_distributed matches sjackknife = True"
+ ],
+ [
   "distributed without get_comm raises = True"
  ]
 ]
