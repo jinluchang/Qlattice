@@ -8,27 +8,38 @@ and ``mk_fft``), norms, and the element-wise square root dispatch.\n
 
 import math
 
-import qlat_utils as q
-
-from .geometry import geo_resize
-from .field_base import (
+class q:
+    from qlat_utils import (
+        timer,
+        displayln_info,
+    )
+    from .geometry import (
+        geo_resize,
+    )
+    from .field_base import (
         FieldBase,
         SelectedFieldBase,
         SelectedPointsBase,
-        )
-from .field_types import FieldRealD
-from .selected_field_types import SelectedFieldRealD
-from .selected_points_types import SelectedPointsRealD
-from .field_utils import (
+    )
+    from .field_types import (
+        FieldRealD,
+    )
+    from .selected_field_types import (
+        SelectedFieldRealD,
+    )
+    from .selected_points_types import (
+        SelectedPointsRealD,
+    )
+    from .field_utils import (
         sqrt_field_real_d,
         sqrt_selected_field_real_d,
         sqrt_selected_points_real_d,
-        )
+    )
 
 def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo
     multiplicity = f.multiplicity
-    geo_e = geo_resize(geo, expansion_left, expansion_right)
+    geo_e = q.geo_resize(geo, expansion_left, expansion_right)
     f_e = type(f)(geo_e, multiplicity)
     f_e @= f
     return f_e
@@ -58,13 +69,12 @@ def merge_fields_ms_field(f, fs, ms):
     """
     cqlat-compatible name for ``Field._cc_merge_fields_ms``.
     """
-    assert isinstance(f, FieldBase)
+    assert isinstance(f, q.FieldBase)
     f._cc_merge_fields_ms(fs, ms)
 
 ### -------------------------------------------------------------------
 
 class FastFourierTransform:
-
     def __init__(self, fft_infos, *, is_normalizing=False, mode_fft=1):
         # mode_fft in [ 0, 1, ]
         # fft_infos = [ ( fft_dir, is_forward, ), ... ]
@@ -76,12 +86,17 @@ class FastFourierTransform:
         return self.__copy__()
 
     def __mul__(self, fields):
-        if isinstance(fields, FieldBase):
-            return (self * [ fields, ])[0]
+        if isinstance(fields, q.FieldBase):
+            return (
+                self
+                * [
+                    fields,
+                ]
+            )[0]
         assert isinstance(fields, list)
         for f in fields:
-            assert isinstance(f, FieldBase)
-        fields = [ f.copy() for f in fields ]
+            assert isinstance(f, q.FieldBase)
+        fields = [f.copy() for f in fields]
         fft_dirs, fft_is_forwards = zip(*self.fft_infos)
         fields[0]._cc_fft(fields, fft_dirs, fft_is_forwards, self.mode_fft)
         if self.is_normalizing and self.fft_infos:
@@ -100,25 +115,57 @@ class FastFourierTransform:
 def mk_fft(is_forward, *, is_only_spatial=False, is_normalizing=False, mode_fft=1):
     if is_only_spatial:
         fft_infos = [
-                (0, is_forward,),
-                (1, is_forward,),
-                (2, is_forward,),
-                ]
-        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
+            (
+                0,
+                is_forward,
+            ),
+            (
+                1,
+                is_forward,
+            ),
+            (
+                2,
+                is_forward,
+            ),
+        ]
+        return FastFourierTransform(
+            fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft
+        )
     else:
         fft_infos = [
-                (0, is_forward,),
-                (1, is_forward,),
-                (2, is_forward,),
-                (3, is_forward,),
-                ]
-        return FastFourierTransform(fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft)
+            (
+                0,
+                is_forward,
+            ),
+            (
+                1,
+                is_forward,
+            ),
+            (
+                2,
+                is_forward,
+            ),
+            (
+                3,
+                is_forward,
+            ),
+        ]
+        return FastFourierTransform(
+            fft_infos, is_normalizing=is_normalizing, mode_fft=mode_fft
+        )
 
 ###
 
 @q.timer
 def qnorm_field(f):
-    if isinstance(f, (FieldBase, SelectedFieldBase, SelectedPointsBase,)):
+    if isinstance(
+        f,
+        (
+            q.FieldBase,
+            q.SelectedFieldBase,
+            q.SelectedPointsBase,
+        ),
+    ):
         f_n = f.qnorm_field()
     else:
         q.displayln_info("qnorm_field:", type(f))
@@ -127,12 +174,12 @@ def qnorm_field(f):
 
 @q.timer
 def sqrt_field(f):
-    if isinstance(f, FieldRealD):
-        f_ret = sqrt_field_real_d(f)
-    elif isinstance(f, SelectedFieldRealD):
-        f_ret = sqrt_selected_field_real_d(f)
-    elif isinstance(f, SelectedPointsRealD):
-        f_ret = sqrt_selected_points_real_d(f)
+    if isinstance(f, q.FieldRealD):
+        f_ret = q.sqrt_field_real_d(f)
+    elif isinstance(f, q.SelectedFieldRealD):
+        f_ret = q.sqrt_selected_field_real_d(f)
+    elif isinstance(f, q.SelectedPointsRealD):
+        f_ret = q.sqrt_selected_points_real_d(f)
     else:
         q.displayln_info("sqrt_field:", type(f))
         assert False
