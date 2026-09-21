@@ -28,10 +28,11 @@ import shutil
 import tempfile
 import subprocess
 
-from qlat_utils.timer import (
-    timer,
-    displayln_info,
-)
+class q:
+    from qlat_utils.timer import (
+        timer,
+        displayln_info,
+    )
 
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
@@ -240,11 +241,11 @@ def mk_pyplot_folder(path=None):
         os.makedirs(path)
     return path
 
-@timer
+@q.timer
 def display_img(fn, *, width=None):
     from IPython.display import HTML, Image, display
     #
-    displayln_info(0, f"display_img: fn='{fn}'")
+    q.displayln_info(0, f"display_img: fn='{fn}'")
     show_width = ""
     if width is not None:
         show_width = f"width='{width}'"
@@ -264,7 +265,7 @@ def display_img(fn, *, width=None):
 
 plot_save_display_width = None
 
-@timer
+@q.timer
 def plot_save(
     fn=None,
     dts=None,
@@ -298,9 +299,9 @@ def plot_save(
         yerr = 0.1 / (1 + x**2)
         dts = dict()
         dts["table.txt"] = azip(x, y, yerr)
-        displayln_info("dts = dict()")
+        q.displayln_info("dts = dict()")
         for key, value in dts.items():
-            displayln_info(f"dts[{key!r}] = {value.tolist()}")
+            q.displayln_info(f"dts[{key!r}] = {value.tolist()}")
         if lines is None:
             lines = [
                 "plot [-3:3] [-1.5:1.5]",
@@ -308,10 +309,10 @@ def plot_save(
                 r"sin(x) w l t '$y = \sin(x)$'",
             ]
             lines.append(r"'table.txt' w yerrorb t '$y = \cos(x)$'")
-            displayln_info("lines = [")
+            q.displayln_info("lines = [")
             for l in lines:
-                displayln_info(f"    {l!r},")
-            displayln_info("]")
+                q.displayln_info(f"    {l!r},")
+            q.displayln_info("]")
         is_show_cmd = True
     if lines is None:
         lines = [
@@ -324,10 +325,10 @@ def plot_save(
                 lines.append(f"'{key}' u 1:2 w p t '{key}'")
             else:
                 lines.append(f"'{key}' t '{key}'")
-        displayln_info("lines = [")
+        q.displayln_info("lines = [")
         for l in lines:
-            displayln_info(f"    {l!r},")
-        displayln_info("]")
+            q.displayln_info(f"    {l!r},")
+        q.displayln_info("]")
         is_show_cmd = True
     if cmds is None:
         cmds = [
@@ -337,33 +338,33 @@ def plot_save(
             "set ylabel '$y$'",
             "set title 'title'",
         ]
-        displayln_info("cmds = [")
+        q.displayln_info("cmds = [")
         for l in cmds:
-            displayln_info(f"    {l!r},")
-        displayln_info("]")
+            q.displayln_info(f"    {l!r},")
+        q.displayln_info("]")
         is_show_cmd = True
     if is_display and (display_width is None):
         display_width = plot_save_display_width
         is_show_cmd = True
     if is_show_cmd:
         if is_display:
-            displayln_info("q.plot_view(")
-            displayln_info(f"    fn={fn!r},")
-            displayln_info("    dts=dts,")
-            displayln_info("    lines=lines,")
-            displayln_info("    cmds=cmds,")
-            displayln_info(f"    display_width={display_width!r},")
-            displayln_info(f"    is_verbose={is_verbose!r},")
-            displayln_info(")")
+            q.displayln_info("q.plot_view(")
+            q.displayln_info(f"    fn={fn!r},")
+            q.displayln_info("    dts=dts,")
+            q.displayln_info("    lines=lines,")
+            q.displayln_info("    cmds=cmds,")
+            q.displayln_info(f"    display_width={display_width!r},")
+            q.displayln_info(f"    is_verbose={is_verbose!r},")
+            q.displayln_info(")")
         else:
-            displayln_info("q.plot_save(")
-            displayln_info(f"    fn={fn!r},")
-            displayln_info("    dts=dts,")
-            displayln_info("    lines=lines,")
-            displayln_info("    cmds=cmds,")
-            displayln_info(f"    is_run_make={is_run_make!r},")
-            displayln_info(f"    is_verbose={is_verbose!r},")
-            displayln_info(")")
+            q.displayln_info("q.plot_save(")
+            q.displayln_info(f"    fn={fn!r},")
+            q.displayln_info("    dts=dts,")
+            q.displayln_info("    lines=lines,")
+            q.displayln_info("    cmds=cmds,")
+            q.displayln_info(f"    is_run_make={is_run_make!r},")
+            q.displayln_info(f"    is_verbose={is_verbose!r},")
+            q.displayln_info(")")
     populate_pyplot_folder(
         path,
         fn=target_fn,
@@ -373,7 +374,7 @@ def plot_save(
     )
     if is_run_make:
         #
-        @timer
+        @q.timer
         def qplot_run_make():
             status = subprocess.run(
                 [
@@ -385,10 +386,10 @@ def plot_save(
                 text=True,
             )
             if is_verbose or status.returncode != 0:
-                displayln_info("stdout:")
-                displayln_info(status.stdout)
-                displayln_info("stderr:")
-                displayln_info(status.stderr)
+                q.displayln_info("stdout:")
+                q.displayln_info(status.stdout)
+                q.displayln_info("stderr:")
+                q.displayln_info(status.stderr)
             assert status.returncode == 0
         #
         qplot_run_make()
@@ -399,12 +400,12 @@ def plot_save(
         if is_display:
             display_img(path_img, width=display_width)
         else:
-            displayln_info(0, f"plot_save: plot created at '{path_img}'.")
+            q.displayln_info(0, f"plot_save: plot created at '{path_img}'.")
         return path_img
     else:
         assert not is_display
         # return directory that contain the sources instead of the png path
-        displayln_info(0, f"plot_save: creating data for plot at '{path}'.")
+        q.displayln_info(0, f"plot_save: creating data for plot at '{path}'.")
         return path
 
 def plot_view(
