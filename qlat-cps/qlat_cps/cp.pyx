@@ -4,7 +4,12 @@ from qlat.all cimport *
 from . cimport everything as cc
 
 import sys
-import qlat as q
+
+class q:
+    from qlat import (
+        clean_cache,
+        Prop,
+    )
 
 def begin_with_cps(Coordinate total_site):
     cc.begin_with_cps(sys.argv, total_site.xx)
