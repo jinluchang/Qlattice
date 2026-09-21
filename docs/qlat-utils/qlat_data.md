@@ -315,19 +315,20 @@ $$jk\_arr[i] = \text{avg} + \sum_{j=1}^{N} \frac{-\text{eps}}{\sqrt{N(N - b(i,j)
 where $r_{i,j} \sim \mathcal{N}(0, 1)$ and $b(i,j)$ is the block size.
 
 If `is_sync_node` is `True`, the operation is assumed to be a collective
-operation in a MPI program where every node has the same input: the
-`n_rand_sample` samples are split between the nodes, each node computes only
-its own rows, and the partial results are summed with `mpi4py`'s `Allreduce`
-on the communicator returned by `q.get_comm()`. Every node then obtains the
-complete `jk_arr`, bit-for-bit identical to the `is_sync_node=False` result
-(so it does not depend on the number of nodes). The rows are split using the
-qlat node numbering (`q.get_id_node()`), which for some Grid processor
-layouts differs from the `MPI_COMM_WORLD` rank — `q.get_comm()` is the
-communicator that matches it. `qlat` and `mpi4py` are imported only when
-`is_sync_node` is `True`. This requires qlat to be initialized on the whole
-MPI communicator (`q.begin_with_mpi()`, `q.begin_with_gpt()` or
-`q.begin_with_grid()`), and the data must have a numeric dtype supported by
-MPI.
+operation in a MPI program where every node has the same input. It is then
+performed by `g_mk_jk_sync_node`: the input is split between the nodes and each
+node computes only its own part with `g_mk_jk_distributed`; the parts are
+gathered with `mpi4py`'s `Allgatherv` on the communicator returned by
+`q.get_comm()`, so that every node obtains the complete `jk_arr`. The result
+agrees with the `is_sync_node=False` result up to the floating-point roundoff,
+but not bit-for-bit, because the average and the sums over the data set are
+reduced across the nodes. The input is split using the qlat node numbering
+(`q.get_id_node()`), which for some Grid processor layouts differs from the
+`MPI_COMM_WORLD` rank — `q.get_comm()` is the communicator that matches it.
+`qlat` and `mpi4py` are imported only when `is_sync_node` is `True`. This
+requires qlat to be initialized on the whole MPI communicator
+(`q.begin_with_mpi()`, `q.begin_with_gpt()` or `q.begin_with_grid()`), and the
+data must have a numeric dtype supported by MPI.
 
 ### `rjk_avg(jk_arr)` / `rjk_err(jk_arr, eps=1)` / `rjk_avg_err(rjk_list, eps=1)`
 
@@ -359,23 +360,33 @@ Global dictionary controlling jackknife behavior. Key settings:
 | `block_size` | `1` | Default blocking size |
 | `block_size_dict` | `{}` | Per-`job_tag` blocking sizes |
 | `rng_state` | `RngState("rejk")` | RNG state |
-| `is_sync_node` | `False` | Run as a collective MPI operation (`"rjk"` only) |
+| `is_sync_node` | `False` | Run as a collective MPI operation |
 
 `is_sync_node` is not part of `get_jk_state` / `set_jk_state`: it changes only
-how the result is computed, not its value, so it is deliberately excluded from
-the `q.cache_call` cache key.
+how the result is computed (the result agrees up to the floating-point
+roundoff), so it is deliberately excluded from the `q.cache_call` cache key.
 
 ### `g_mk_jk(data_list, jk_idx_list, *, avg=None, ...)`
 
 Create a (randomized) super-jackknife dataset from un-jackknifed data.
 Dispatches to `sjackknife` or `rjackknife` based on `jk_type`.
 
-With `is_sync_node=True` the operation is parallelized over the MPI nodes as
-described for `rjackknife` above. This is only supported for
-`jk_type == "rjk"`; using `is_sync_node=True` together with
-`jk_type == "super"` raises an `Exception`. The complementary operation, in
-which the input data are also split between the nodes, is
-`g_mk_jk_distributed`.
+With `is_sync_node=True` the operation is performed by `g_mk_jk_sync_node` as
+described for `rjackknife` above; both `jk_type == "rjk"` and
+`jk_type == "super"` are supported. The complementary operation, in which the
+input data are also split between the nodes, is `g_mk_jk_distributed`.
+
+### `g_mk_jk_sync_node(data_list, jk_idx_list, *, avg=None, ...)`
+
+Perform a (randomized) super-jackknife as a collective MPI operation where
+every node has the same (whole) input and obtains the same complete result.
+This implements the `is_sync_node=True` option of `g_mk_jk` and `rjackknife`:
+the input is split between the nodes in the order of the nodes
+(`get_distributed_range`), each node computes only its own part of the result
+with `g_mk_jk_distributed`, and the parts are gathered with `mpi4py`'s
+`Allgatherv`, so that every node obtains the complete `jk_arr` in the same
+order as the one from `g_mk_jk`. The result agrees with `g_mk_jk` up to the
+floating-point roundoff, but not bit-for-bit.
 
 ### `g_mk_jk_distributed(data_list, jk_idx_list, *, avg=None, ...)`
 
@@ -416,7 +427,8 @@ The result agrees with `g_mk_jk` (and with `g_mk_jk(..., is_sync_node=True)`)
 up to the floating-point roundoff, but not bit-for-bit: the average and the
 sums over the data set are reduced across the nodes, which changes the order
 of the floating-point additions. The `is_sync_node` setting of
-`default_g_jk_kwargs` is ignored.
+`default_g_jk_kwargs` is ignored. `g_mk_jk_sync_node` uses this function to
+implement `is_sync_node=True`.
 
 ### `get_distributed_range(total_size, id_node, num_node)`
 

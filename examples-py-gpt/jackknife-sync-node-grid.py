@@ -41,7 +41,10 @@ jk_idx_list = [("job_tag", traj) for traj in range(32)]
 jk_seq = q.g_mk_jk(data_arr, jk_idx_list, is_sync_node=False)
 jk_sync = q.g_mk_jk(data_arr, jk_idx_list, is_sync_node=True)
 
-ok = bool(np.array_equal(jk_seq, jk_sync))
+d = np.abs(jk_sync - jk_seq)
+scale = np.maximum(np.abs(jk_seq), 1e-100)
+rel = float(np.max(d / scale)) if d.size > 0 else 0.0
+ok = bool(jk_sync.shape == jk_seq.shape and rel < 1e-9)
 q.json_results_append(f"grid: sync == sequential = {ok}")
 q.json_results_append(f"grid: sync shape = {tuple(jk_sync.shape)}")
 assert ok
