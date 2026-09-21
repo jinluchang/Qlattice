@@ -562,12 +562,18 @@ not `None`, otherwise the local sums reduced with `Allreduce` and divided by
 Return the local part of the result from `partial_arr` (shape
 `(total_size, *elem_shape)`, the contribution of the local data to every
 sample, with the sample 0 equal to `avg` on its owner): the contributions are
-summed with `Reduce_scatter` and `avg` is added to the samples.
+summed with `Reduce_scatter` and `avg` is added to the samples. `partial_arr`
+may be any array, in particular a non-contiguous view such as a column of a 2-D
+array (a contiguous copy is made when needed, since the buffer of the
+collective must be contiguous).
 
 ### `get_gathered_jk_arr(jk_local, comm, num_node)`
 
 Return the complete result from the local parts `jk_local`, gathered with
-`Allgatherv` in the order of the nodes.
+`Allgatherv` in the order of the nodes. `jk_local` may be any array, in
+particular a non-contiguous view such as a column of a 2-D array (a contiguous
+copy is made when needed, since the send buffer of the collective must be
+contiguous).
 
 ### `g_mk_jk_val(rs_tag, val, err, *, ...)`
 

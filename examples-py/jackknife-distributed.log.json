@@ -136,6 +136,15 @@
   "sjackknife_distributed matches sjackknife = True"
  ],
  [
+  "gather of a strided 1-D view = True"
+ ],
+ [
+  "gather of a stride 2 1-D view = True"
+ ],
+ [
+  "reduce scatter of a strided 1-D view = True"
+ ],
+ [
   "distributed without get_comm raises = True"
  ]
 ]

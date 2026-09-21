@@ -1235,17 +1235,22 @@ def get_distributed_avg(comm, data_arr, n, avg=None):
     return filter_np_results(glb_sum / n)
 
 def get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg):
-    r"""
+    """
     Return the local part of the (randomized) Super-Jackknife data set.\n
     ``partial_arr`` has shape ``(total_size, *elem_shape)`` and holds the
     contribution of the local data to every sample, with the sample 0 equal to
     ``avg`` on the node which owns it and 0 elsewhere.  The contributions of
     the nodes are summed with ``Reduce_scatter``, so that every node obtains
     its own samples; ``avg`` is then added to the samples, since the samples
-    are ``avg + sum_j (...)`` while the sample 0 is ``avg`` itself.
+    are ``avg + sum_j (...)`` while the sample 0 is ``avg`` itself.\n
+    ``partial_arr`` may be any array, in particular a non-contiguous view such
+    as a column of a 2-D array; a contiguous copy is made when needed.
     """
     from mpi4py import MPI
     #
+    # The buffers of the collectives must be contiguous; ``reshape(-1)`` is
+    # only a view when the array is already 1-D, so copy a strided array here.
+    partial_arr = np.ascontiguousarray(partial_arr)
     total_size = partial_arr.shape[0]
     elem_shape = partial_arr.shape[1:]
     elem_size = 1
@@ -1268,14 +1273,19 @@ def get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg):
     return jk_arr
 
 def get_gathered_jk_arr(jk_local, comm, num_node):
-    r"""
+    """
     Return the complete (randomized) Super-Jackknife data set.\n
     ``jk_local`` is the local part of the result of a distributed jackknife
     function; the parts are gathered with ``Allgatherv``, in the order of the
-    nodes, so that every node obtains the complete ``jk_arr``.
+    nodes, so that every node obtains the complete ``jk_arr``.\n
+    ``jk_local`` may be any array, in particular a non-contiguous view such as
+    a column of a 2-D array; a contiguous copy is made when needed.
     """
     from mpi4py import MPI
     #
+    # The send buffer of the collective must be contiguous; ``reshape(-1)`` is
+    # only a view when the array is already 1-D, so copy a strided array here.
+    jk_local = np.ascontiguousarray(jk_local)
     n_arr = np.array([len(jk_local)], dtype=np.int64)
     comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
     total_size = int(n_arr[0])

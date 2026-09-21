@@ -281,6 +281,45 @@ rel = get_max_rel_diff(jk_s_dist, jk_s_seq)
 q.json_results_append(f"sjackknife_distributed matches sjackknife = {rel < 1e-9}")
 assert rel < 1e-9, rel
 
+# ---- the gather / reduce-scatter helpers accept non-contiguous views ----
+# The send buffers of the collectives must be contiguous; the 1-D strided
+# views below used to fail inside mpi4py with "ndarray is not contiguous",
+# because reshape(-1) is not a copy for an array which is already 1-D.
+total_g = 5 * comm.size
+rows_g = np.zeros((5, 4))
+rows_g[:, 1] = np.arange(5) + 10.0 * comm.rank
+jk_col = q.get_gathered_jk_arr(rows_g[:, 1], comm, comm.size)
+jk_col_cpy = q.get_gathered_jk_arr(np.ascontiguousarray(rows_g[:, 1]), comm, comm.size)
+ok = bool(jk_col.shape == (total_g,) and np.array_equal(jk_col, jk_col_cpy))
+q.json_results_append(f"gather of a strided 1-D view = {ok}")
+assert ok
+
+buf_g = np.zeros(10)
+jk_stride = q.get_gathered_jk_arr(buf_g[::2], comm, comm.size)
+jk_stride_cpy = q.get_gathered_jk_arr(np.ascontiguousarray(buf_g[::2]), comm, comm.size)
+ok = bool(jk_stride.shape == (total_g,) and np.array_equal(jk_stride, jk_stride_cpy))
+q.json_results_append(f"gather of a stride 2 1-D view = {ok}")
+assert ok
+
+total_r = 5 * comm.size
+i_start_r, i_end_r = q.get_distributed_range(total_r, comm.rank, comm.size)
+rows_r = np.zeros((total_r, 3))
+rows_r[:, 0] = np.arange(total_r) + 100.0 * comm.rank
+rs_a = q.get_reduce_scattered_jk_arr(rows_r[:, 0], comm, comm.rank, comm.size, 0.0)
+rs_b = q.get_reduce_scattered_jk_arr(
+    np.ascontiguousarray(rows_r[:, 0]), comm, comm.rank, comm.size, 0.0
+)
+rs_expected = np.sum(
+    [np.arange(total_r) + 100.0 * r for r in range(comm.size)], axis=0
+)[i_start_r:i_end_r]
+ok = bool(
+    rs_a.shape == (i_end_r - i_start_r,)
+    and np.array_equal(rs_a, rs_b)
+    and np.array_equal(rs_a, rs_expected)
+)
+q.json_results_append(f"reduce scatter of a strided 1-D view = {ok}")
+assert ok
+
 # ---- g_mk_jk_distributed without a qlat communicator must raise ----
 setup_g_jk_kwargs(
     n_rand_sample=16,
