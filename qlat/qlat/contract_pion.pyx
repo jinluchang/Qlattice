@@ -15,7 +15,10 @@ from . cimport everything as cc
 from .propagator cimport Prop
 from .propagator cimport SelProp
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+    )
 
 @q.timer
 def contract_pion_field(prop, tslice):
