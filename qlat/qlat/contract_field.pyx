@@ -15,7 +15,10 @@ from . cimport everything as cc
 from .field_types cimport FieldComplexD
 from .propagator cimport Prop
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+    )
 
 @q.timer
 def contract_chvp_16(prop1, prop2):
