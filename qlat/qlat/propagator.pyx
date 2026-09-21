@@ -28,7 +28,11 @@ from .field_selection cimport (
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+    )
+
 import numpy as np
 
 cdef class Prop(FieldWilsonMatrix):
