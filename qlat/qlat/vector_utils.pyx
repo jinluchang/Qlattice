@@ -2,15 +2,12 @@
 
 """
 Module ``qlat.vector_utils``
-=============================
-
+=============================\n
 Cython bindings for the legacy vector-utility routines (the former
 ``qlat/cqlat/vector_utils.cpp`` exports): propagator/gauge-field
 comparison, gwu/qlat file I/O, source construction and meson
-contraction helpers.
-
-Documentation: ``docs/qlat/qlat_vector_utils.md``
-
+contraction helpers.\n
+Documentation: ``docs/qlat/qlat_vector_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
@@ -18,8 +15,6 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .propagator cimport Prop
 from .qcd cimport GaugeField
-
-import qlat_utils as q
 
 ### -------------------------------------------------------------------
 
