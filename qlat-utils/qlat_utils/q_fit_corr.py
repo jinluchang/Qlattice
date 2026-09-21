@@ -9,13 +9,24 @@ Documentation: ``docs/qlat-utils/qlat_q_fit_corr.md``\n
 
 import numpy as np
 
-from .c import *
-from .utils import *
-from .data import *
-from .jackknife_utils import *
-from .parallel import (
-    get_q_num_mp_processes,
-)
+class q:
+    from .c import (
+        RngState,
+        displayln_info,
+        get_verbose_level,
+        set_verbose_level,
+        timer,
+        timer_verbose,
+    )
+    from .utils import (
+        get_fname,
+    )
+    from .jackknife_utils import (
+        g_jk_avg_err,
+    )
+    from .parallel import (
+        get_q_num_mp_processes,
+    )
 
 def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
     r"""
@@ -27,7 +38,7 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     jk_corr_data[jk, i, j, t] = corr_data[i, j, t] + corr_data_sigma[i, j, t] * N(0,1)
     """
     if rng is None:
-        rng = RngState("mk_data_set-seed")
+        rng = q.RngState("mk_data_set-seed")
     #
     energies = rng.u_rand_arr((n_energies,)) * 2.0 + 0.1
     #
@@ -82,7 +93,7 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     )
     return param_arr, jk_corr_data, corr_data_sigma
 
-@timer
+@q.timer
 def build_corr_from_param_arr(
     param_arr,
     *,
@@ -134,7 +145,7 @@ def build_corr_from_param_arr(
         ).sum(0)
     return corr
 
-@timer
+@q.timer
 def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
     """
     Adjust order of states with free energy parameter
@@ -161,7 +172,7 @@ def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
     )
     return new_param_arr
 
-@timer
+@q.timer
 def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None):
     """
     return new param_arr (does not change original param_arr)
@@ -184,7 +195,7 @@ def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr
     )
     return new_param_arr
 
-@timer
+@q.timer
 def mk_fcn(
     corr_data,
     corr_data_sigma,
@@ -295,7 +306,7 @@ def mk_fcn(
     fcn_f_jit = jax.jit(fcn_f)
     fcn_fg_jit = jax.jit(jax.value_and_grad(fcn_f))
     #
-    @timer
+    @q.timer
     def fcn(param_arr, requires_grad=True):
         if requires_grad:
             chisq, grad = fcn_fg_jit(param_arr)
@@ -308,20 +319,20 @@ def mk_fcn(
 
 ### -------------------
 
-@timer
+@q.timer
 def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
-    fname = get_fname()
+    fname = q.get_fname()
     chisq_pre = None
     for i in range(n_step):
         chisq, param_grad_arr = fcn(param_arr)
         grad_norm = np.linalg.norm(param_grad_arr)
-        displayln_info(
+        q.displayln_info(
             1,
             f"{fname}: step={i} chisq={chisq} grad_norm={grad_norm} param_arr={param_arr}",
         )
         if chisq_pre is not None:
             if chisq > chisq_pre:
-                displayln_info(
+                q.displayln_info(
                     0,
                     f"{fname}: early stop step={i} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}",
                 )
@@ -329,17 +340,17 @@ def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
         param_arr_pre = param_arr
         chisq_pre = chisq
         param_arr = param_arr - step_size / grad_norm * param_grad_arr
-    displayln_info(
+    q.displayln_info(
         0,
         f"{fname}: step={n_step} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}",
     )
     return param_arr_pre, n_step
 
-@timer
+@q.timer
 def adaptive_minimize(
     fcn, step_size_list, n_step=10, max_total_steps=10000, *, param_arr
 ):
-    fname = get_fname()
+    fname = q.get_fname()
     idx = 0
     total_steps = 0
     total_steps_pre = 0
@@ -350,7 +361,7 @@ def adaptive_minimize(
         )
         total_steps += i_step
         if total_steps - total_steps_pre > 1000:
-            displayln_info(0, f"{fname}: {step_size:.8f} total_steps={total_steps}")
+            q.displayln_info(0, f"{fname}: {step_size:.8f} total_steps={total_steps}")
             total_steps_pre = total_steps
         if total_steps > max_total_steps:
             return param_arr
@@ -361,18 +372,18 @@ def adaptive_minimize(
             if idx == len(step_size_list):
                 return param_arr
 
-@timer
+@q.timer
 def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None):
     import scipy
     #
-    fname = get_fname()
+    fname = q.get_fname()
     n_params = len(param_arr)
     if fixed_param_mask is None:
         fixed_param_mask = np.zeros(n_params, dtype=bool)
     p_fixed = param_arr[fixed_param_mask]
     free_param_mask = ~fixed_param_mask
     #
-    @timer
+    @q.timer
     def c_fcn(p_free):
         p_all = np.empty(n_params, dtype=np.float64)
         p_all[fixed_param_mask] = p_fixed
@@ -380,7 +391,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         chisq = fcn(p_all, requires_grad=False)
         return chisq
     #
-    @timer
+    @q.timer
     def c_fcn_grad(p_free):
         p_all = np.empty(n_params, dtype=np.float64)
         p_all[fixed_param_mask] = p_fixed
@@ -407,8 +418,8 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
     )
     p_free_mini = res.x
     fcn_final = c_fcn(p_free_mini)
-    displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
-    displayln_info(
+    q.displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
+    q.displayln_info(
         0,
         f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}",
     )
@@ -417,7 +428,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         param_arr_mini[free_param_mask] = p_free_mini
         return param_arr_mini
     else:
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .",
         )
@@ -453,7 +464,7 @@ class MpPoolSingle:
 
 ### -----------------
 
-@timer
+@q.timer
 def mk_mp_pool(n_proc=None):
     """
     return mp_pool
@@ -462,7 +473,7 @@ def mk_mp_pool(n_proc=None):
     mp_map = mp_pool.imap
     """
     if n_proc is None:
-        n_proc = get_q_num_mp_processes()
+        n_proc = q.get_q_num_mp_processes()
     assert isinstance(n_proc, int)
     if n_proc == 0:
         mp_pool = MpPoolSingle()
@@ -477,7 +488,7 @@ def mk_mp_pool(n_proc=None):
     assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
     return mp_pool
 
-@timer
+@q.timer
 def close_mp_pool(mp_pool):
     if mp_pool is None:
         return
@@ -488,7 +499,7 @@ def close_mp_pool(mp_pool):
 n_proc_global = None
 mp_pool_global = None
 
-@timer
+@q.timer
 def get_mp_pool_global(n_proc=None):
     """
     return mp_pool
@@ -521,7 +532,7 @@ def get_mp_pool_global(n_proc=None):
     global mp_pool_global
     global n_proc_global
     if n_proc is None:
-        n_proc = get_q_num_mp_processes()
+        n_proc = q.get_q_num_mp_processes()
     if n_proc_global != n_proc:
         close_mp_pool_global()
     if mp_pool_global is None:
@@ -529,7 +540,7 @@ def get_mp_pool_global(n_proc=None):
         n_proc_global = n_proc
     return mp_pool_global
 
-@timer
+@q.timer
 def close_mp_pool_global():
     """
     See q.get_mp_pool_global(n_proc)
@@ -543,7 +554,7 @@ def close_mp_pool_global():
 ### -----------------
 
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
-    fname = get_fname()
+    fname = q.get_fname()
     #
     def f(
         *,
@@ -568,8 +579,8 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         rng_seed,
         verbose_level,
     ):
-        set_verbose_level(verbose_level)
-        rng = RngState(rng_seed)
+        q.set_verbose_level(verbose_level)
+        rng = q.RngState(rng_seed)
         n_params = len(param_arr_mini)
         n_ops = corr_data.shape[0]
         fcn = mk_fcn(
@@ -592,7 +603,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             else:
                 grad_masked = grad
             grad_norm_masked = np.linalg.norm(grad_masked)
-            displayln_info(
+            q.displayln_info(
                 verbose_level,
                 f"{fname}: fcn={fcn_v:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}",
             )
@@ -606,7 +617,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                 ]
             ).T
             important_eg_arr = eg_arr[abs(grad_energies) > grad_energies_norm / 10]
-            displayln_info(
+            q.displayln_info(
                 verbose_level, f"{fname}: energies and grad arr=\n{important_eg_arr}"
             )
         #
@@ -620,7 +631,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         #
         param_arr = param_arr_mini.copy()
         display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=0)
-        displayln_info(0, f"{fname}: mini fcn (fixed all energies)")
+        q.displayln_info(0, f"{fname}: mini fcn (fixed all energies)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(
@@ -633,11 +644,11 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             if i == n_step_mini_jk - 1:
                 vl = 0
             display_param_arr(param_arr, mask=all_energies_mask, verbose_level=vl)
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: initial free_energy_arr={param_arr[free_energies_mask].tolist()}",
         )
-        displayln_info(
+        q.displayln_info(
             0, f"{fname}: mini fcn (free energies selected by free_energy_idx_arr)"
         )
         for i in range(n_step_mini_jk):
@@ -655,7 +666,7 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
             param_arr = apply_energy_minimum(
                 param_arr, energy_minimum_arr, free_energy_idx_arr
             )
-            displayln_info(
+            q.displayln_info(
                 0,
                 f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}",
             )
@@ -664,12 +675,12 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                 vl = 0
             display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=vl)
         chisq, chisq_grad = fcn(param_arr)
-        set_verbose_level(-1)
+        q.set_verbose_level(-1)
         return chisq, chisq_grad, param_arr
     #
     return f(**kwargs)
 
-@timer_verbose
+@q.timer_verbose
 def fit_energy_amplitude(
     jk_corr_data,
     *,
@@ -730,9 +741,9 @@ def fit_energy_amplitude(
     #
     ``energy_minimum_arr`` should be of same shape as ``free_energy_idx_arr`` will constrain all the free energies to be larger than this energy (None means no constraint)
     """
-    fname = get_fname()
+    fname = q.get_fname()
     #
-    verbose_level = get_verbose_level()
+    verbose_level = q.get_verbose_level()
     #
     assert len(jk_corr_data.shape) == 4
     #
@@ -844,7 +855,7 @@ def fit_energy_amplitude(
     else:
         mp_map = mp_pool.imap
     #
-    corr_data, corr_data_err = g_jk_avg_err(jk_corr_data)
+    corr_data, corr_data_err = q.g_jk_avg_err(jk_corr_data)
     #
     isfinite_sel = np.isfinite(corr_data)
     jk_corr_data[:, ~isfinite_sel] = 0.0
@@ -926,11 +937,11 @@ def fit_energy_amplitude(
         )
         return kwargs
     #
-    displayln_info(
+    q.displayln_info(
         0,
         f"{fname}: initial free_energy_arr={param_arr_mini[free_energies_mask].tolist()}",
     )
-    displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
+    q.displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
     for idx, v in enumerate(
         mp_map(
@@ -941,15 +952,15 @@ def fit_energy_amplitude(
             ],
         )
     ):
-        set_verbose_level(verbose_level)
+        q.set_verbose_level(verbose_level)
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: map: rs_idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'",
         )
         if energy_minimum_arr is not None:
-            displayln_info(
+            q.displayln_info(
                 0,
                 f"{fname}: map: rs_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr[free_energy_idx_arr] - energy_minimum_arr).tolist()}",
             )
@@ -962,20 +973,20 @@ def fit_energy_amplitude(
             rng_seed_mini = rng_seed_list[idx]
             param_arr_mini = param_arr
     #
-    displayln_info(
+    q.displayln_info(
         0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'"
     )
-    displayln_info(
+    q.displayln_info(
         0,
         f"{fname}: avg mini free_energy_arr={param_arr_mini[free_energies_mask].tolist()}",
     )
     if energy_minimum_arr is not None:
-        displayln_info(
+        q.displayln_info(
             0,
             f"{fname}: map: rs_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr_mini[free_energy_idx_arr] - energy_minimum_arr).tolist()}",
         )
     #
-    displayln_info(0, f"{fname}: mini all jk samples")
+    q.displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
     jk_chisq_grad = []
     jk_param_arr = []
@@ -993,18 +1004,18 @@ def fit_energy_amplitude(
             ],
         )
     ):
-        set_verbose_level(verbose_level)
+        q.set_verbose_level(verbose_level)
         chisq, chisq_grad, param_arr = v
         jk_chisq.append(chisq)
         jk_chisq_grad.append(chisq_grad)
         jk_param_arr.append(param_arr)
         if n_step_mini_jk != 0:
-            displayln_info(
+            q.displayln_info(
                 0,
                 f"{fname}: map: jk_idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()}",
             )
             if energy_minimum_arr is not None:
-                displayln_info(
+                q.displayln_info(
                     0,
                     f"{fname}: map: jk_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr[free_energy_idx_arr] - energy_minimum_arr).tolist()}",
                 )
@@ -1044,16 +1055,16 @@ def fit_energy_amplitude(
     res["jk_param_arr_for_scaled_corr"] = jk_param_arr_for_scaled_corr
     res["jk_param_arr"] = jk_param_arr
     #
-    displayln_info(0, f"{fname} finished")
+    q.displayln_info(0, f"{fname} finished")
     return res
 
 ### -------------------
 
-@timer
+@q.timer
 def param_evolve(param_arr, mom_arr, hmc_mass_arr, dt):
     param_arr += mom_arr / hmc_mass_arr * dt
 
-@timer
+@q.timer
 def mom_evolve(mom_arr, param_arr, fcn, dt):
     """
     evolve mom_arr and return force
@@ -1062,7 +1073,7 @@ def mom_evolve(mom_arr, param_arr, fcn, dt):
     mom_arr -= param_grad_arr * dt
     return param_grad_arr
 
-@timer
+@q.timer
 def hmc_energy(param_arr, mom_arr, hmc_mass_arr, fcn):
     return np.sum(mom_arr * mom_arr / hmc_mass_arr) / 2 + fcn(param_arr)[0]
 
@@ -1103,7 +1114,7 @@ class HmcParams:
         F a t^2/2 = F^2 / m / 2 ~ pi^2/8
         """
         if rng is None:
-            rng = RngState(f"seed-hmc-core-{traj}")
+            rng = q.RngState(f"seed-hmc-core-{traj}")
         if param_arr is None:
             assert n_params is not None
             # n_params = n_energies * (n_ops + 1)
@@ -1142,7 +1153,7 @@ class HmcParams:
 
 ### -----------------
 
-@timer
+@q.timer
 def hmc_traj(fcn, hmc_params):
     """
     fcn(param_arr) => chisq, param_grad_arr
@@ -1153,7 +1164,7 @@ def hmc_traj(fcn, hmc_params):
     hmc_mass_adaptive_rate:
     hmc_mass_arr = (1-adaptive_rate) * hmc_mass_arr + hmc_mass_adaptive_rate * (4/np.pi**2) * force_sqr_avg
     """
-    fname = get_fname()
+    fname = q.get_fname()
     traj = hmc_params.traj
     param_arr = hmc_params.param_arr.copy()
     hmc_mass_arr = hmc_params.hmc_mass_arr
@@ -1176,7 +1187,7 @@ def hmc_traj(fcn, hmc_params):
         else:
             param_evolve(param_arr, mom_arr, hmc_mass_arr, dt / 2)
         if np.any(np.isnan(param_arr)):
-            displayln_info(
+            q.displayln_info(
                 -1,
                 f"WARNING: {fname} traj={traj} nan encountered. Abort current evolution. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)",
             )
@@ -1195,12 +1206,12 @@ def hmc_traj(fcn, hmc_params):
         ) * hmc_mass_arr + hmc_params.hmc_mass_adaptive_rate * (
             4 / np.pi**2
         ) * force_sqr_avg
-    displayln_info(
+    q.displayln_info(
         0,
         f"{fname}: Delta H = {delta_hh} ; H_final={hmc_energy_final} ; H_initial={hmc_energy_initial}",
     )
     if delta_hh > 1e4 * hmc_params.temperature:
-        displayln_info(
+        q.displayln_info(
             -1,
             f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)",
         )
@@ -1208,7 +1219,7 @@ def hmc_traj(fcn, hmc_params):
         delta_hh_history.append(delta_hh)
         return
     elif delta_hh > 10 * hmc_params.temperature:
-        displayln_info(
+        q.displayln_info(
             -1, f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large."
         )
     hmc_params.traj = traj + 1
