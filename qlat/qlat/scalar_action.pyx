@@ -19,7 +19,10 @@ from .field_base cimport FieldBase
 from .field_types cimport FieldRealD
 from .field_types cimport FieldComplexD
 
-from . import field_double as field_double
+class q:
+    from . import (
+        field_double,
+    )
 
 cdef class ScalarAction:
 
@@ -62,12 +65,12 @@ cdef class ScalarAction:
     def set_complex_from_double(self, cf, sf):
         assert isinstance(cf, FieldBase)
         assert isinstance(sf, FieldBase)
-        return field_double.set_complex_from_double(cf, sf)
+        return q.field_double.set_complex_from_double(cf, sf)
 
     def set_double_from_complex(self, sf, cf):
         assert isinstance(cf, FieldBase)
         assert isinstance(sf, FieldBase)
-        return field_double.set_double_from_complex(sf, cf)
+        return q.field_double.set_double_from_complex(sf, cf)
 
     def sum_sq(self, FieldRealD sf):
         return self.xx.sum_sq(sf.xx)
