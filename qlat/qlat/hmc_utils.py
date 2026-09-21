@@ -30,17 +30,28 @@ error to O(dt^4).
 
 import math
 
-import qlat_utils as q
-
-from .mpi import glb_sum_double
-from .qcd import GaugeField
-from .hmc import (
-    GaugeMomentum,
-    set_gm_force,
-    gf_evolve,
-    gm_hamilton_node,
-    gf_hamilton_node,
-)
+class q:
+    from qlat_utils import (
+        timer_verbose,
+        timer,
+        displayln_info,
+        get_fname,
+        get_id_node,
+        qnorm,
+    )
+    from .mpi import (
+        glb_sum_double,
+    )
+    from .qcd import (
+        GaugeField,
+    )
+    from .hmc import (
+        GaugeMomentum,
+        set_gm_force,
+        gf_evolve,
+        gm_hamilton_node,
+        gf_hamilton_node,
+    )
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
@@ -60,8 +71,8 @@ def metropolis_accept(delta_h, traj, rs):
             rand_num = rs.u_rand_gen(1.0, 0.0)
             if rand_num <= accept_prob:
                 flag_d = 1.0
-    flag_d = glb_sum_double(flag_d)
-    accept_prob = glb_sum_double(accept_prob)
+    flag_d = q.glb_sum_double(flag_d)
+    accept_prob = q.glb_sum_double(accept_prob)
     flag = flag_d > 0.5
     q.displayln_info(
         f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}"
@@ -76,12 +87,12 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     point, and add ``dt * F_intermediate`` to :math:`P`.
     """
     geo = gf_init.geo
-    gf = GaugeField(geo)
+    gf = q.GaugeField(geo)
     gf @= gf_init
-    gm_force = GaugeMomentum(geo)
-    set_gm_force(gm_force, gf, ga)
-    gf_evolve(gf, gm_force, fg_dt)
-    set_gm_force(gm_force, gf, ga)
+    gm_force = q.GaugeMomentum(geo)
+    q.set_gm_force(gm_force, gf, ga)
+    q.gf_evolve(gf, gm_force, fg_dt)
+    q.set_gm_force(gm_force, gf, ga)
     gm_force *= dt
     gm += gm_force
 
@@ -92,23 +103,23 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, n_step, md_time=1.0):
     ``md_time / n_step``.  Returns the energy violation ``delta_h``
     (already MPI-summed).
     """
-    energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
+    energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
     theta = (2.0 - math.sqrt(3.0)) / 48.0
     ttheta = theta * dt * dt * dt
-    gf_evolve(gf, gm, lam * dt)
+    q.gf_evolve(gf, gm, lam * dt)
     for i in range(n_step):
         gm_evolve_fg_pure_gauge(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt)
-        gf_evolve(gf, gm, (1.0 - 2.0 * lam) * dt)
+        q.gf_evolve(gf, gm, (1.0 - 2.0 * lam) * dt)
         gm_evolve_fg_pure_gauge(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt)
         if i < n_step - 1:
-            gf_evolve(gf, gm, 2.0 * lam * dt)
+            q.gf_evolve(gf, gm, 2.0 * lam * dt)
         else:
-            gf_evolve(gf, gm, lam * dt)
+            q.gf_evolve(gf, gm, lam * dt)
     gf.unitarize()
-    delta_h = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga) - energy
-    delta_h = glb_sum_double(delta_h)
+    delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) - energy
+    delta_h = q.glb_sum_double(delta_h)
     return delta_h
 
 @q.timer(is_timer_fork=True)
@@ -151,15 +162,15 @@ def run_hmc_pure_gauge(
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
-    gf0 = GaugeField(geo)
+    gf0 = q.GaugeField(geo)
     gf0 @= gf
-    gm = GaugeMomentum(geo)
+    gm = q.GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     delta_h = run_hmc_evolve_pure_gauge(gm, gf0, ga, n_step, md_time)
     if is_reverse_test:
-        gm_r = GaugeMomentum(geo)
+        gm_r = q.GaugeMomentum(geo)
         gm_r @= gm
-        gf0_r = GaugeField(geo)
+        gf0_r = q.GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, n_step, -md_time)
         gf0_r -= gf
