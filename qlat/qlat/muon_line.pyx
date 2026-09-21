@@ -21,7 +21,11 @@ from . cimport everything as cc
 from qlat_utils.all cimport *
 cimport numpy
 import numpy as np
-import qlat_utils as q
+
+class q:
+    from qlat_utils import (
+        timer,
+    )
 
 @q.timer
 def has_cuba():
