@@ -87,6 +87,7 @@ tests = \
 		jackknife-test.log \
 		jackknife-sync-node.log \
 		jackknife-sync-node-reorder.log \
+		jackknife-distributed.log \
 		interp.log \
 		field-utils.log \
 		field-analysis.log \

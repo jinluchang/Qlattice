@@ -1,0 +1,135 @@
+[
+ [
+  "get_comm().size = 2"
+ ],
+ [
+  "get_comm().size == get_num_node() = True"
+ ],
+ [
+  "bs1: nodes own all the samples = True"
+ ],
+ [
+  "bs1: distributed shape = (1024, 3)"
+ ],
+ [
+  "bs1: distributed matches g_mk_jk = True"
+ ],
+ [
+  "bs1 avg",
+  {
+   "value": [
+    0.15877844356933307,
+    0.07401276716159937,
+    0.06061677326589542
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "bs1 err",
+  {
+   "value": [
+    0.12812368684702016,
+    0.14520529434013993,
+    0.12039630267092644
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "bs1: distributed matches is_sync_node = True"
+ ],
+ [
+  "bs4-uneven: nodes own all the samples = True"
+ ],
+ [
+  "bs4-uneven: distributed shape = (1024, 3)"
+ ],
+ [
+  "bs4-uneven: distributed matches g_mk_jk = True"
+ ],
+ [
+  "bs4: nodes own all the samples = True"
+ ],
+ [
+  "bs4: distributed shape = (1024, 3)"
+ ],
+ [
+  "bs4: distributed matches g_mk_jk = True"
+ ],
+ [
+  "mixed: nodes own all the samples = True"
+ ],
+ [
+  "mixed: distributed shape = (1024, 3)"
+ ],
+ [
+  "mixed: distributed matches g_mk_jk = True"
+ ],
+ [
+  "normalizing: nodes own all the samples = True"
+ ],
+ [
+  "normalizing: distributed shape = (1024, 3)"
+ ],
+ [
+  "normalizing: distributed matches g_mk_jk = True"
+ ],
+ [
+  "old-rand-alg: nodes own all the samples = True"
+ ],
+ [
+  "old-rand-alg: distributed shape = (1024, 3)"
+ ],
+ [
+  "old-rand-alg: distributed matches g_mk_jk = True"
+ ],
+ [
+  "n_rand_sample=0: nodes own all the samples = True"
+ ],
+ [
+  "n_rand_sample=0: distributed shape = (1, 3)"
+ ],
+ [
+  "n_rand_sample=0: distributed matches g_mk_jk = True"
+ ],
+ [
+  "n_rand_sample=1: nodes own all the samples = True"
+ ],
+ [
+  "n_rand_sample=1: distributed shape = (2, 3)"
+ ],
+ [
+  "n_rand_sample=1: distributed matches g_mk_jk = True"
+ ],
+ [
+  "single-traj: nodes own all the samples = True"
+ ],
+ [
+  "single-traj: distributed shape = (1024, 2)"
+ ],
+ [
+  "single-traj: distributed matches g_mk_jk = True"
+ ],
+ [
+  "super: nodes own all the samples = True"
+ ],
+ [
+  "super: distributed shape = (17, 3)"
+ ],
+ [
+  "super: distributed matches g_mk_jk = True"
+ ],
+ [
+  "super-hash: nodes own all the samples = True"
+ ],
+ [
+  "super-hash: distributed shape = (33, 3)"
+ ],
+ [
+  "super-hash: distributed matches g_mk_jk = True"
+ ],
+ [
+  "distributed without get_comm raises = True"
+ ]
+]

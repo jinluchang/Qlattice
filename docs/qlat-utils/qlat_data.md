@@ -373,7 +373,71 @@ Dispatches to `sjackknife` or `rjackknife` based on `jk_type`.
 With `is_sync_node=True` the operation is parallelized over the MPI nodes as
 described for `rjackknife` above. This is only supported for
 `jk_type == "rjk"`; using `is_sync_node=True` together with
-`jk_type == "super"` raises an `Exception`.
+`jk_type == "super"` raises an `Exception`. The complementary operation, in
+which the input data are also split between the nodes, is
+`g_mk_jk_distributed`.
+
+### `g_mk_jk_distributed(data_list, jk_idx_list, *, avg=None, ...)`
+
+Create a (randomized) super-jackknife dataset when the data set itself is
+split between the MPI nodes. This is a collective MPI operation: every node
+must call it with the same parameters and with its own disjoint part of the
+data set (`data_list` and `jk_idx_list` are the local parts), and every node
+returns its own part of the result:
+
+```python
+import numpy as np
+import qlat as q
+
+comm = q.get_comm()
+i_start, i_end = q.get_distributed_range(len(data_list), comm.rank, comm.size)
+jk_local = q.g_mk_jk_distributed(
+    data_list[i_start:i_end], jk_idx_list[i_start:i_end]
+)
+jk_arr = np.concatenate(comm.allgather(jk_local))  # the complete data set
+```
+
+The samples of the result are split between the nodes in the order of the
+nodes: node `r` out of `num_node` owns the samples in
+`range(*get_distributed_range(g_jk_size(), r, num_node))`, so concatenating
+the local parts in the order of the nodes reproduces the complete data set in
+the same order as the one obtained with `g_mk_jk`. A node holds an array with
+0 samples when there are more nodes than samples.
+
+For `jk_type == "rjk"` every node computes the contribution of its own data to
+all the `n_rand_sample` samples and the partial results are combined with
+`mpi4py`'s `Reduce_scatter` on the communicator from `q.get_comm()`; for
+`jk_type == "super"` the samples are the `all_jk_idx` entries (or the hash
+based samples), split in the same way. Only the small `jk_idx` metadata is
+gathered on every node, so no node needs to hold the whole data set, the
+whole random matrix or the whole result.
+
+The result agrees with `g_mk_jk` (and with `g_mk_jk(..., is_sync_node=True)`)
+up to the floating-point roundoff, but not bit-for-bit: the average and the
+sums over the data set are reduced across the nodes, which changes the order
+of the floating-point additions. The `is_sync_node` setting of
+`default_g_jk_kwargs` is ignored.
+
+### `get_distributed_range(total_size, id_node, num_node)`
+
+Return `(i_start, i_end)`, the contiguous range of the `total_size` indices
+owned by node `id_node` out of `num_node` nodes:
+
+```
+i_start = (total_size * id_node) // num_node
+i_end   = (total_size * (id_node + 1)) // num_node
+```
+
+The parts are ordered by `id_node`, cover `range(total_size)` exactly once and
+differ in size by at most one.
+
+### `get_collective_comm(tag)` / `is_mpi_dtype(dtype)`
+
+Helpers for the collective MPI operations. `get_collective_comm(tag)` returns
+`(comm, id_node, num_node)` from `q.get_comm()` and raises an `Exception`
+(with `tag` naming the caller) when the qlat communicator is missing or does
+not cover the whole MPI communicator. `is_mpi_dtype(dtype)` reports whether a
+numpy dtype can be summed by MPI.
 
 ### `g_mk_jk_val(rs_tag, val, err, *, ...)`
 

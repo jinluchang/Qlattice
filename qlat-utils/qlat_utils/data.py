@@ -800,6 +800,7 @@ def mk_r_i_j_mat(
     is_apply_rand_sample_jk_idx_blocking_shift,
     is_use_old_rand_alg,
     i_range=None,
+    jk_idx_list_for_count=None,
 ):
     """
     Return ``(r_arr, b_arr)``.\n
@@ -808,7 +809,12 @@ def mk_r_i_j_mat(
     (default ``None`` means the full range ``(0, n_rand_sample,)``).
     Only the rows in ``i_range`` are computed; the per-block random streams
     do not depend on ``i_range``, so every returned row is identical to the
-    corresponding row of a full-range call.
+    corresponding row of a full-range call.\n
+    ``jk_idx_list_for_count`` (default ``None`` means ``jk_idx_list``) is the
+    list over which the block sizes ``b_arr`` are counted; the columns of
+    ``r_arr`` and ``b_arr`` always correspond to ``jk_idx_list``.  This is used
+    by ``g_mk_jk_distributed`` where the columns are the locally held
+    ``jk_idx`` while the block sizes must be counted over the whole data set.
     """
     assert n_rand_sample >= 0
     if i_range is None:
@@ -843,22 +849,30 @@ def mk_r_i_j_mat(
     jk_idx_str_set = set()
     if jk_blocking_func is None:
         is_apply_rand_sample_jk_idx_blocking_shift = False
+    # ``b_arr`` counts the blocks of ``jk_idx_list_for_count`` (default
+    # ``jk_idx_list``); the columns of ``r_arr`` and ``b_arr`` always
+    # correspond to ``jk_idx_list``.
+    is_separate_count = jk_idx_list_for_count is not None
     #
     @q.timer
     def set_jk_idx():
         if is_apply_rand_sample_jk_idx_blocking_shift:
             for i_local in range(n_sample):
                 i = i_start + i_local
-                count_dict = dict()
                 for j in range(n):
                     jk_idx = jk_blocking_func(i + 1, jk_idx_list[j])
                     jk_idx_str = str(jk_idx)
                     jk_idx_str_arr[i_local, j] = jk_idx_str
                     jk_idx_str_set.add(jk_idx_str)
-                    if jk_idx_str in count_dict:
-                        count_dict[jk_idx_str] += 1
-                    else:
-                        count_dict[jk_idx_str] = 1
+                count_dict = dict()
+                if is_separate_count:
+                    for jk_idx in jk_idx_list_for_count:
+                        jk_idx_str = str(jk_blocking_func(i + 1, jk_idx))
+                        count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
+                else:
+                    for j in range(n):
+                        jk_idx_str = jk_idx_str_arr[i_local, j]
+                        count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
                 for j in range(n):
                     jk_idx_str = jk_idx_str_arr[i_local, j]
                     b_arr[i_local, j] = count_dict[jk_idx_str]
@@ -871,13 +885,18 @@ def mk_r_i_j_mat(
                 jk_idx_str = str(jk_idx)
                 jk_idx_str_arr[:, j] = jk_idx_str
                 jk_idx_str_set.add(jk_idx_str)
-                if jk_idx_str in count_dict:
-                    count_dict[jk_idx_str] += 1
-                else:
-                    count_dict[jk_idx_str] = 1
-            for j in range(n):
-                jk_idx_str = jk_idx_str_arr[0, j]
-                b_arr[:, j] = count_dict[jk_idx_str]
+                if not is_separate_count:
+                    count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
+            if is_separate_count:
+                for jk_idx in jk_idx_list_for_count:
+                    if jk_blocking_func is not None:
+                        jk_idx = jk_blocking_func(0, jk_idx)
+                    jk_idx_str = str(jk_idx)
+                    count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
+            if n_sample > 0:
+                for j in range(n):
+                    jk_idx_str = jk_idx_str_arr[0, j]
+                    b_arr[:, j] = count_dict[jk_idx_str]
     #
     set_jk_idx()
     if is_use_old_rand_alg == "v1":
@@ -919,13 +938,78 @@ def mk_r_i_j_mat(
                     garr = r_arr_dict[jk_idx_str]
                     r_arr[i_local, j] = garr[i]
         else:
-            for j in range(n):
-                jk_idx_str = jk_idx_str_arr[0, j]
-                garr = r_arr_dict[jk_idx_str]
-                r_arr[:, j] = garr
+            if n_sample > 0:
+                for j in range(n):
+                    jk_idx_str = jk_idx_str_arr[0, j]
+                    garr = r_arr_dict[jk_idx_str]
+                    r_arr[:, j] = garr[i_start:i_end]
     #
     set_r_arr()
     return r_arr, b_arr
+
+def get_distributed_range(total_size, id_node, num_node):
+    """
+    Return ``(i_start, i_end)``, the range of the ``total_size`` indices owned
+    by node ``id_node`` out of ``num_node`` nodes.\n
+    The ranges are contiguous, ordered by ``id_node``, cover
+    ``range(total_size)`` exactly once and differ in size by at most one::
+        i_start = (total_size * id_node) // num_node
+        i_end = (total_size * (id_node + 1)) // num_node
+    Concatenating the parts in the order of the nodes reproduces the whole
+    range, so ``np.concatenate(comm.allgather(x_local))`` is the complete
+    array when ``x_local = x[i_start:i_end]``.
+    """
+    assert isinstance(total_size, int_types)
+    assert 0 <= total_size
+    assert isinstance(id_node, int_types)
+    assert isinstance(num_node, int_types)
+    assert 0 <= id_node < num_node
+    i_start = (total_size * id_node) // num_node
+    i_end = (total_size * (id_node + 1)) // num_node
+    return i_start, i_end
+
+def is_mpi_dtype(dtype):
+    """
+    Return whether ``dtype`` is a numpy dtype that MPI can use to sum buffers,
+    i.e. a dtype supported by ``MPI.SUM``, like the ones used by
+    ``g_mk_jk_distributed``.
+    """
+    dtype = np.dtype(dtype)
+    if dtype.kind == "f":
+        return dtype.itemsize in (4, 8)
+    if dtype.kind == "c":
+        return dtype.itemsize in (8, 16)
+    if dtype.kind in ("i", "u"):
+        return dtype.itemsize in (1, 2, 4, 8)
+    return False
+
+def get_collective_comm(tag):
+    """
+    Return ``(comm, id_node, num_node)`` for a collective MPI operation.\n
+    ``tag`` names the caller for the error messages, e.g.
+    ``"rjackknife: is_sync_node=True"``.\n
+    ``qlat`` (used for ``q.get_comm()``) is imported only here.  The
+    communicator must be initialized on the whole MPI communicator, i.e. with
+    ``q.begin_with_mpi()``, ``q.begin_with_gpt()`` or ``q.begin_with_grid()``
+    (or set with ``q.set_comm(...)``), so that
+    ``comm.rank == q.get_id_node()`` and ``comm.size == q.get_num_node()``.
+    """
+    import qlat
+    #
+    comm = qlat.get_comm()
+    if comm is None:
+        raise Exception(
+            f"{tag} requires the qlat communicator;"
+            " use q.begin_with_mpi(), q.begin_with_gpt() or"
+            " q.begin_with_grid() (or set it with q.set_comm(...))"
+        )
+    if comm.size != qlat.get_num_node():
+        raise Exception(
+            f"{tag} requires qlat to be initialized"
+            f" on the whole MPI communicator, but comm.size={comm.size} and"
+            f" q.get_num_node()={qlat.get_num_node()}"
+        )
+    return comm, comm.rank, comm.size
 
 @q.timer
 def rjackknife(
@@ -995,28 +1079,13 @@ def rjackknife(
     if is_sync_node:
         # Collective MPI operation: every node must call this function with the
         # same input.  ``qlat`` and ``mpi4py`` are imported only here.
-        import qlat
         from mpi4py import MPI
         #
-        comm = qlat.get_comm()
-        if comm is None:
-            raise Exception(
-                "rjackknife: is_sync_node=True requires the qlat communicator;"
-                " use q.begin_with_mpi(), q.begin_with_gpt() or"
-                " q.begin_with_grid() (or set it with q.set_comm(...))"
-            )
-        if comm.size != qlat.get_num_node():
-            raise Exception(
-                f"rjackknife: is_sync_node=True requires qlat to be initialized"
-                f" on the whole MPI communicator, but comm.size={comm.size} and"
-                f" q.get_num_node()={qlat.get_num_node()}"
-            )
-        id_node, num_node = comm.rank, comm.size
+        comm, id_node, num_node = get_collective_comm("rjackknife: is_sync_node=True")
     else:
         comm = None
         id_node, num_node = 0, 1
-    i_start = (n_rand_sample * id_node) // num_node
-    i_end = (n_rand_sample * (id_node + 1)) // num_node
+    i_start, i_end = get_distributed_range(n_rand_sample, id_node, num_node)
     r_arr, b_arr = mk_r_i_j_mat(
         n_rand_sample,
         jk_idx_list,
@@ -1380,6 +1449,226 @@ def g_mk_jk(
         )
     else:
         assert False
+    return jk_arr
+
+@use_kwargs(default_g_jk_kwargs)
+@q.timer
+def g_mk_jk_distributed(
+    data_list,
+    jk_idx_list,
+    *,
+    avg=None,
+    jk_type,
+    all_jk_idx,
+    get_all_jk_idx,
+    n_rand_sample,
+    rng_state,
+    jk_blocking_func,
+    is_normalizing_rand_sample,
+    is_apply_rand_sample_jk_idx_blocking_shift,
+    is_use_old_rand_alg,
+    is_hash_jk_idx,
+    jk_idx_hash_size,
+    eps,
+    **_kwargs,
+):
+    r"""
+    Perform (randomized) Super-Jackknife with distributed input and distributed
+    output.\n
+    This is a collective MPI operation: every node must call it with the same
+    parameters.  ``qlat`` (used for ``q.get_comm()``) and ``mpi4py`` are
+    imported only here.\n
+    :param data_list: local part of the initial un-jackknifed data.
+    :param jk_idx_list: local indices that name the local ``data_list``.\n
+    The data set is the union of the local ``data_list`` of all the nodes; the
+    local parts must be disjoint and must cover the whole data set exactly
+    once.  No node needs to hold the whole data set and only the small
+    ``jk_idx`` metadata is gathered on every node.\n
+    The returned ``jk_arr`` is the local part of the (randomized)
+    Super-Jackknife data set, which has ``g_jk_size()`` samples in total.  The
+    samples are split between the nodes in the order of the nodes: node ``r``
+    out of ``num_node`` nodes holds the samples in
+    ``range(*get_distributed_range(g_jk_size(...), r, num_node))``, so that::
+        jk_arr = np.concatenate(q.get_comm().allgather(jk_local))
+    is the complete data set, in the same order as the one obtained with
+    ``g_mk_jk``.  A node holds an array with 0 samples when there are more
+    nodes than samples.\n
+    ``jk_type == "rjk"``: the ``n_rand_sample`` samples are split between the
+    nodes; every node computes the contribution of its own data to all the
+    samples and the partial results are combined with the ``Reduce_scatter``
+    of ``mpi4py`` on the communicator from ``q.get_comm()``.\n
+    ``jk_type == "super"``: the samples are the ``all_jk_idx`` entries (or the
+    hash based samples), split in the same way.\n
+    The result agrees with the one of ``g_mk_jk`` (and of
+    ``g_mk_jk(..., is_sync_node=True)``) up to the floating-point roundoff, but
+    not bit-for-bit: the average and the sums over the data set are reduced
+    across the nodes, which changes the order of the floating-point additions.\n
+    The ``is_sync_node`` setting of ``default_g_jk_kwargs`` is ignored: the
+    output of this function is always distributed.
+    """
+    from mpi4py import MPI
+    #
+    fname = "g_mk_jk_distributed"
+    comm, id_node, num_node = get_collective_comm(fname)
+    if n_rand_sample is None:
+        n_rand_sample = 1024
+    if rng_state is None:
+        rng_state = q.RngState("rejk")
+    assert len(data_list) == len(jk_idx_list)
+    if isinstance(data_list, np.ndarray):
+        dtype = data_list.dtype
+    else:
+        dtype = None
+    data_list_local = [d for d in data_list if d is not None]
+    jk_idx_list_local = [
+        jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None
+    ]
+    data_arr = np.array(data_list_local, dtype=dtype)
+    n_local = len(data_arr)
+    # the dtype and the element shape of the data; the lowest rank with data
+    # provides them, so that a node without any data still knows them
+    if n_local > 0:
+        elem_info = (data_arr.dtype.str, tuple(data_arr.shape[1:]))
+    else:
+        elem_info = None
+    elem_info = next(
+        (info for info in comm.allgather(elem_info) if info is not None), None
+    )
+    if elem_info is None:
+        raise Exception(f"{fname}: the distributed data set is empty")
+    dtype = np.dtype(elem_info[0])
+    elem_shape = tuple(elem_info[1])
+    if not is_mpi_dtype(dtype):
+        raise Exception(
+            f"{fname}: the data must have a dtype supported by MPI so that the"
+            f" partial results can be summed, but dtype={dtype}"
+        )
+    if n_local == 0:
+        data_arr = np.zeros((0,) + elem_shape, dtype=dtype)
+    else:
+        data_arr = np.asarray(data_arr, dtype=dtype)
+    n_arr = np.array([n_local], dtype=np.int64)
+    comm.Allreduce(MPI.IN_PLACE, n_arr, op=MPI.SUM)
+    n = int(n_arr[0])
+    #
+    # Only the small ``jk_idx`` metadata is gathered on every node.
+    jk_idx_list_glb = [
+        jk_idx
+        for jk_idx_list_node in comm.allgather(jk_idx_list_local)
+        for jk_idx in jk_idx_list_node
+    ]
+    #
+    if avg is None:
+        local_sum = np.asarray(np.sum(data_arr, axis=0))
+        glb_sum = np.zeros_like(local_sum)
+        comm.Allreduce(local_sum, glb_sum, op=MPI.SUM)
+        avg = filter_np_results(glb_sum / n)
+    #
+    if jk_type == "rjk":
+        total_size = 1 + n_rand_sample
+    elif jk_type == "super":
+        if all_jk_idx is None:
+            if get_all_jk_idx is None:
+                assert is_hash_jk_idx
+                all_jk_idx = [
+                    "avg",
+                ] + list(range(jk_idx_hash_size))
+            else:
+                all_jk_idx = get_all_jk_idx()
+        assert all_jk_idx[0] == "avg"
+        total_size = len(all_jk_idx)
+    else:
+        assert False
+    i_start, i_end = get_distributed_range(total_size, id_node, num_node)
+    n_local_out = i_end - i_start
+    #
+    # ``partial_arr`` holds the contribution of the local data to every sample
+    partial_arr = np.zeros((total_size,) + elem_shape, dtype=dtype)
+    if i_start == 0 and n_local_out > 0:
+        # the sample 0 is the average and must be counted only once
+        partial_arr[0] = avg
+    #
+    if jk_type == "rjk":
+        r_arr, b_arr = mk_r_i_j_mat(
+            n_rand_sample,
+            jk_idx_list_local,
+            rng_state,
+            jk_blocking_func=jk_blocking_func,
+            is_normalizing_rand_sample=is_normalizing_rand_sample,
+            is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
+            is_use_old_rand_alg=is_use_old_rand_alg,
+            i_range=(0, n_rand_sample),
+            jk_idx_list_for_count=jk_idx_list_glb,
+        )
+        n_b_arr = n - b_arr
+        n_b_arr[n <= b_arr] = 1
+        fac_arr = -eps / np.sqrt(n * n_b_arr)
+        fac_arr[n <= b_arr] = 0
+        fac_r_arr = fac_arr * r_arr
+        pad_shape = (1,) * len(elem_shape)
+        fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
+        data_diff = data_arr - avg
+        partial_arr[1:] = np.sum(fac_r_arr * data_diff, axis=1)
+    elif jk_type == "super":
+        n_super_sample = total_size - 1
+        if jk_blocking_func is None:
+            b_jk_idx_list_local = jk_idx_list_local
+            b_jk_idx_list_glb = jk_idx_list_glb
+        else:
+            b_jk_idx_list_local = [
+                jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_local
+            ]
+            b_jk_idx_list_glb = [
+                jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list_glb
+            ]
+        i_dict = dict()
+        for i, jk_idx in enumerate(all_jk_idx):
+            i_dict[str(jk_idx)] = i
+        rs = rng_state
+        #
+        def get_i(jk_idx):
+            jk_idx_str = str(jk_idx)
+            if jk_idx_str in i_dict:
+                i = i_dict[jk_idx_str]
+            else:
+                assert is_hash_jk_idx
+                i = 1 + int(rs.split(jk_idx_str).rand_gen() % n_super_sample)
+            assert i > 0
+            return i
+        #
+        count_dict = dict()
+        for jk_idx in b_jk_idx_list_glb:
+            i = get_i(jk_idx)
+            count_dict[i] = count_dict.get(i, 0) + 1
+        data_diff = data_arr - avg
+        for j in range(n_local):
+            i = get_i(b_jk_idx_list_local[j])
+            count = count_dict[i]
+            if n > count:
+                fac = -eps * np.sqrt(1 / (n * (n - count)))
+                partial_arr[i] += fac * data_diff[j]
+    else:
+        assert False
+    #
+    # every node keeps its own samples, which are the ``recvcounts[id_node]``
+    # elements of the sum over the nodes
+    elem_size = 1
+    for x in elem_shape:
+        elem_size *= x
+    recvcounts = []
+    for r in range(num_node):
+        r_start, r_end = get_distributed_range(total_size, r, num_node)
+        recvcounts.append((r_end - r_start) * elem_size)
+    jk_arr = np.empty((n_local_out,) + elem_shape, dtype=dtype)
+    comm.Reduce_scatter(
+        partial_arr.reshape(-1),
+        jk_arr.reshape(-1),
+        recvcounts,
+        op=MPI.SUM,
+    )
+    if n_local_out > 0 and i_end > 1:
+        # the samples are ``avg + sum_j (...)``; the sample 0 is ``avg`` itself
+        jk_arr[max(1 - i_start, 0) :] += avg
     return jk_arr
 
 @use_kwargs(default_g_jk_kwargs)
