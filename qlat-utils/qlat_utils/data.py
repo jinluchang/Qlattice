@@ -1802,23 +1802,55 @@ def g_mk_jk(
     **_kwargs,
 ):
     """
-    Perform (randomized) Super-Jackknife for the Jackknife data set.\n
-    :param data_list: initial un-jackknifed data.
-    :param jk_idx_list: should be list of indices that names the ``data_list``.
-    :param is_sync_node: if True, assume this is a collective operation in a
-        MPI program where every node have the same input.  The operation is
-        then parallelized over the MPI nodes with ``g_mk_jk_sync_node``, which
-        splits the input between the nodes and calls
-        ``g_mk_jk_distributed``; every node obtains the same complete result,
-        which agrees with the ``is_sync_node=False`` result up to the
-        floating-point roundoff.  Both ``jk_type == "rjk"`` and
-        ``jk_type == "super"`` are supported.
-    :return: (randomized) Super-Jackknife data set.\n
-    Note that::\n
-        ``len(data_list) == len(jk_idx_list)``
-        ``jk_idx_list = [(job_tag, traj,) for traj in traj_list]``\n
-    If the ``data_list`` is actually already jackknifed,
-    we can set ``eps`` to be factor ``len(data_list)`` larger.
+    Create a (randomized) Super-Jackknife data set from un-jackknifed data.\n
+    ``jk_arr[0]`` is the average of the data and ``jk_arr[1:]`` are the
+    resampled values, from which the error is estimated with ``g_jk_avg_err``.
+    The data set has ``g_jk_size()`` samples, i.e. ``1 + n_rand_sample`` for
+    ``jk_type == "rjk"`` and ``1 + len(all_jk_idx)`` for
+    ``jk_type == "super"``, and its dtype is the dtype of the data.\n
+    :param data_list: the un-jackknifed data, a list or ``np.ndarray`` of
+        values (each value being a ``float``, a ``complex`` or an
+        ``np.ndarray``); ``None`` entries are ignored.  For the collective MPI
+        variants below the data must have a dtype supported by MPI.
+    :param jk_idx_list: the indices that name the entries of ``data_list``,
+        with ``len(jk_idx_list) == len(data_list)``, usually
+        ``jk_idx_list = [(job_tag, traj,) for traj in traj_list]``.  The
+        indices are mapped to the jackknife blocks by ``jk_blocking_func``
+        (see ``jk_blocking_func_default``, ``block_size`` and
+        ``block_size_dict``).
+    :param avg: the average of the data; when ``None`` (the default) it is
+        computed from ``data_list``.  Pass a precomputed value to reuse it (it
+        must be the average of the whole data set).
+    :param is_sync_node: when ``True``, the operation is performed by
+        ``g_mk_jk_sync_node``, i.e. as a collective MPI operation in which
+        every node holds the whole data set, every node must call this function
+        with the same parameters, and every node obtains the complete
+        ``jk_arr``.  Use ``g_mk_jk_distributed`` instead when the data set
+        itself is split between the nodes.  Both ``jk_type`` values are
+        supported; the result agrees with the ``is_sync_node=False`` result up
+        to the floating-point roundoff.
+    :return: the (randomized) Super-Jackknife data set ``jk_arr``.\n
+    The other keyword parameters are the entries of ``default_g_jk_kwargs``,
+    which supplies their defaults; set them there, pass them explicitly or use
+    the ``q.JkKwargs(...)`` context manager.  The most commonly used are:\n
+    - ``jk_type``: ``"rjk"`` (the default) or ``"super"``.
+    - ``eps`` (default ``1``): the overall scale of the fluctuations; when the
+      data is already jackknifed, multiply it by ``len(data_list)``.
+    - ``n_rand_sample`` (default ``1024``): the number of random samples of
+      ``"rjk"``.
+    - ``is_normalizing_rand_sample``,
+      ``is_apply_rand_sample_jk_idx_blocking_shift`` and
+      ``is_use_old_rand_alg``: options of the random numbers of ``"rjk"``.
+    - ``is_hash_jk_idx``, ``jk_idx_hash_size``, ``all_jk_idx`` and
+      ``get_all_jk_idx``: the samples of ``"super"``.
+    - ``block_size``, ``block_size_dict`` and ``jk_blocking_func``: the
+      jackknife blocks.
+    - ``rng_state``: the random numbers of ``"rjk"``.\n
+    See ``rjackknife`` and ``sjackknife`` for the formulas, and
+    ``docs/qlat-utils/qlat_data.md`` for the full documentation.\n
+    Example::
+        jk_arr = q.g_mk_jk(data_list, jk_idx_list)
+        avg, err = q.g_jk_avg_err(jk_arr)
     """
     if is_sync_node:
         # Collective MPI operation where every node has the same input: only a
@@ -1894,39 +1926,59 @@ def g_mk_jk_distributed(
     eps,
     **_kwargs,
 ):
-    r"""
-    Perform (randomized) Super-Jackknife with distributed input and distributed
-    output.\n
+    """
+    Create a (randomized) Super-Jackknife data set when the data set itself is
+    split between the MPI nodes.\n
     This is a collective MPI operation: every node must call it with the same
-    parameters.  ``qlat`` (used for ``q.get_comm()``) and ``mpi4py`` are
-    imported only here.\n
-    :param data_list: local part of the initial un-jackknifed data.
-    :param jk_idx_list: local indices that name the local ``data_list``.\n
-    The data set is the union of the local ``data_list`` of all the nodes; the
-    local parts must be disjoint and must cover the whole data set exactly
-    once.  No node needs to hold the whole data set and only the small
-    ``jk_idx`` metadata is gathered on every node.\n
-    The returned ``jk_arr`` is the local part of the (randomized)
-    Super-Jackknife data set, which has ``g_jk_size()`` samples in total.  The
-    samples are split between the nodes in the order of the nodes: node ``r``
-    out of ``num_node`` nodes holds the samples in
-    ``range(*get_distributed_range(g_jk_size(...), r, num_node))``, so that::
+    parameters and with its own disjoint part of the data set, and every node
+    returns its own part of the result.  The split of the data set between the
+    nodes is free as long as the local parts are disjoint and cover the whole
+    data set exactly once (``get_distributed_range(len(data_list), ...)`` is a
+    convenient balanced split); no node needs to hold the whole data set, the
+    whole random matrix or the whole result, and only the small ``jk_idx``
+    metadata is gathered on every node.\n
+    The returned ``jk_arr`` is the local part of the data set, which has
+    ``g_jk_size()`` samples in total.  The samples are split between the nodes
+    in the order of the nodes, independently of the split of the input: node
+    ``r`` out of ``num_node`` nodes holds the samples in
+    ``range(*get_distributed_range(g_jk_size(...), r, num_node))`` (a node
+    holds 0 samples when there are more nodes than samples), so that::
         jk_arr = np.concatenate(q.get_comm().allgather(jk_local))
     is the complete data set, in the same order as the one obtained with
-    ``g_mk_jk``.  A node holds an array with 0 samples when there are more
-    nodes than samples.\n
-    ``jk_type == "rjk"``: dispatches to ``rjackknife_distributed``; the
-    ``n_rand_sample`` samples are split between the nodes and every node
-    computes the contribution of its own data to all the samples.\n
-    ``jk_type == "super"``: dispatches to ``sjackknife_distributed``; the
-    samples are the ``all_jk_idx`` entries (or the hash based samples), split
-    in the same way.\n
+    ``g_mk_jk``.\n
+    ``jk_type == "rjk"`` calls ``rjackknife_distributed`` (the random samples
+    are split between the nodes and every node computes the contribution of
+    its own data to all of them); ``jk_type == "super"`` calls
+    ``sjackknife_distributed`` (the samples are the ``all_jk_idx`` entries, or
+    the hash based samples).\n
+    Requires qlat to be initialized on the whole MPI communicator, i.e. with
+    ``q.begin_with_mpi()``, ``q.begin_with_gpt()`` or ``q.begin_with_grid()``
+    (or ``q.set_comm(...)``), and the data must have a dtype supported by MPI.\n
     The result agrees with the one of ``g_mk_jk`` (and of
     ``g_mk_jk(..., is_sync_node=True)``) up to the floating-point roundoff, but
     not bit-for-bit: the average and the sums over the data set are reduced
-    across the nodes, which changes the order of the floating-point additions.\n
-    The ``is_sync_node`` setting of ``default_g_jk_kwargs`` is ignored: the
-    output of this function is always distributed.
+    across the nodes, which changes the order of the floating-point additions.
+    The ``is_sync_node`` entry of ``default_g_jk_kwargs`` is ignored, since the
+    output of this function is always distributed.\n
+    :param data_list: the local part of the un-jackknifed data.
+    :param jk_idx_list: the indices that name the local ``data_list``, with
+        ``len(jk_idx_list) == len(data_list)``.
+    :param avg: the average of the whole data set, the same on every node; when
+        ``None`` (the default) it is computed from the data set by summing the
+        local contributions over the nodes with ``Allreduce``.
+    :return: the local part of the (randomized) Super-Jackknife data set (an
+        array with 0 samples on a node which owns no sample).\n
+    The other keyword parameters, including ``jk_type`` and ``eps``, are the
+    same as for ``g_mk_jk``; their defaults are the entries of
+    ``default_g_jk_kwargs``.  See ``g_mk_jk`` for the description of the
+    entries.\n
+    Example::
+        comm = q.get_comm()
+        i_start, i_end = q.get_distributed_range(len(data_list), comm.rank, comm.size)
+        jk_local = q.g_mk_jk_distributed(
+            data_list[i_start:i_end], jk_idx_list[i_start:i_end],
+        )
+        jk_arr = np.concatenate(comm.allgather(jk_local))
     """
     if jk_type == "super":
         jk_arr = sjackknife_distributed(
@@ -1979,22 +2031,44 @@ def g_mk_jk_sync_node(
     eps,
     **_kwargs,
 ):
-    r"""
-    Perform (randomized) Super-Jackknife as a collective MPI operation where
-    every node has the same (whole) input and obtains the same complete
-    result.\n
-    This implements the ``is_sync_node=True`` option of ``g_mk_jk``: the input,
-    which every node holds in full, is split between the nodes in the order of
-    the nodes and ``rjackknife_sync_node`` or ``sjackknife_sync_node`` is
-    called on the local parts, so that every node obtains the complete
-    ``jk_arr``, in the same order as the one obtained with ``g_mk_jk`` on a
-    single node.\n
-    Both ``jk_type == "rjk"`` and ``jk_type == "super"`` are supported.  See
-    ``g_mk_jk_distributed`` for the meaning of the parameters.\n
-    The result agrees with the one of ``g_mk_jk`` up to the floating-point
+    """
+    Create a (randomized) Super-Jackknife data set as a collective MPI
+    operation in which every node holds the whole input and obtains the whole
+    result.  This is what ``g_mk_jk(..., is_sync_node=True)`` calls.\n
+    Every node must call this function with the same parameters and with the
+    whole data set (``data_list`` and ``jk_idx_list`` are the complete lists);
+    every node then obtains the complete ``jk_arr``, in the same order as the
+    one obtained with ``g_mk_jk`` on a single node.  The input is split between
+    the nodes in the order of the nodes with ``get_distributed_range`` and the
+    local parts are computed by ``rjackknife_sync_node`` or
+    ``sjackknife_sync_node`` (which call ``rjackknife_distributed`` or
+    ``sjackknife_distributed``) and then gathered, so the work is parallelized
+    over the nodes even though every node starts with the whole data set.\n
+    Both ``jk_type == "rjk"`` and ``jk_type == "super"`` are supported.  The
+    result agrees with the one of ``g_mk_jk`` up to the floating-point
     roundoff, but not bit-for-bit: the average and the sums over the data set
-    are reduced across the nodes, which changes the order of the
-    floating-point additions.
+    are reduced across the nodes, which changes the order of the floating-point
+    additions.\n
+    Requires qlat to be initialized on the whole MPI communicator, i.e. with
+    ``q.begin_with_mpi()``, ``q.begin_with_gpt()`` or ``q.begin_with_grid()``
+    (or ``q.set_comm(...)``), and the data must have a dtype supported by MPI.\n
+    :param data_list: the whole un-jackknifed data, the same on every node.
+    :param jk_idx_list: the indices that name the whole ``data_list``, the same
+        on every node.
+    :param avg: the average of the whole data set, the same on every node; when
+        ``None`` (the default) it is computed from the data set by summing the
+        local contributions over the nodes with ``Allreduce``.
+    :return: the complete (randomized) Super-Jackknife data set ``jk_arr``, the
+        same on every node.\n
+    The other keyword parameters, including ``jk_type`` and ``eps``, are the
+    same as for ``g_mk_jk``; their defaults are the entries of
+    ``default_g_jk_kwargs``.  See ``g_mk_jk`` for the description of the
+    entries, and ``g_mk_jk_distributed`` for the case in which the data set is
+    split between the nodes instead.\n
+    Example::
+        jk_arr = q.g_mk_jk_sync_node(data_list, jk_idx_list)
+        # is equivalent to
+        jk_arr = q.g_mk_jk(data_list, jk_idx_list, is_sync_node=True)
     """
     if jk_type == "super":
         jk_arr = sjackknife_sync_node(
