@@ -13,6 +13,7 @@ py_files = files(
   'cache.py',
   'c.py',
   'data.py',
+  'jackknife_utils.py',
   'load_prop.py',
   'lru_cache.py',
   '__main__.py',

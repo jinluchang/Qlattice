@@ -19,6 +19,8 @@ from .utils_io import *
 
 from .data import *
 
+from .jackknife_utils import *
+
 from .qplot import *
 
 from .parallel import *

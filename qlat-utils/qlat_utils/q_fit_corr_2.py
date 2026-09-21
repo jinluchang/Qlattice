@@ -13,6 +13,7 @@ import numpy as np
 from .c import *
 from .utils import *
 from .data import *
+from .jackknife_utils import *
 from .parallel import *
 
 from .q_fit_corr import (

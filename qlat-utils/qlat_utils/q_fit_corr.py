@@ -12,6 +12,7 @@ import numpy as np
 from .c import *
 from .utils import *
 from .data import *
+from .jackknife_utils import *
 from .parallel import (
     get_q_num_mp_processes,
 )
