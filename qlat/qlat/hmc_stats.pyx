@@ -16,7 +16,10 @@ from . cimport everything as cc
 from .hmc cimport GaugeMomentum
 from .qcd cimport GaugeField
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        mk_file_dirs_info,
+    )
 
 def get_gm_force_magnitudes(GaugeMomentum gm_force, cc.Int n_elems):
     cdef cc.std_vector[cc.RealD] mag_vec = cc.get_gm_force_magnitudes(
