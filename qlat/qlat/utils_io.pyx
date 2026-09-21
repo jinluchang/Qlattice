@@ -15,7 +15,13 @@ from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import qlat_utils as q
+class q:
+    from qlat_utils import (
+        timer,
+        clean_cache,
+        get_time_budget,
+    )
+
 import numpy as np
 
 obtained_lock_history_list = []
