@@ -14,7 +14,12 @@ from . cimport everything as cc
 from qlat_utils.all cimport *
 cimport numpy
 import numpy as np
-import qlat_utils as q
+
+class q:
+    from qlat_utils import (
+        timer,
+    )
+
 from .field_selection cimport FieldSelection, PointsSelection
 from .field_types cimport FieldRealD, FieldComplexD
 from .selected_points_types cimport SelectedPointsRealD, SelectedPointsComplexD, SelectedPointsWilsonMatrix
