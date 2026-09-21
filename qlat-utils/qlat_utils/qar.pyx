@@ -10,7 +10,11 @@ Documentation: ``docs/qlat-utils/qlat_qar.md``\n
 
 from . cimport everything as cc
 
-from .timer import timer, get_id_node
+class q:
+    from .timer import (
+        timer,
+        get_id_node,
+    )
 
 ### ----------------------------------------------------------
 
@@ -357,7 +361,7 @@ cdef class QarFile:
 
 ### ----------------------------------------------------------
 
-@timer
+@q.timer
 def open_qar(const cc.std_string& path, const cc.std_string& mode):
     """
     Call QarFile(path, mode) with kwargs
@@ -370,7 +374,7 @@ def open_qar_info(*args, **kwargs):
     Call `open_qar` with same arguments if q.get_id_node() == 0.
     Otherwise return Gobble(), which does nothing for any method and returns it self.
     """
-    if get_id_node() == 0:
+    if q.get_id_node() == 0:
         return open_qar(*args, **kwargs)
     else:
         return Gobble()
@@ -413,28 +417,28 @@ def does_regular_file_exist_qar(const cc.std_string& path):
 def does_file_exist_qar(const cc.std_string& path):
     return cc.does_file_exist_qar(path)
 
-@timer
+@q.timer
 def qar_build_index(const cc.std_string& path_qar):
     """
     create "path_qar.idx" file
     """
     cc.qar_build_index(path_qar)
 
-@timer
+@q.timer
 def qar_create(const cc.std_string& path_qar, const cc.std_string& path_folder,
                *, const cc.bool is_remove_folder_after=False):
     return cc.qar_create(path_qar, path_folder, is_remove_folder_after)
 
-@timer
+@q.timer
 def qar_extract(const cc.std_string& path_qar, const cc.std_string& path_folder,
                 *, const cc.bool is_remove_qar_after=False):
     return cc.qar_extract(path_qar, path_folder, is_remove_qar_after)
 
-@timer
+@q.timer
 def qcopy_file(const cc.std_string& path_src, const cc.std_string& path_dst):
     return cc.qcopy_file(path_src, path_dst)
 
-@timer
+@q.timer
 def list_qar(const cc.std_string& path_qar):
     cdef list l = cc.list_qar(path_qar)
     return [ <str>fn for fn in l ]
@@ -475,24 +479,24 @@ def compute_crc32(const cc.std_string& path):
 
 ### ----------------------------------------------------------
 
-@timer
+@q.timer
 def qar_build_index_info(const cc.std_string& path_qar):
     """
     create "path_qar.idx" file (only on node 0)
     """
     cc.qar_build_index_info(path_qar)
 
-@timer
+@q.timer
 def qar_create_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
                *, const cc.Bool is_remove_folder_after=False):
     return cc.qar_create_info(path_qar, path_folder, is_remove_folder_after)
 
-@timer
+@q.timer
 def qar_extract_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
                 *, const cc.Bool is_remove_qar_after=False):
     return cc.qar_extract_info(path_qar, path_folder, is_remove_qar_after)
 
-@timer
+@q.timer
 def qcopy_file_info(const cc.std_string& path_src, const cc.std_string& path_dst):
     return cc.qcopy_file_info(path_src, path_dst)
 
@@ -528,19 +532,19 @@ def does_file_exist_qar_sync_node(const cc.std_string& path):
     """
     return cc.does_file_exist_qar_sync_node(path)
 
-@timer
+@q.timer
 def qar_create_sync_node(
     const cc.std_string& path_qar, const cc.std_string& path_folder,
     *, const cc.Bool is_remove_folder_after=False,
 ):
     return cc.qar_create_sync_node(path_qar, path_folder, is_remove_folder_after)
 
-@timer
+@q.timer
 def qar_extract_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
                 *, const cc.Bool is_remove_qar_after=False):
     return cc.qar_extract_sync_node(path_qar, path_folder, is_remove_qar_after)
 
-@timer
+@q.timer
 def qcopy_file_sync_node(const cc.std_string& path_src, const cc.std_string& path_dst):
     return cc.qcopy_file_sync_node(path_src, path_dst)
 
