@@ -18,9 +18,19 @@ from .qcd cimport GaugeField
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
-from .hmc import set_gm_force, gf_evolve
-from .wilson_flow import gf_wilson_flow_step, gf_energy_density_field, gf_energy_derivative_density_field
-import qlat_utils as q
+class q:
+    from .hmc import (
+        set_gm_force,
+        gf_evolve,
+    )
+    from .wilson_flow import (
+        gf_wilson_flow_step,
+        gf_energy_density_field,
+        gf_energy_derivative_density_field,
+    )
+    from qlat_utils import (
+        timer,
+    )
 
 @q.timer
 def gf_plaq_action_density_field(GaugeField gf):
