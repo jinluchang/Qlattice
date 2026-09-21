@@ -13,8 +13,6 @@ Documentation: ``docs/qlat/qlat_gauge_action.md``\n
 from qlat_utils.all cimport *
 from . cimport everything as cc
 
-import qlat_utils as q
-
 cdef class GaugeAction:
 
     def __cinit__(self):
