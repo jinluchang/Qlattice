@@ -3,6 +3,11 @@
 # Tests for q.free_scalar_invert, q.free_scalar_mom_invert,
 # q.free_scalar_deriv_mom and q.free_scalar_invert_deriv.
 #
+# free_scalar_deriv_mom multiplies a momentum-space field by
+#     prod_mu [ (-4 sin^2(k_mu/2))^m (i sin(k_mu))^e ],  deriv[mu] = 2 m + e,
+# i.e. the even orders are the laplacian powers (unchanged) while the leftover
+# odd order is one symmetric (central) difference factor i sin(k_mu).
+#
 # free_scalar_invert(src, mass) must solve the free lattice scalar
 # equation
 #     (4 sinh^2(mass/2) - laplacian) sol = src
@@ -122,43 +127,38 @@ def mk_signed_index(latt_size, i):
 
 def mk_k_axis(latt_size, momtwist, i):
     # k_i = 2 pi ( smod(n_i, L_i) + momtwist_i ) / L_i
-    return (
-        2.0
-        * np.pi
-        * (mk_signed_index(latt_size, i) + momtwist[i])
-        / latt_size[i]
-    )
+    return 2.0 * np.pi * (mk_signed_index(latt_size, i) + momtwist[i]) / latt_size[i]
 
 def mk_deriv_factor(latt_size, deriv, momtwist):
-    # independent reference: prod_mu d_mu^{deriv[mu]} with
-    # d_mu = 2 i sin(k_mu / 2); an odd deriv[mu] drops the self-conjugate
-    # momentum k_mu = pi
+    # independent reference: prod_mu [ (-4 sin^2(k_mu/2))^m (i sin(k_mu))^e ]
+    # with deriv[mu] = 2 m + e.  The even part is the laplacian power (minus
+    # the mu term of D(k)) and the leftover odd factor is the central
+    # difference, which vanishes at the self-conjugate momentum k_mu = pi
     fac = np.ones(latt_size, dtype=np.complex128)
     for i in range(4):
         n_signed = mk_signed_index(latt_size, i)
-        d = 2.0j * np.sin(mk_k_axis(latt_size, momtwist, i) / 2.0)
-        if deriv[i] % 2 == 1:
-            is_edge = np.abs(2.0 * (n_signed + momtwist[i])) == latt_size[i]
-            d = np.where(is_edge, 0.0, d)
+        k = mk_k_axis(latt_size, momtwist, i)
         shape = [1, 1, 1, 1]
         shape[i] = latt_size[i]
-        fac = fac * d.reshape(shape) ** deriv[i]
+        d_even = (-4.0 * np.sin(k / 2.0) ** 2).reshape(shape)
+        is_edge = np.abs(2.0 * (n_signed + momtwist[i])) == latt_size[i]
+        d_odd = np.where(is_edge, 0.0, 1.0j * np.sin(k)).reshape(shape)
+        n = int(deriv[i])
+        for _ in range(n // 2):
+            fac = fac * d_even
+        if n % 2 == 1:
+            fac = fac * d_odd
     return fac
 
 def mk_self_conjugate_mask(latt_size, mu, momtwist):
-    # True at the self-conjugate momentum k_mu = pi, where the sign of
-    # 2 i sin(k_mu / 2) is ambiguous
-    edge = np.abs(2.0 * (mk_signed_index(latt_size, mu) + momtwist[mu])) == latt_size[mu]
+    # True at the self-conjugate momentum k_mu = pi, where the odd (central
+    # difference) factor i sin(k_mu) vanishes
+    edge = (
+        np.abs(2.0 * (mk_signed_index(latt_size, mu) + momtwist[mu])) == latt_size[mu]
+    )
     shape = [1, 1, 1, 1]
     shape[mu] = latt_size[mu]
     return np.broadcast_to(edge.reshape(shape), latt_size)
-
-def mk_half_shift_phase(latt_size, momtwist, mu):
-    # exp( i k_mu / 2 ), the phase relating d_mu to the forward difference
-    k = mk_k_axis(latt_size, momtwist, mu)
-    shape = [1, 1, 1, 1]
-    shape[mu] = latt_size[mu]
-    return np.broadcast_to(np.exp(0.5j * k).reshape(shape), latt_size).copy()
 
 q.begin_with_mpi(size_node_list)
 
@@ -270,11 +270,13 @@ q.json_results_append(
 )
 
 # --- free_scalar_deriv_mom: the bare lattice derivative factor in momentum
-#     space, d_mu(k) = 2 i sin(k_mu / 2).  It is checked against (i) an
-#     independent momentum-space DFT reference, (ii) the local forward
-#     difference through the identity d_mu = exp(-i k_mu/2) (exp(i k_mu) - 1),
-#     and (iii) the second derivative, which is minus the mu term of the
-#     lattice laplacian because d_mu^2 = -4 sin^2(k_mu / 2).
+#     space.  Each order deriv[mu] = 2 m + e is split into the laplacian power
+#     (-4 sin^2(k_mu/2))^m (e = 0) and, for the leftover odd order, one
+#     symmetric (central) difference factor i sin(k_mu).  It is checked against
+#     (i) an independent momentum-space DFT reference, (ii) the local central
+#     difference in position space, and (iii) the second derivative, which is
+#     minus the mu term of the lattice laplacian because the even part is
+#     unchanged.
 zero_twist = [0.0, 0.0, 0.0, 0.0]
 src_mom_arr = np.fft.fftn(src_arr) / np.sqrt(np.prod(latt_size))
 
@@ -295,6 +297,7 @@ deriv_cases = [
     ("dt", [0, 0, 0, 1], zero_twist),
     ("dx dy", [1, 1, 0, 0], zero_twist),
     ("dx twist", [1, 0, 0, 0], momtwist_list),
+    ("dx3", [3, 0, 0, 0], zero_twist),
 ]
 deriv_out = {}
 for tag, deriv, twist_list in deriv_cases:
@@ -314,8 +317,8 @@ q.json_results_append(
     check_eps,
 )
 
-# self-conjugate momentum k_mu = pi: the two branches of 2 i sin(k_mu/2)
-# differ by a sign, so it is dropped for odd orders and kept for even orders
+# self-conjugate momentum k_mu = pi: the odd factor i sin(k_mu) vanishes there,
+# so the mode is dropped for odd orders and kept for even orders
 for mu, tag in [(0, "d0"), (3, "d3")]:
     edge_mask = mk_self_conjugate_mask(latt_size, mu, zero_twist)
     assert bool(np.any(edge_mask)), "no self-conjugate momentum on this lattice"
@@ -337,25 +340,23 @@ for mu, tag in [(0, "d0"), (3, "d3")]:
         f"free-scalar-invert: deriv {tag}^2 keeps self-conjugate mode = {err_even_edge < check_eps}"
     )
 
-# local check: exp(+i k_mu/2) d_mu = exp(i k_mu) - 1 is the forward difference
-# (the self-conjugate mode is dropped for the odd derivative, so it is masked)
+# local check: the odd factor i sin(k_mu) is the central difference
+# (f(x+1) - f(x-1)) / 2 in the mu direction
 for mu in [0, 3]:
     deriv = [0, 0, 0, 0]
     deriv[mu] = 1
     f_mom = fft_f * src
     q.free_scalar_deriv_mom(f_mom, deriv)
-    out_mom_arr = get_global_arr(geo, f_mom)
-    fw_arr = np.roll(src_arr, -1, axis=mu) - src_arr
-    fw_mom_arr = np.fft.fftn(fw_arr) / np.sqrt(np.prod(latt_size))
-    lhs_arr = mk_half_shift_phase(latt_size, zero_twist, mu) * out_mom_arr
-    keep_mask = 1.0 - mk_self_conjugate_mask(latt_size, mu, zero_twist)
-    err_fw = float(np.max(np.abs((lhs_arr - fw_mom_arr) * keep_mask)))
-    assert err_fw < check_eps, (mu, err_fw)
+    out_arr = get_global_arr(geo, fft_b * f_mom)
+    cd_arr = 0.5 * (np.roll(src_arr, -1, axis=mu) - np.roll(src_arr, 1, axis=mu))
+    err_cd = float(np.max(np.abs(out_arr - cd_arr)))
+    assert err_cd < check_eps, (mu, err_cd)
     q.json_results_append(
-        f"free-scalar-invert: deriv d{mu} is forward difference = {err_fw < check_eps}"
+        f"free-scalar-invert: deriv d{mu} is central difference = {err_cd < check_eps}"
     )
 
-# local check: d_mu^2 = -4 sin^2(k_mu/2) is minus the mu term of the laplacian
+# local check: the even order deriv[mu] = 2 is unchanged and equals minus the
+# mu term of the lattice laplacian
 for mu in [0, 3]:
     deriv = [0, 0, 0, 0]
     deriv[mu] = 2
@@ -414,9 +415,7 @@ q.json_results_append(
 )
 
 # mode_fft=0 must agree with the default mode_fft=1
-sol_invert_deriv0 = q.free_scalar_invert_deriv(
-    src, mass, deriv=deriv_dx, mode_fft=0
-)
+sol_invert_deriv0 = q.free_scalar_invert_deriv(src, mass, deriv=deriv_dx, mode_fft=0)
 err_invert_deriv0 = float(
     np.max(np.abs(get_global_arr(geo, sol_invert_deriv0) - sol_invert_deriv_arr))
 )

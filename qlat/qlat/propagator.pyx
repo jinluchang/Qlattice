@@ -517,17 +517,21 @@ def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None):
     Apply a lattice derivative in momentum space, in-place.\n
     `f` is assumed to already be in momentum space (e.g. the output of a
     normalizing forward FFT).  `deriv` gives the derivative order for each
-    direction `x, y, z, t` and the field is multiplied by\n
-        prod_mu ( 2 i sin(k_mu / 2) )^{deriv[mu]}\n
+    direction `x, y, z, t`, `deriv[mu] = 2 m + e` with `e` in `{0, 1}`, and the
+    field is multiplied by\n
+        prod_mu [ ( -4 sin^2(k_mu / 2) )^m ( i sin(k_mu) )^e ]\n
     with `k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu`.\n
+    The even part `-4 sin^2(k_mu / 2)` is minus the `mu` term of the `D(k)` used
+    by `free_scalar_mom_invert`, so even derivative orders are unchanged (in
+    particular `deriv[mu] = 2` is exactly minus the `mu` term of the
+    laplacian).  The leftover odd factor `i sin(k_mu)` is the symmetric
+    (central) difference factor.\n
     This is the bare derivative factor: it contains no mass and no `1 / D(k)`.
     Compose it with `free_scalar_mom_invert` to differentiate the free scalar
-    inverse; the two factors commute.  Note `d_mu^2 = -4 sin^2(k_mu / 2)`, i.e.
-    minus the mu term of the `D(k)` used by `free_scalar_mom_invert`.\n
-    At the self-conjugate momentum `k_mu = pi` the two branches of
-    `2 i sin(k_mu / 2)` differ by a sign.  For an odd `deriv[mu]` that sign is
-    ambiguous, so that mode is dropped (`d_mu = 0`); for an even `deriv[mu]`
-    the sign squares out and the mode is kept.\n
+    inverse; the two factors commute.\n
+    At the self-conjugate momentum `k_mu = pi` the odd factor `i sin(k_mu)`
+    vanishes; it is set to exactly `0` there, so that mode is dropped for an
+    odd `deriv[mu]`.  For an even `deriv[mu]` the mode is kept.\n
     `deriv=None` is equivalent to `[0, 0, 0, 0]` and leaves `f` unchanged.
     """
     cdef cc.vector[cc.Int] deriv_vec = cc.vector[cc.Int]()

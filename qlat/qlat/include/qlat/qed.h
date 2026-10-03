@@ -261,20 +261,28 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
                                   const array<Int, DIMN>& deriv_order,
                                   const CoordinateD& momtwist)
 // f is in momentum space.
-// f(k) <- [ prod_mu d_mu(k)^{deriv_order[mu]} ] f(k)
-// d_mu(k) = 2 ii sin(k_mu / 2),  k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu )
-// / L_mu.
+// f(k) <- [ prod_mu g_mu(k)^{deriv_order[mu]} ] f(k),
+// with k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu.
+//
+// Each derivative order is split into an even and an odd part,
+// deriv_order[mu] = 2 m + e with e in {0, 1}, and the factor is
+//   g_mu(k)^{2 m} = ( 2 ii sin(k_mu / 2) )^{2 m} = ( -4 sin^2(k_mu / 2) )^m,
+//   g_mu(k)^{1}   = ii sin(k_mu)                                       (e = 1).
+//
+// The even part is unchanged: -4 sin^2(k_mu / 2) is minus the mu term of the
+// D(k) used by free_scalar_mom_invert, so even derivative orders (in
+// particular deriv_order[mu] = 2) remain the laplacian powers.  The leftover
+// odd factor is the symmetric (central) difference factor ii sin(k_mu).
+//
+// At the self-conjugate momentum k_mu = pi ( smod(n_mu, L_mu) + momtwist_mu =
+// +- L_mu / 2 ) the odd factor ii sin(k_mu) vanishes identically; it is set to
+// exactly 0 there, so that mode is dropped for odd derivative orders.  For an
+// even deriv_order[mu] the mode is kept, so the even part
+// ( -4 sin^2(k_mu / 2) )^m is minus the mu term of the D(k) used by
+// free_scalar_mom_invert, to the m-th power.
 //
 // The bare lattice derivative factor, with no mass and no 1 / D(k).  It is
 // meant to be composed with free_scalar_mom_invert, which commutes with it.
-//
-// At the self-conjugate momentum k_mu = pi ( smod(n_mu, L_mu) + momtwist_mu =
-// +- L_mu / 2 ) the two branches of 2 ii sin(k_mu / 2) under k_mu -> k_mu + 2
-// pi differ by a sign.  For an odd deriv_order[mu] that sign is ambiguous, so
-// d_mu is set to 0 there and the mode is dropped.  For an even
-// deriv_order[mu] the sign squares out and the mode is kept, so that
-// d_mu^2 = -4 sin^2(k_mu / 2) is minus the mu term of the D(k) used by
-// free_scalar_mom_invert.
 {
   TIMER("free_scalar_deriv_mom");
   const Geometry& geo = f.geo();
@@ -286,16 +294,19 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
     for (Int i = 0; i < DIMN; i++) {
       kg[i] = smod(kg[i], total_site[i]);
       const RealD kk = 2.0 * PI * (kg[i] + momtwist[i]) / (RealD)total_site[i];
-      ComplexD d = ComplexD(0.0, 2.0 * std::sin(kk / 2.0));
-      if (0 != deriv_order[i] % 2) {
-        const RealD rem2 = 2.0 * (kg[i] + momtwist[i]);
-        if (std::abs(rem2 - (RealD)total_site[i]) < 1.0e-12 ||
-            std::abs(rem2 + (RealD)total_site[i]) < 1.0e-12) {
-          d = ComplexD(0.0, 0.0);
-        }
+      const ComplexD d_even = -4.0 * sqr(std::sin(kk / 2.0));
+      ComplexD d_odd = ComplexD(0.0, std::sin(kk));
+      const RealD rem2 = 2.0 * (kg[i] + momtwist[i]);
+      if (std::abs(rem2 - (RealD)total_site[i]) < 1.0e-12 ||
+          std::abs(rem2 + (RealD)total_site[i]) < 1.0e-12) {
+        d_odd = ComplexD(0.0, 0.0);
       }
-      for (Int n = 0; n < deriv_order[i]; ++n) {
-        fac *= d;
+      const Int n = deriv_order[i];
+      for (Int m = 0; m < n / 2; ++m) {
+        fac *= d_even;
+      }
+      if (0 != n % 2) {
+        fac *= d_odd;
       }
     }
     Vector<ComplexD> v = f.get_elems(kl);

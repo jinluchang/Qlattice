@@ -49,6 +49,12 @@ def free_scalar_invert_deriv(src, mass, *, momtwist=None, mode_fft=1, deriv=None
     inverse `free_scalar_mom_invert`, and transforms back.  The derivative and
     the inverse commute, so this is the derivative of the free scalar inverse
     (equivalently the free scalar inverse of the derivative source).\n
+    Each order `deriv[mu] = 2 m + e` is split into the laplacian power
+    `( -4 sin^2(k_mu / 2) )^m` and, for an odd `deriv[mu]` (`e = 1`), one
+    symmetric (central) difference factor `i sin(k_mu)`; even orders are
+    unchanged.  In particular `deriv=[1, 0, 0, 0]` is the central difference in
+    the `x` direction, while `deriv=[2, 0, 0, 0]` is minus the `x` term of the
+    laplacian.\n
     `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result
     equals `free_scalar_invert(src, mass, ...)`.
     """
