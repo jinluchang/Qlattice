@@ -220,7 +220,7 @@ in let
   + lib.optionalString (opts.use-pypi != null) "-pypi"
   );
 
-  version-pypi = "1.16";
+  version-pypi = "1.17";
 
   options-list = [
     {}
