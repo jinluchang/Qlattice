@@ -512,37 +512,51 @@ def free_scalar_mom_invert(FieldComplexD f, mass, CoordinateD momtwist=None):
     cc.free_scalar_mom_invert(f.xx, mass, momtwist.xx)
 
 @q.timer
-def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None):
+def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None, *, even_deriv_kernel=None):
     """
     Apply a lattice derivative in momentum space, in-place.\n
     `f` is assumed to already be in momentum space (e.g. the output of a
     normalizing forward FFT).  `deriv` gives the derivative order for each
     direction `x, y, z, t`, `deriv[mu] = 2 m + e` with `e` in `{0, 1}`, and the
     field is multiplied by\n
-        prod_mu [ ( -4 sin^2(k_mu / 2) )^m ( i sin(k_mu) )^e ]\n
+        prod_mu [ d_even(k_mu)^m ( i sin(k_mu) )^e ]\n
     with `k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu`.\n
-    The even part `-4 sin^2(k_mu / 2)` is minus the `mu` term of the `D(k)` used
-    by `free_scalar_mom_invert`, so even derivative orders are unchanged (in
-    particular `deriv[mu] = 2` is exactly minus the `mu` term of the
-    laplacian).  The leftover odd factor `i sin(k_mu)` is the symmetric
-    (central) difference factor.\n
+    The leftover odd factor `i sin(k_mu)` is the symmetric (central) difference
+    factor.  `even_deriv_kernel` selects the even kernel `d_even`:\n
+    - `"half"` (the default, also `None`): `d_even = ( 2 i sin(k_mu / 2) )^2 =
+      -4 sin^2(k_mu / 2)`, which is minus the `mu` term of the `D(k)` used by
+      `free_scalar_mom_invert`, so even derivative orders are the laplacian
+      powers (in particular `deriv[mu] = 2` is exactly minus the `mu` term of
+      the laplacian);\n
+    - `"central"`: `d_even = ( i sin(k_mu) )^2 = -sin^2(k_mu)`, the square of
+      the odd kernel, so every order is a power of `i sin(k_mu)`.\n
     This is the bare derivative factor: it contains no mass and no `1 / D(k)`.
     Compose it with `free_scalar_mom_invert` to differentiate the free scalar
     inverse; the two factors commute.\n
     At the self-conjugate momentum `k_mu = pi` the odd factor `i sin(k_mu)`
     vanishes; it is set to exactly `0` there, so that mode is dropped for an
-    odd `deriv[mu]`.  For an even `deriv[mu]` the mode is kept.\n
+    odd `deriv[mu]`.  With `even_deriv_kernel="central"` the even kernel is its
+    square, so the mode is dropped for an even `deriv[mu]` as well; with
+    `"half"` the mode is kept.\n
     `deriv=None` is equivalent to `[0, 0, 0, 0]` and leaves `f` unchanged.
     """
     cdef cc.vector[cc.Int] deriv_vec = cc.vector[cc.Int]()
     cdef cc.Int i
     cdef cc.Int n
+    cdef bint is_even_deriv_central
     if momtwist is None:
         momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
     if deriv is None:
         deriv = [ 0, 0, 0, 0 ]
     else:
         deriv = list(deriv)
+    if even_deriv_kernel is None:
+        even_deriv_kernel = "half"
+    if even_deriv_kernel not in ("half", "central"):
+        raise Exception(
+            f"free_scalar_deriv_mom: even_deriv_kernel={even_deriv_kernel} must be 'half' or 'central'"
+        )
+    is_even_deriv_central = even_deriv_kernel == "central"
     if len(deriv) != 4:
         raise Exception(f"free_scalar_deriv_mom: deriv={deriv} must have length 4")
     deriv_vec.resize(4)
@@ -551,7 +565,7 @@ def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None):
         if n < 0:
             raise Exception(f"free_scalar_deriv_mom: deriv={deriv} must be non-negative")
         deriv_vec[i] = n
-    cc.free_scalar_deriv_mom(f.xx, deriv_vec, momtwist.xx)
+    cc.free_scalar_deriv_mom(f.xx, deriv_vec, momtwist.xx, is_even_deriv_central)
 
 cdef class FermionField4d(FieldWilsonVector):
 

@@ -4,9 +4,11 @@
 # q.free_scalar_deriv_mom and q.free_scalar_invert_deriv.
 #
 # free_scalar_deriv_mom multiplies a momentum-space field by
-#     prod_mu [ (-4 sin^2(k_mu/2))^m (i sin(k_mu))^e ],  deriv[mu] = 2 m + e,
-# i.e. the even orders are the laplacian powers (unchanged) while the leftover
-# odd order is one symmetric (central) difference factor i sin(k_mu).
+#     prod_mu [ d_even(k_mu)^m (i sin(k_mu))^e ],  deriv[mu] = 2 m + e,
+# i.e. the leftover odd order is one symmetric (central) difference factor
+# i sin(k_mu), while the even kernel d_even is selected by even_deriv_kernel:
+# "half" (the default) is the laplacian power -4 sin^2(k_mu/2) and "central"
+# is the square of the odd factor, -sin^2(k_mu).
 #
 # free_scalar_invert(src, mass) must solve the free lattice scalar
 # equation
@@ -129,19 +131,29 @@ def mk_k_axis(latt_size, momtwist, i):
     # k_i = 2 pi ( smod(n_i, L_i) + momtwist_i ) / L_i
     return 2.0 * np.pi * (mk_signed_index(latt_size, i) + momtwist[i]) / latt_size[i]
 
-def mk_deriv_factor(latt_size, deriv, momtwist):
-    # independent reference: prod_mu [ (-4 sin^2(k_mu/2))^m (i sin(k_mu))^e ]
-    # with deriv[mu] = 2 m + e.  The even part is the laplacian power (minus
-    # the mu term of D(k)) and the leftover odd factor is the central
-    # difference, which vanishes at the self-conjugate momentum k_mu = pi
+def mk_deriv_factor(latt_size, deriv, momtwist, even_deriv_kernel=None):
+    # independent reference: prod_mu [ d_even(k_mu)^m (i sin(k_mu))^e ]
+    # with deriv[mu] = 2 m + e and the odd (central difference) factor
+    # i sin(k_mu), which vanishes at the self-conjugate momentum k_mu = pi.
+    # even_deriv_kernel selects d_even: "half" (default) is the laplacian power
+    # -4 sin^2(k_mu/2), "central" is the square of the odd factor -sin^2(k_mu)
+    if even_deriv_kernel is None:
+        even_deriv_kernel = "half"
     fac = np.ones(latt_size, dtype=np.complex128)
     for i in range(4):
         n_signed = mk_signed_index(latt_size, i)
         k = mk_k_axis(latt_size, momtwist, i)
         shape = [1, 1, 1, 1]
         shape[i] = latt_size[i]
-        d_even = (-4.0 * np.sin(k / 2.0) ** 2).reshape(shape)
         is_edge = np.abs(2.0 * (n_signed + momtwist[i])) == latt_size[i]
+        if even_deriv_kernel == "half":
+            d_even = (-4.0 * np.sin(k / 2.0) ** 2).reshape(shape)
+        elif even_deriv_kernel == "central":
+            d_even = np.where(is_edge, 0.0, -(np.sin(k) ** 2)).reshape(shape)
+        else:
+            raise Exception(
+                f"mk_deriv_factor: bad even_deriv_kernel={even_deriv_kernel}"
+            )
         d_odd = np.where(is_edge, 0.0, 1.0j * np.sin(k)).reshape(shape)
         n = int(deriv[i])
         for _ in range(n // 2):
@@ -270,13 +282,15 @@ q.json_results_append(
 )
 
 # --- free_scalar_deriv_mom: the bare lattice derivative factor in momentum
-#     space.  Each order deriv[mu] = 2 m + e is split into the laplacian power
-#     (-4 sin^2(k_mu/2))^m (e = 0) and, for the leftover odd order, one
-#     symmetric (central) difference factor i sin(k_mu).  It is checked against
-#     (i) an independent momentum-space DFT reference, (ii) the local central
-#     difference in position space, and (iii) the second derivative, which is
-#     minus the mu term of the lattice laplacian because the even part is
-#     unchanged.
+#     space.  Each order deriv[mu] = 2 m + e is split into an even power of
+#     d_even(k_mu) and, for the leftover odd order, one symmetric (central)
+#     difference factor i sin(k_mu).  even_deriv_kernel selects d_even:
+#     "half" (the default) is the laplacian power -4 sin^2(k_mu/2), so
+#     deriv[mu] = 2 is minus the mu term of the lattice laplacian, while
+#     "central" is the square of the odd factor, -sin^2(k_mu).  It is checked
+#     against (i) an independent momentum-space DFT reference, (ii) the local
+#     central difference (and its square) in position space, and (iii) the
+#     second derivative.
 zero_twist = [0.0, 0.0, 0.0, 0.0]
 src_mom_arr = np.fft.fftn(src_arr) / np.sqrt(np.prod(latt_size))
 
@@ -317,6 +331,61 @@ q.json_results_append(
     check_eps,
 )
 
+# even_deriv_kernel="central" replaces the even laplacian power by the square of
+# the odd central difference factor; check it against the same DFT reference
+central_cases = [
+    ("d0^2 central", [2, 0, 0, 0]),
+    ("d3^2 central", [0, 0, 0, 2]),
+    ("dx3 central", [3, 0, 0, 0]),
+    ("d2 dx central", [2, 1, 0, 0]),
+]
+for tag, deriv in central_cases:
+    f_mom = fft_f * src
+    q.free_scalar_deriv_mom(f_mom, deriv, even_deriv_kernel="central")
+    out_arr = get_global_arr(geo, f_mom)
+    ref_deriv_arr = src_mom_arr * mk_deriv_factor(
+        latt_size, deriv, zero_twist, "central"
+    )
+    err_deriv = float(np.max(np.abs(out_arr - ref_deriv_arr)))
+    assert err_deriv < check_eps, (tag, err_deriv)
+    q.json_results_append(
+        f"free-scalar-invert: deriv {tag} matches DFT reference = {err_deriv < check_eps}"
+    )
+
+# "half" is the default and the odd orders do not depend on even_deriv_kernel
+f_half = fft_f * src
+q.free_scalar_deriv_mom(f_half, [2, 0, 0, 0], even_deriv_kernel="half")
+f_def = fft_f * src
+q.free_scalar_deriv_mom(f_def, [2, 0, 0, 0])
+err_def = float(
+    np.max(np.abs(get_global_arr(geo, f_half) - get_global_arr(geo, f_def)))
+)
+assert err_def == 0.0, err_def
+q.json_results_append(
+    f"free-scalar-invert: even_deriv_kernel half is the default = {err_def == 0.0}"
+)
+f_odd_half = fft_f * src
+q.free_scalar_deriv_mom(f_odd_half, [1, 0, 0, 0], even_deriv_kernel="half")
+f_odd_cen = fft_f * src
+q.free_scalar_deriv_mom(f_odd_cen, [1, 0, 0, 0], even_deriv_kernel="central")
+err_odd_scheme = float(
+    np.max(np.abs(get_global_arr(geo, f_odd_half) - get_global_arr(geo, f_odd_cen)))
+)
+assert err_odd_scheme == 0.0, err_odd_scheme
+q.json_results_append(
+    f"free-scalar-invert: odd order independent of even_deriv_kernel = {err_odd_scheme == 0.0}"
+)
+is_bad_kernel_rejected = False
+try:
+    f_bad = fft_f * src
+    q.free_scalar_deriv_mom(f_bad, [1, 0, 0, 0], even_deriv_kernel="bad")
+except Exception:
+    is_bad_kernel_rejected = True
+assert is_bad_kernel_rejected
+q.json_results_append(
+    f"free-scalar-invert: bad even_deriv_kernel is rejected = {is_bad_kernel_rejected}"
+)
+
 # self-conjugate momentum k_mu = pi: the odd factor i sin(k_mu) vanishes there,
 # so the mode is dropped for odd orders and kept for even orders
 for mu, tag in [(0, "d0"), (3, "d3")]:
@@ -338,6 +407,19 @@ for mu, tag in [(0, "d0"), (3, "d3")]:
     assert err_even_edge < check_eps, (mu, err_even_edge)
     q.json_results_append(
         f"free-scalar-invert: deriv {tag}^2 keeps self-conjugate mode = {err_even_edge < check_eps}"
+    )
+
+# with even_deriv_kernel="central" the even kernel is the square of the odd
+# factor, so the self-conjugate mode is dropped for even orders as well
+for mu, tag in [(0, "d0"), (3, "d3")]:
+    edge_mask = mk_self_conjugate_mask(latt_size, mu, zero_twist)
+    deriv_even = [2 if i == mu else 0 for i in range(4)]
+    f_even = fft_f * src
+    q.free_scalar_deriv_mom(f_even, deriv_even, even_deriv_kernel="central")
+    err_even_edge_c = float(np.max(np.abs(get_global_arr(geo, f_even)[edge_mask])))
+    assert err_even_edge_c == 0.0, (mu, err_even_edge_c)
+    q.json_results_append(
+        f"free-scalar-invert: deriv {tag}^2 central drops self-conjugate mode = {err_even_edge_c == 0.0}"
     )
 
 # local check: the odd factor i sin(k_mu) is the central difference
@@ -372,6 +454,23 @@ for mu in [0, 3]:
         f"free-scalar-invert: deriv d{mu}^2 is minus laplacian term = {err_lap < check_eps}"
     )
 
+# local check: with even_deriv_kernel="central", deriv[mu] = 2 is the square of
+# the central difference, (f(x+2) - 2 f(x) + f(x-2)) / 4
+for mu in [0, 3]:
+    deriv = [0, 0, 0, 0]
+    deriv[mu] = 2
+    f_mom = fft_f * src
+    q.free_scalar_deriv_mom(f_mom, deriv, even_deriv_kernel="central")
+    out_arr = get_global_arr(geo, fft_b * f_mom)
+    cd2_arr = 0.25 * (
+        np.roll(src_arr, -2, axis=mu) - 2.0 * src_arr + np.roll(src_arr, 2, axis=mu)
+    )
+    err_cd2 = float(np.max(np.abs(out_arr - cd2_arr)))
+    assert err_cd2 < check_eps, (mu, err_cd2)
+    q.json_results_append(
+        f"free-scalar-invert: deriv d{mu}^2 central is central difference squared = {err_cd2 < check_eps}"
+    )
+
 # composition with the free inverse: the derivative and 1 / D(k) commute
 deriv_dx = [1, 0, 0, 0]
 g_deriv_inv = fft_f * src
@@ -404,6 +503,27 @@ err_invert_deriv = float(np.max(np.abs(sol_invert_deriv_arr - sol_deriv_inv)))
 assert err_invert_deriv < check_eps, err_invert_deriv
 q.json_results_append(
     f"free-scalar-invert: invert_deriv matches mom composition = {err_invert_deriv < check_eps}"
+)
+
+# free_scalar_invert_deriv forwards even_deriv_kernel: with "central" the second
+# derivative of the free inverse is the free inverse of the central-difference
+# squared source
+deriv_d2 = [2, 0, 0, 0]
+sol_d2_central = q.free_scalar_invert_deriv(
+    src, mass, deriv=deriv_d2, even_deriv_kernel="central"
+)
+cd2_src_arr = 0.25 * (
+    np.roll(src_arr, -2, axis=0) - 2.0 * src_arr + np.roll(src_arr, 2, axis=0)
+)
+sol_d2_ref = q.free_scalar_invert(mk_field_from_global(geo, cd2_src_arr), mass)
+err_d2_central = float(
+    np.max(
+        np.abs(get_global_arr(geo, sol_d2_central) - get_global_arr(geo, sol_d2_ref))
+    )
+)
+assert err_d2_central < check_eps, err_d2_central
+q.json_results_append(
+    f"free-scalar-invert: invert_deriv d2 central = invert(central diff squared) = {err_d2_central < check_eps}"
 )
 
 # deriv=None must reduce to free_scalar_invert

@@ -41,7 +41,9 @@ def free_scalar_invert(src, mass, *, momtwist=None, mode_fft=1):
     return sol
 
 @q.timer
-def free_scalar_invert_deriv(src, mass, *, momtwist=None, mode_fft=1, deriv=None):
+def free_scalar_invert_deriv(
+    src, mass, *, momtwist=None, mode_fft=1, deriv=None, even_deriv_kernel=None
+):
     """
     Free scalar inverse with a lattice derivative, in position space.\n
     Transforms `src` to momentum space, applies the bare derivative factor
@@ -49,19 +51,27 @@ def free_scalar_invert_deriv(src, mass, *, momtwist=None, mode_fft=1, deriv=None
     inverse `free_scalar_mom_invert`, and transforms back.  The derivative and
     the inverse commute, so this is the derivative of the free scalar inverse
     (equivalently the free scalar inverse of the derivative source).\n
-    Each order `deriv[mu] = 2 m + e` is split into the laplacian power
-    `( -4 sin^2(k_mu / 2) )^m` and, for an odd `deriv[mu]` (`e = 1`), one
-    symmetric (central) difference factor `i sin(k_mu)`; even orders are
-    unchanged.  In particular `deriv=[1, 0, 0, 0]` is the central difference in
-    the `x` direction, while `deriv=[2, 0, 0, 0]` is minus the `x` term of the
-    laplacian.\n
+    Each order `deriv[mu] = 2 m + e` is split into an even power of
+    `d_even(k_mu)` and, for an odd `deriv[mu]` (`e = 1`), one symmetric
+    (central) difference factor `i sin(k_mu)`.  `even_deriv_kernel` selects
+    `d_even`:\n
+    - `"half"` (the default, also `None`): `d_even = -4 sin^2(k_mu / 2)`, minus
+      the `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so even
+      orders are the laplacian powers;\n
+    - `"central"`: `d_even = -sin^2(k_mu)`, the square of `i sin(k_mu)`, so
+      every order is a power of the symmetric difference factor.\n
+    In particular `deriv=[1, 0, 0, 0]` is the central difference in the `x`
+    direction (independent of `even_deriv_kernel`), `deriv=[2, 0, 0, 0]` is
+    minus the `x` term of the laplacian with `"half"`, and
+    `deriv=[2, 0, 0, 0]` with `"central"` is the square of that central
+    difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`.\n
     `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result
     equals `free_scalar_invert(src, mass, ...)`.
     """
     fft_f = q.mk_fft(is_forward=True, is_normalizing=True, mode_fft=mode_fft)
     fft_b = q.mk_fft(is_forward=False, is_normalizing=True, mode_fft=mode_fft)
     f = fft_f * src
-    q.free_scalar_deriv_mom(f, deriv, momtwist)
+    q.free_scalar_deriv_mom(f, deriv, momtwist, even_deriv_kernel=even_deriv_kernel)
     q.free_scalar_mom_invert(f, mass, momtwist)
     sol = fft_b * f
     return sol

@@ -427,7 +427,8 @@ defaults to zero when `None`.
 ### `free_scalar_deriv_mom`
 
 ```python
-free_scalar_deriv_mom(f: FieldComplexD, deriv, momtwist: CoordinateD = None) -> None
+free_scalar_deriv_mom(f: FieldComplexD, deriv, momtwist: CoordinateD = None, *,
+                      even_deriv_kernel: str = None) -> None
 ```
 
 Apply a lattice derivative **in momentum space** to a complex field `f`
@@ -437,24 +438,33 @@ direction `x, y, z, t`.  Writing `deriv[mu] = 2 m + e` with `e` in `{0, 1}`,
 the field is multiplied by
 
 ```
-prod_mu [ ( -4 sin^2(k_mu / 2) )^m ( i sin(k_mu) )^e ],
+prod_mu [ d_even(k_mu)^m ( i sin(k_mu) )^e ],
 k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu
 ```
 
 `smod` is the signed momentum index (folded to `[-L/2, L/2)`), matching the
 convention used by `free_scalar_mom_invert`.
 
-The **even part** `-4 sin^2(k_mu / 2)` is the lattice laplacian factor: it is
-minus the `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so even
-derivative orders are unchanged — in particular `deriv[mu] = 2` is exactly
-minus the `mu` term of the laplacian.  The leftover **odd** factor
-`i sin(k_mu)` is the symmetric (central) difference factor, so
-`deriv = [1, 0, 0, 0]` is the central difference in the `x` direction.
+The leftover **odd** factor `i sin(k_mu)` is the symmetric (central) difference
+factor, so `deriv = [1, 0, 0, 0]` is the central difference in the `x`
+direction.  `even_deriv_kernel` selects the **even** kernel `d_even`:
+
+- `"half"` (the default, also `None`): `d_even = ( 2 i sin(k_mu / 2) )^2 =
+  -4 sin^2(k_mu / 2)`.  This is the lattice laplacian factor: it is minus the
+  `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so even derivative
+  orders are the laplacian powers — in particular `deriv[mu] = 2` is exactly
+  minus the `mu` term of the laplacian.
+- `"central"`: `d_even = ( i sin(k_mu) )^2 = -sin^2(k_mu)`, the square of the
+  odd kernel, so every order is a power of the symmetric difference factor
+  `i sin(k_mu)`.  With this choice `deriv[mu] = 2` is the square of the central
+  difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`, and it no longer matches the
+  `D(k)` of `free_scalar_mom_invert`.
 
 At the **self-conjugate** momentum `k_mu = pi` (`smod(n_mu, L_mu) +
 momtwist_mu = +- L_mu / 2`) the odd factor `i sin(k_mu)` vanishes; it is set to
-exactly `0` there, so that mode is dropped for an **odd** `deriv[mu]`.  For an
-**even** `deriv[mu]` the mode is kept.
+exactly `0` there, so that mode is dropped for an **odd** `deriv[mu]`.  With
+`even_deriv_kernel="central"` the even kernel is its square, so the mode is
+dropped for an **even** `deriv[mu]` as well; with `"half"` the mode is kept.
 
 This is the **bare** derivative factor: it contains no mass and no `1 / D(k)`.
 Compose it with `free_scalar_mom_invert` to differentiate the free scalar
@@ -487,21 +497,27 @@ Transforms to momentum space, applies the inverse, and transforms back.
 free_scalar_invert_deriv(src: FieldComplexD, mass: float, *,
                          momtwist: CoordinateD = None,
                          mode_fft: int = 1,
-                         deriv=None) -> FieldComplexD
+                         deriv=None,
+                         even_deriv_kernel: str = None) -> FieldComplexD
 ```
 
 Position-space entry point for the derivative of the free scalar inverse.
 Transforms `src` to momentum space, applies `free_scalar_deriv_mom` with the
 orders `deriv`, applies `free_scalar_mom_invert`, and transforms back.  The
 derivative and the inverse commute, so this equals the free scalar inverse of
-the derivative source as well.  Each order is split into the even (laplacian)
-part and, for an odd order, one symmetric (central) difference factor
-`i sin(k_mu)`; see `free_scalar_deriv_mom`.  So `deriv=[1, 0, 0, 0]` is the
+the derivative source as well.  Each order is split into an even power of
+`d_even(k_mu)` and, for an odd order, one symmetric (central) difference factor
+`i sin(k_mu)`; `even_deriv_kernel` selects `d_even` (`"half"`, the default, or
+`"central"` — see `free_scalar_deriv_mom`).  So `deriv=[1, 0, 0, 0]` is the
 central difference in the `x` direction, while `deriv=[2, 0, 0, 0]` is minus
-the `x` term of the laplacian:
+the `x` term of the laplacian with `"half"` and the square of the central
+difference with `"central"`:
 
 ```python
 sol = q.free_scalar_invert_deriv(src, mass, deriv=[1, 0, 0, 0], momtwist=t)
+sol2 = q.free_scalar_invert_deriv(
+    src, mass, deriv=[2, 0, 0, 0], even_deriv_kernel="central"
+)
 ```
 
 `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result equals

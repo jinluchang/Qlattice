@@ -259,27 +259,32 @@ inline void free_scalar_mom_invert(Field<ComplexD>& f, const RealD mass,
 
 inline void free_scalar_deriv_mom(Field<ComplexD>& f,
                                   const array<Int, DIMN>& deriv_order,
-                                  const CoordinateD& momtwist)
+                                  const CoordinateD& momtwist,
+                                  const bool is_even_deriv_central = false)
 // f is in momentum space.
 // f(k) <- [ prod_mu g_mu(k)^{deriv_order[mu]} ] f(k),
 // with k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu.
 //
 // Each derivative order is split into an even and an odd part,
 // deriv_order[mu] = 2 m + e with e in {0, 1}, and the factor is
-//   g_mu(k)^{2 m} = ( 2 ii sin(k_mu / 2) )^{2 m} = ( -4 sin^2(k_mu / 2) )^m,
-//   g_mu(k)^{1}   = ii sin(k_mu)                                       (e = 1).
-//
-// The even part is unchanged: -4 sin^2(k_mu / 2) is minus the mu term of the
-// D(k) used by free_scalar_mom_invert, so even derivative orders (in
-// particular deriv_order[mu] = 2) remain the laplacian powers.  The leftover
-// odd factor is the symmetric (central) difference factor ii sin(k_mu).
+//   g_mu(k)^{2 m} = d_even(k_mu)^m,
+//   g_mu(k)^{1}   = ii sin(k_mu).
+// The leftover odd factor is always the symmetric (central) difference factor
+// ii sin(k_mu).  The even kernel d_even is selected by is_even_deriv_central:
+//   false ("half")   d_even = ( 2 ii sin(k_mu / 2) )^2 = -4 sin^2(k_mu / 2),
+//                    which is minus the mu term of the D(k) used by
+//                    free_scalar_mom_invert, so even derivative orders
+//                    (in particular deriv_order[mu] = 2) are the laplacian
+//                    powers (the default, unchanged behavior);
+//   true  ("central") d_even = ( ii sin(k_mu) )^2 = -sin^2(k_mu), the square
+//                    of the odd kernel, so every order is a power of the
+//                    symmetric difference factor ii sin(k_mu).
 //
 // At the self-conjugate momentum k_mu = pi ( smod(n_mu, L_mu) + momtwist_mu =
 // +- L_mu / 2 ) the odd factor ii sin(k_mu) vanishes identically; it is set to
-// exactly 0 there, so that mode is dropped for odd derivative orders.  For an
-// even deriv_order[mu] the mode is kept, so the even part
-// ( -4 sin^2(k_mu / 2) )^m is minus the mu term of the D(k) used by
-// free_scalar_mom_invert, to the m-th power.
+// exactly 0 there, so that mode is dropped for odd derivative orders.  With
+// the "central" even kernel, which is its square, the mode is dropped for even
+// orders as well; with the "half" kernel the mode is kept ((-4)^m).
 //
 // The bare lattice derivative factor, with no mass and no 1 / D(k).  It is
 // meant to be composed with free_scalar_mom_invert, which commutes with it.
@@ -294,13 +299,15 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
     for (Int i = 0; i < DIMN; i++) {
       kg[i] = smod(kg[i], total_site[i]);
       const RealD kk = 2.0 * PI * (kg[i] + momtwist[i]) / (RealD)total_site[i];
-      const ComplexD d_even = -4.0 * sqr(std::sin(kk / 2.0));
       ComplexD d_odd = ComplexD(0.0, std::sin(kk));
       const RealD rem2 = 2.0 * (kg[i] + momtwist[i]);
       if (std::abs(rem2 - (RealD)total_site[i]) < 1.0e-12 ||
           std::abs(rem2 + (RealD)total_site[i]) < 1.0e-12) {
         d_odd = ComplexD(0.0, 0.0);
       }
+      const ComplexD d_even = is_even_deriv_central
+                                  ? d_odd * d_odd
+                                  : -4.0 * sqr(std::sin(kk / 2.0));
       const Int n = deriv_order[i];
       for (Int m = 0; m < n / 2; ++m) {
         fac *= d_even;
@@ -318,7 +325,8 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
 
 inline void free_scalar_deriv_mom(Field<ComplexD>& f,
                                   const vector<Int>& deriv_order,
-                                  const CoordinateD& momtwist)
+                                  const CoordinateD& momtwist,
+                                  const bool is_even_deriv_central = false)
 // host-only overload for the Cython boundary (`array` is not bound there)
 {
   qassert((Long)deriv_order.size() == DIMN);
@@ -326,7 +334,7 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
   for (Int i = 0; i < DIMN; ++i) {
     deriv_order_arr[i] = deriv_order[i];
   }
-  free_scalar_deriv_mom(f, deriv_order_arr, momtwist);
+  free_scalar_deriv_mom(f, deriv_order_arr, momtwist, is_even_deriv_central);
 }
 
 template <class T>

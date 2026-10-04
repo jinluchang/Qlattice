@@ -96,6 +96,27 @@
   1e-10
  ],
  [
+  "free-scalar-invert: deriv d0^2 central matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3^2 central matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv dx3 central matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: deriv d2 dx central matches DFT reference = True"
+ ],
+ [
+  "free-scalar-invert: even_deriv_kernel half is the default = True"
+ ],
+ [
+  "free-scalar-invert: odd order independent of even_deriv_kernel = True"
+ ],
+ [
+  "free-scalar-invert: bad even_deriv_kernel is rejected = True"
+ ],
+ [
   "free-scalar-invert: deriv d0 drops self-conjugate mode = True"
  ],
  [
@@ -108,6 +129,12 @@
   "free-scalar-invert: deriv d3^2 keeps self-conjugate mode = True"
  ],
  [
+  "free-scalar-invert: deriv d0^2 central drops self-conjugate mode = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3^2 central drops self-conjugate mode = True"
+ ],
+ [
   "free-scalar-invert: deriv d0 is central difference = True"
  ],
  [
@@ -118,6 +145,12 @@
  ],
  [
   "free-scalar-invert: deriv d3^2 is minus laplacian term = True"
+ ],
+ [
+  "free-scalar-invert: deriv d0^2 central is central difference squared = True"
+ ],
+ [
+  "free-scalar-invert: deriv d3^2 central is central difference squared = True"
  ],
  [
   "free-scalar-invert: deriv commutes with free inverse = True"
@@ -135,6 +168,9 @@
  ],
  [
   "free-scalar-invert: invert_deriv matches mom composition = True"
+ ],
+ [
+  "free-scalar-invert: invert_deriv d2 central = invert(central diff squared) = True"
  ],
  [
   "free-scalar-invert: invert_deriv deriv none = free_scalar_invert = True"
