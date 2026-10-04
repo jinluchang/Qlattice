@@ -523,13 +523,13 @@ def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None, *, 
     with `k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu`.\n
     The leftover odd factor `i sin(k_mu)` is the symmetric (central) difference
     factor.  `even_deriv_kernel` selects the even kernel `d_even`:\n
-    - `"half"` (the default, also `None`): `d_even = ( 2 i sin(k_mu / 2) )^2 =
-      -4 sin^2(k_mu / 2)`, which is minus the `mu` term of the `D(k)` used by
-      `free_scalar_mom_invert`, so even derivative orders are the laplacian
-      powers (in particular `deriv[mu] = 2` is exactly minus the `mu` term of
-      the laplacian);\n
-    - `"central"`: `d_even = ( i sin(k_mu) )^2 = -sin^2(k_mu)`, the square of
-      the odd kernel, so every order is a power of `i sin(k_mu)`.\n
+    - `"central"` (the default, also `None`): `d_even = ( i sin(k_mu) )^2 =
+      -sin^2(k_mu)`, the square of the odd kernel, so every order is a power of
+      `i sin(k_mu)`;\n
+    - `"half"`: `d_even = ( 2 i sin(k_mu / 2) )^2 = -4 sin^2(k_mu / 2)`, which
+      is minus the `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so
+      even derivative orders are the laplacian powers (in particular
+      `deriv[mu] = 2` is exactly minus the `mu` term of the laplacian).\n
     This is the bare derivative factor: it contains no mass and no `1 / D(k)`.
     Compose it with `free_scalar_mom_invert` to differentiate the free scalar
     inverse; the two factors commute.\n
@@ -551,7 +551,7 @@ def free_scalar_deriv_mom(FieldComplexD f, deriv, CoordinateD momtwist=None, *, 
     else:
         deriv = list(deriv)
     if even_deriv_kernel is None:
-        even_deriv_kernel = "half"
+        even_deriv_kernel = "central"
     if even_deriv_kernel not in ("half", "central"):
         raise Exception(
             f"free_scalar_deriv_mom: even_deriv_kernel={even_deriv_kernel} must be 'half' or 'central'"

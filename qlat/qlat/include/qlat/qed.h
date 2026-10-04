@@ -260,7 +260,7 @@ inline void free_scalar_mom_invert(Field<ComplexD>& f, const RealD mass,
 inline void free_scalar_deriv_mom(Field<ComplexD>& f,
                                   const array<Int, DIMN>& deriv_order,
                                   const CoordinateD& momtwist,
-                                  const bool is_even_deriv_central = false)
+                                  const bool is_even_deriv_central = true)
 // f is in momentum space.
 // f(k) <- [ prod_mu g_mu(k)^{deriv_order[mu]} ] f(k),
 // with k_mu = 2 pi ( smod(n_mu, L_mu) + momtwist_mu ) / L_mu.
@@ -271,14 +271,14 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
 //   g_mu(k)^{1}   = ii sin(k_mu).
 // The leftover odd factor is always the symmetric (central) difference factor
 // ii sin(k_mu).  The even kernel d_even is selected by is_even_deriv_central:
+//   true  ("central") d_even = ( ii sin(k_mu) )^2 = -sin^2(k_mu), the square
+//                    of the odd kernel, so every order is a power of the
+//                    symmetric difference factor ii sin(k_mu) (the default);
 //   false ("half")   d_even = ( 2 ii sin(k_mu / 2) )^2 = -4 sin^2(k_mu / 2),
 //                    which is minus the mu term of the D(k) used by
 //                    free_scalar_mom_invert, so even derivative orders
 //                    (in particular deriv_order[mu] = 2) are the laplacian
-//                    powers (the default, unchanged behavior);
-//   true  ("central") d_even = ( ii sin(k_mu) )^2 = -sin^2(k_mu), the square
-//                    of the odd kernel, so every order is a power of the
-//                    symmetric difference factor ii sin(k_mu).
+//                    powers.
 //
 // At the self-conjugate momentum k_mu = pi ( smod(n_mu, L_mu) + momtwist_mu =
 // +- L_mu / 2 ) the odd factor ii sin(k_mu) vanishes identically; it is set to
@@ -326,7 +326,7 @@ inline void free_scalar_deriv_mom(Field<ComplexD>& f,
 inline void free_scalar_deriv_mom(Field<ComplexD>& f,
                                   const vector<Int>& deriv_order,
                                   const CoordinateD& momtwist,
-                                  const bool is_even_deriv_central = false)
+                                  const bool is_even_deriv_central = true)
 // host-only overload for the Cython boundary (`array` is not bound there)
 {
   qassert((Long)deriv_order.size() == DIMN);

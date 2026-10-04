@@ -449,16 +449,15 @@ The leftover **odd** factor `i sin(k_mu)` is the symmetric (central) difference
 factor, so `deriv = [1, 0, 0, 0]` is the central difference in the `x`
 direction.  `even_deriv_kernel` selects the **even** kernel `d_even`:
 
-- `"half"` (the default, also `None`): `d_even = ( 2 i sin(k_mu / 2) )^2 =
-  -4 sin^2(k_mu / 2)`.  This is the lattice laplacian factor: it is minus the
-  `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so even derivative
-  orders are the laplacian powers — in particular `deriv[mu] = 2` is exactly
-  minus the `mu` term of the laplacian.
-- `"central"`: `d_even = ( i sin(k_mu) )^2 = -sin^2(k_mu)`, the square of the
-  odd kernel, so every order is a power of the symmetric difference factor
-  `i sin(k_mu)`.  With this choice `deriv[mu] = 2` is the square of the central
-  difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`, and it no longer matches the
-  `D(k)` of `free_scalar_mom_invert`.
+- `"central"` (the default, also `None`): `d_even = ( i sin(k_mu) )^2 =
+  -sin^2(k_mu)`, the square of the odd kernel, so every order is a power of the
+  symmetric difference factor `i sin(k_mu)`.  With this choice `deriv[mu] = 2`
+  is the square of the central difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`,
+  and it does not match the `D(k)` of `free_scalar_mom_invert`.
+- `"half"`: `d_even = ( 2 i sin(k_mu / 2) )^2 = -4 sin^2(k_mu / 2)`.  This is
+  the lattice laplacian factor: it is minus the `mu` term of the `D(k)` used by
+  `free_scalar_mom_invert`, so even derivative orders are the laplacian powers —
+  in particular `deriv[mu] = 2` is exactly minus the `mu` term of the laplacian.
 
 At the **self-conjugate** momentum `k_mu = pi` (`smod(n_mu, L_mu) +
 momtwist_mu = +- L_mu / 2`) the odd factor `i sin(k_mu)` vanishes; it is set to
@@ -507,16 +506,16 @@ orders `deriv`, applies `free_scalar_mom_invert`, and transforms back.  The
 derivative and the inverse commute, so this equals the free scalar inverse of
 the derivative source as well.  Each order is split into an even power of
 `d_even(k_mu)` and, for an odd order, one symmetric (central) difference factor
-`i sin(k_mu)`; `even_deriv_kernel` selects `d_even` (`"half"`, the default, or
-`"central"` — see `free_scalar_deriv_mom`).  So `deriv=[1, 0, 0, 0]` is the
-central difference in the `x` direction, while `deriv=[2, 0, 0, 0]` is minus
-the `x` term of the laplacian with `"half"` and the square of the central
-difference with `"central"`:
+`i sin(k_mu)`; `even_deriv_kernel` selects `d_even` (`"central"`, the default,
+or `"half"` — see `free_scalar_deriv_mom`).  So `deriv=[1, 0, 0, 0]` is the
+central difference in the `x` direction, while `deriv=[2, 0, 0, 0]` is the
+square of the central difference with `"central"` and minus the `x` term of the
+laplacian with `"half"`:
 
 ```python
 sol = q.free_scalar_invert_deriv(src, mass, deriv=[1, 0, 0, 0], momtwist=t)
 sol2 = q.free_scalar_invert_deriv(
-    src, mass, deriv=[2, 0, 0, 0], even_deriv_kernel="central"
+    src, mass, deriv=[2, 0, 0, 0], even_deriv_kernel="half"
 )
 ```
 

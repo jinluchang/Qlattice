@@ -55,16 +55,16 @@ def free_scalar_invert_deriv(
     `d_even(k_mu)` and, for an odd `deriv[mu]` (`e = 1`), one symmetric
     (central) difference factor `i sin(k_mu)`.  `even_deriv_kernel` selects
     `d_even`:\n
-    - `"half"` (the default, also `None`): `d_even = -4 sin^2(k_mu / 2)`, minus
-      the `mu` term of the `D(k)` used by `free_scalar_mom_invert`, so even
-      orders are the laplacian powers;\n
-    - `"central"`: `d_even = -sin^2(k_mu)`, the square of `i sin(k_mu)`, so
-      every order is a power of the symmetric difference factor.\n
+    - `"central"` (the default, also `None`): `d_even = -sin^2(k_mu)`, the
+      square of `i sin(k_mu)`, so every order is a power of the symmetric
+      difference factor;\n
+    - `"half"`: `d_even = -4 sin^2(k_mu / 2)`, minus the `mu` term of the
+      `D(k)` used by `free_scalar_mom_invert`, so even orders are the laplacian
+      powers.\n
     In particular `deriv=[1, 0, 0, 0]` is the central difference in the `x`
-    direction (independent of `even_deriv_kernel`), `deriv=[2, 0, 0, 0]` is
-    minus the `x` term of the laplacian with `"half"`, and
-    `deriv=[2, 0, 0, 0]` with `"central"` is the square of that central
-    difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`.\n
+    direction (independent of `even_deriv_kernel`), and `deriv=[2, 0, 0, 0]` is
+    the square of that central difference, `(f(x+2) - 2 f(x) + f(x-2)) / 4`,
+    with `"central"`, or minus the `x` term of the laplacian with `"half"`.\n
     `deriv=None` is equivalent to `[0, 0, 0, 0]`, in which case the result
     equals `free_scalar_invert(src, mass, ...)`.
     """
