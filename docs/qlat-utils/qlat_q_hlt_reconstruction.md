@@ -80,6 +80,7 @@ Create and return a default HLT parameter dictionary.
 | `g_t_arr_init` | `ndarray \| None` | `None` | Initial guess for filter coefficients. If `None`, zeros are used. |
 | `does_have_constraint` | `bool` | `False` | Whether to enforce a normalization constraint on the spectral density. |
 
+(get_f_e_weight_log)=
 ### `get_f_e_weight_log(params)`
 
 Return the log-weight function for the energy weight `exp(f(e))`.
@@ -91,6 +92,7 @@ linear function `f(e) = alpha * e` using the `alpha` parameter.
 
 ## Core Transform
 
+(delta_from_g)=
 ### `delta_from_g(g_t_arr, t_arr, e_arr)`
 
 Compute the reconstructed spectral delta from filter coefficients.
@@ -114,6 +116,7 @@ These functions approximate integrals as discrete sums over the provided `e_arr`
 energy grid. They are faster than the integration-based variants and suitable for
 iterative optimization.
 
+(aa_from_g_via_sum)=
 ### `aa_from_g_via_sum(g_t_arr, params)`
 
 Compute the chi-squared-like fidelity term using discrete summation.
@@ -129,6 +132,7 @@ Evaluates: `sum_e w(e) * (delta(e) - delta_target(e))^2` where `w(e)` includes
 trapezoidal quadrature weights and the energy weight function. Supports ATW
 contributions when `tt_size` is set.
 
+(normalization_constraint_via_sum)=
 ### `normalization_constraint_via_sum(g_t_arr, params)`
 
 Enforce a normalization constraint via projection.
@@ -144,6 +148,7 @@ penalty. Otherwise, projects `g_t_arr` onto the subspace where the integrated
 spectral density matches the target normalization, returning the projected
 coefficients and a penalty proportional to the squared deviation.
 
+(ww_from_g_via_sum)=
 ### `ww_from_g_via_sum(g_t_arr, params)`
 
 Compute the total cost function (fidelity + regularization + constraint).
@@ -161,6 +166,7 @@ The cost is: `aa / aa_zero + lambda * cov_term + constraint_penalty`, where
 
 `jax.value_and_grad` of `ww_from_g_via_sum`. Returns `(value, gradient)`.
 
+(mk_g_t_arr_via_sum)=
 ### `mk_g_t_arr_via_sum(params)`
 
 Run the optimization to find optimal filter coefficients using summation.
@@ -181,6 +187,7 @@ These functions use `scipy.integrate.quad` for continuous energy integration. Th
 are more accurate but computationally heavier, making them better suited for final
 results or small problems.
 
+(aa_from_g)=
 ### `aa_from_g(g_t_arr, params)`
 
 Compute the fidelity term using continuous integration.
@@ -194,6 +201,7 @@ Compute the fidelity term using continuous integration.
 Internally builds and caches `aa_mat`, `f_vec`, and `aa_const` in `params` for
 efficiency. The cost is: `aa_const + f_vec . g + g^T aa_mat g`.
 
+(normalization_constraint)=
 ### `normalization_constraint(g_t_arr, params)`
 
 Enforce a normalization constraint using continuous integration.
@@ -207,6 +215,7 @@ Enforce a normalization constraint using continuous integration.
 Same logic as `normalization_constraint_via_sum` but uses `build_hlt_fc_vec` for
 continuous integration of the constraint vector.
 
+(ww_from_g)=
 ### `ww_from_g(g_t_arr, params)`
 
 Compute the total cost function using continuous integration.
@@ -224,6 +233,7 @@ constraint_penalty`.
 
 `jax.value_and_grad` of `ww_from_g`. Returns `(value, gradient)`.
 
+(mk_g_t_arr)=
 ### `mk_g_t_arr(params)`
 
 Run the optimization to find optimal filter coefficients using continuous

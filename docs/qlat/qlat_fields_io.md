@@ -15,7 +15,7 @@ Source: `qlat/qlat/fields_io.pyx`
    - [Constructor](#reader-constructor)
    - [Methods](#reader-methods)
    - [Properties](#reader-properties)
-4. [`ShuffledBitSet` Class](#shufflebitset-class)
+4. [`ShuffledBitSet` Class](#shuffledbitset-class)
 5. [Module-Level Functions](#module-level-functions)
 6. [Examples](#examples)
 
@@ -69,7 +69,8 @@ q.end_with_mpi()
 
 Writes lattice fields to a shuffled binary directory.
 
-### <a id="constructor"></a> Constructor
+(constructor)=
+### Constructor
 
 ### `ShuffledFieldsWriter(path: str, new_size_node: Coordinate, is_append=False)`
 
@@ -83,7 +84,8 @@ Open a writer at `path` with the given I/O node layout.
 
 ---
 
-### <a id="writer-methods"></a> Methods
+(writer-methods)=
+### Methods
 
 ### `close()`
 
@@ -121,7 +123,8 @@ internally for sparse field I/O.
 
 ---
 
-### <a id="writer-properties"></a> Properties
+(writer-properties)=
+### Properties
 
 ### `__contains__(fn: str) -> bool`
 
@@ -133,7 +136,8 @@ Check membership via the `in` operator.
 
 Reads lattice fields from a shuffled binary directory.
 
-### <a id="reader-constructor"></a> Constructor
+(reader-constructor)=
+### Constructor
 
 ### `ShuffledFieldsReader(path: str, new_size_node=None)`
 
@@ -146,7 +150,8 @@ Open a reader at `path`.
 
 ---
 
-### <a id="reader-methods"></a> Methods
+(reader-methods)=
+### Methods
 
 ### `close()`
 
@@ -193,7 +198,8 @@ Get or create a cached `ShuffledBitSet` for the given `FieldSelection`.
 
 ---
 
-### <a id="reader-properties"></a> Properties
+(reader-properties)=
+### Properties
 
 ### `__contains__(fn: str) -> bool`
 

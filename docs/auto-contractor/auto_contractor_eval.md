@@ -77,6 +77,7 @@ All intermediate results are pickled to `path/` for reuse.  The path is
 suffixed with `_cy` or `_py` depending on `is_cython`.  Only node 0 performs
 the build; other nodes wait for the pickle file to appear.
 
+(meson-build-content)=
 ### `meson_build_content`
 
 A string containing the Meson build definition for compiling Cython extension

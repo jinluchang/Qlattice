@@ -270,6 +270,7 @@ Initialize an instanton tracker.
 | `dis_sqr_limit` | Squared distance limit to identify same instanton |
 | `threshold` | Plaquette threshold: sites with `plaq < 1 - threshold` are instanton candidates |
 
+(instantonmap_shift)=
 ### `InstantonMap.shift`
 
 ```python
@@ -279,6 +280,7 @@ InstantonMap.shift(shift: Coordinate) -> None
 Record a shift of the gauge field. Updates `origin_coordinate` so that
 instanton coordinates remain in the initial lattice frame.
 
+(instantonmap_convert_xg)=
 ### `InstantonMap.convert_xg`
 
 ```python
@@ -288,6 +290,7 @@ InstantonMap.convert_xg(xg: Coordinate | CoordinateD) -> Coordinate | Coordinate
 Convert a coordinate in the current lattice frame to the initial lattice
 frame.
 
+(instantonmap_half_lattice)=
 ### `InstantonMap.half_lattice`
 
 ```python
@@ -297,6 +300,7 @@ InstantonMap.half_lattice() -> None
 Double the lattice spacing (halve the lattice size). Used when the gauge
 field is coarsened during multi-scale instanton detection.
 
+(instantonmap_acc_time)=
 ### `InstantonMap.acc_time`
 
 ```python
@@ -305,6 +309,7 @@ InstantonMap.acc_time(step_size: float) -> None
 
 Accumulate flow time and increment the step counter after a flow step.
 
+(instantonmap_acc_topo_info)=
 ### `InstantonMap.acc_topo_info`
 
 ```python

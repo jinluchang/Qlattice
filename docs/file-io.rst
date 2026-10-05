@@ -216,7 +216,6 @@ Support ``np.asarray(f)``.
    :toctree: generated
 
    Field
-   FieldBase
    FieldBase.save_direct
    FieldBase.load_direct
    FieldBase.save_64
@@ -238,7 +237,6 @@ FieldSelection
    :recursive:
    :toctree: generated
 
-   FieldSelection
    FieldSelection.save
    FieldSelection.load
    FieldSelection.to_psel
@@ -254,7 +252,6 @@ Support ``np.asarray(sf)``.
    :toctree: generated
 
    SelectedField
-   SelectedFieldBase
    SelectedFieldBase.save_direct
    SelectedFieldBase.load_direct
    SelectedFieldBase.save_64
@@ -276,7 +273,6 @@ Support ``np.asarray(psel)``.
    :recursive:
    :toctree: generated
 
-   PointsSelection
    PointsSelection.save
    PointsSelection.load
    PointsSelection.xg_arr
@@ -291,7 +287,6 @@ Support ``np.asarray(sp)``.
    :toctree: generated
 
    SelectedPoints
-   SelectedPointsBase
    SelectedPointsBase.save_str
    SelectedPointsBase.load_str
    SelectedPointsBase.to_numpy

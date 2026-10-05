@@ -263,6 +263,7 @@ Wrapper that loads or computes the average HVP field.
 
 **Returns:** `load` callable yielding `q.FieldComplexD(geo, 16)`.
 
+(random-u-1-volume-source-propagators)=
 ## Random U(1) Volume-Source Propagators
 
 ### `run_field_rand_u1_dict(job_tag, traj)`

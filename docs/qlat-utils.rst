@@ -267,6 +267,6 @@ Plotting
    plot_save
    plot_view
 
-Example code to make a plot: ``examples-py/plot.py``
+Example code to make a plot: ``examples-py/__plot__.py``
 
-.. literalinclude:: ../examples-py/plot.py
+.. literalinclude:: ../examples-py/__plot__.py

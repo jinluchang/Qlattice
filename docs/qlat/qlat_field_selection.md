@@ -263,7 +263,8 @@ the same data.
 A site-level selection stored as a rank field. Each local site has a rank
 value: `rank >= 0` means selected, `rank == -1` means not selected.
 
-### <a id="fieldselection-constructors"></a> Constructors
+(fieldselection-constructors)=
+### Constructors
 
 ### `FieldSelection()`
 
@@ -280,7 +281,8 @@ Create from a `PointsSelection`. Requires `psel.points_dist_type in ["l", "f", "
 
 ---
 
-### <a id="fieldselection-properties"></a> Properties
+(fieldselection-properties)=
+### Properties
 
 ### `geo -> Geometry`
 
@@ -331,7 +333,8 @@ lower rank keep their existing rank.
 
 ---
 
-### <a id="fieldselection-set-operations"></a> Set Operations
+(fieldselection-set-operations)=
+### Set Operations
 
 ### `intersect_with(fsel: FieldSelection)`
 
@@ -361,7 +364,8 @@ Convert to a Local-distribution `PointsSelection`.
 
 ---
 
-### <a id="fieldselection-indexing-and-iteration"></a> Indexing and Iteration
+(fieldselection-indexing-and-iteration)=
+### Indexing and Iteration
 
 ### `__getitem__(idx)` / `__setitem__(idx, val)`
 
@@ -387,7 +391,8 @@ Return the global coordinate for the selected element at index `idx`.
 
 ---
 
-### <a id="fieldselection-io-and-pickle"></a> I/O and Pickle
+(fieldselection-io-and-pickle)=
+### I/O and Pickle
 
 ### `save(path: str) -> int`
 
@@ -409,7 +414,8 @@ Builds an MPI communication plan for redistributing `SelectedPointsChar`
 data between different point distribution types. The plan is reusable and
 can shuffle forward or in reverse.
 
-### <a id="selectedshuffleplan-constructors"></a> Constructors
+(selectedshuffleplan-constructors)=
+### Constructors
 
 ### `SelectedShufflePlan()`
 
@@ -457,7 +463,8 @@ shuffles.
 
 ---
 
-### <a id="selectedshuffleplan-properties"></a> Properties
+(selectedshuffleplan-properties)=
+### Properties
 
 ### `points_dist_type_send -> str`
 

@@ -9,15 +9,15 @@ Source: `qlat/qlat/inverter.pyx`
 1. [Overview](#overview)
 2. [`Inverter` Base Class](#inverter-base-class)
 3. [`InverterDwfFreeField` Class](#inverterdwffreefield-class)
-   - [Constructor](#constructor)
-   - [Methods](#methods)
+   - [Constructor](#inverterdwffreefield-constructor)
+   - [Methods](#inverterdwffreefield-methods)
 4. [`InverterDomainWall` Class](#inverterdomainwall-class)
-   - [Constructor](#constructor-1)
-   - [Methods](#methods-1)
+   - [Constructor](#inverterdomainwall-constructor)
+   - [Methods](#inverterdomainwall-methods)
    - [Solver Parameters](#solver-parameters)
 5. [`InverterGaugeTransform` Class](#invertergaugetransform-class)
-   - [Constructor](#constructor-2)
-   - [Methods](#methods-2)
+   - [Constructor](#invertergaugetransform-constructor)
+   - [Methods](#invertergaugetransform-methods)
 6. [`EigSystem` Class](#eigsystem-class)
 7. [Module-Level Cache](#module-level-cache)
 8. [Examples](#examples)
@@ -65,6 +65,7 @@ Empty base class. All concrete inverters inherit from it and implement
 Analytically inverts the free (no gauge field) domain-wall Dirac operator.
 Useful for testing and as a reference solution.
 
+(inverterdwffreefield-constructor)=
 ### Constructor
 
 ```python
@@ -78,6 +79,7 @@ InverterDwfFreeField(*, mass, m5=1.0, momtwist=None, qtimer=TimerNone())
 | `momtwist` | `CoordinateD` | `None` | Momentum twist (4-vector); defaults to zero |
 | `qtimer` | `Timer` / `TimerNone` | `TimerNone()` | Optional timer for profiling |
 
+(inverterdwffreefield-methods)=
 ### Methods
 
 #### `__mul__(prop_src) -> Prop`
@@ -98,6 +100,7 @@ Returns the solution propagator, or a list of solution propagators if
 CG-based domain-wall fermion inverter backed by the C/C++ library. Requires
 a gauge field and a `FermionAction` specification.
 
+(inverterdomainwall-constructor)=
 ### Constructor
 
 ```python
@@ -110,6 +113,7 @@ InverterDomainWall(*, gf, fa, qtimer=TimerNone())
 | `fa` | `FermionAction` | — | Fermion action parameters (mass, Ls, m5, etc.) |
 | `qtimer` | `Timer` / `TimerNone` | `TimerNone()` | Optional timer for profiling |
 
+(inverterdomainwall-methods)=
 ### Methods
 
 #### `__mul__(prop_src) -> Prop`
@@ -157,6 +161,7 @@ Given a gauge transform `gt`, it computes `gt_inv * src`, inverts using the
 wrapped inverter, then applies `gt * sol` so the result is in the
 transformed gauge.
 
+(invertergaugetransform-constructor)=
 ### Constructor
 
 ```python
@@ -169,6 +174,7 @@ InverterGaugeTransform(*, inverter, gt, qtimer=TimerNone())
 | `gt` | `GaugeTransform` | — | Gauge transformation to apply |
 | `qtimer` | `Timer` / `TimerNone` | `TimerNone()` | Optional timer for profiling |
 
+(invertergaugetransform-methods)=
 ### Methods
 
 #### `__mul__(prop_src) -> Prop | FermionField4d`

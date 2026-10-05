@@ -44,8 +44,12 @@ myst_enable_extensions = [
 # templates_path = ['_templates']
 exclude_patterns = []
 
+# Create explicit targets for markdown headings so that the `#anchor` links of
+# the per-module outlines resolve to them (and are checked by myst).
+myst_heading_anchors = 3
+
 # Suppress docutils warnings from *args in function signatures rendered by autosummary
-suppress_warnings = ["docutils", "myst.xref_missing"]
+suppress_warnings = ["docutils"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

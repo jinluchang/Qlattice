@@ -92,10 +92,12 @@ integral.
 
 Release all loaded interpolation tables from memory.
 
+(get_number_of_muon_line_interpolations)=
 ### `get_number_of_muon_line_interpolations() -> int`
 
 Return the number of interpolation tables currently loaded in memory.
 
+(compute_save_muonline_interpolation)=
 ### `compute_save_muonline_interpolation(path, dims, eps) -> int`
 
 Compute and save a muon-line interpolation table to disk.
@@ -108,6 +110,7 @@ Compute and save a muon-line interpolation table to disk.
 
 Default integration tolerances: `epsabs=1e-8`, `epsrel=1e-3`.
 
+(load_multiple_muonline_interpolations)=
 ### `load_multiple_muonline_interpolations(path, idx_list) -> int`
 
 Load pre-computed interpolation tables from `path`.
@@ -128,10 +131,12 @@ Extra weights control how multiple interpolation tables are combined in
 `get_muon_line_m_extra` and `get_muon_line_m_extra_lat`.  The weights are
 a list of lists of floats, one inner list per interpolation index.
 
+(get_muon_line_m_extra_weights)=
 ### `get_muon_line_m_extra_weights() -> list[list[float]]`
 
 Return the current extra weights.
 
+(set_muon_line_m_extra_weights)=
 ### `set_muon_line_m_extra_weights(weights=None)`
 
 Set the extra weights.  Pass `None` to restore the default values.

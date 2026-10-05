@@ -44,8 +44,6 @@ print(q.show_val_err((avg, err)))
 
 ---
 
----
-
 ## Physical Constants
 
 | Name | Value | Description |
