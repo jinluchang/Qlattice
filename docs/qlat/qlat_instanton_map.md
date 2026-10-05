@@ -52,11 +52,13 @@ charge (freeze flow) or enhance tunnelling (shrink flow), enabling
 robust instanton counting and topological charge estimation.
 
 Standard Wilson flow action:
+
 $$
 S_\mathrm{Wilson} = \frac{\beta}{2}\sum_{x,\mu,\nu} \Big(1 - \frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
 $$
 
 Modified flow with plaquette-dependent coupling:
+
 $$
 S_f = -\frac{\beta}{2}\sum_{x,\mu,\nu} f\Big(\frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
 $$

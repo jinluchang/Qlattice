@@ -69,15 +69,14 @@ def jk_avg(jk_arr):
     return q.filter_np_results(val)
 
 def jk_err(jk_arr, *, eps=1, block_size=1):
-    r"""
-    Return
-    $$
-    \frac{1}{eps} \sqrt{ N/(N-block_size) \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
-    $$
+    """
+    Return\n
+    .. math::\n
+        \\frac{1}{eps} \\sqrt{ N/(N-block_size) \\sum_{i=1}^N (jk[i] - jk_avg)^2 }.\n
     when ``block_size=1``.
     Note: ``len(jk_arr) = N + 1``.
     Same ``eps`` as the ``eps`` used in the ``jackknife`` function.
-    Does not properly honor the $(N-1)$ formula in error calculation
+    Does not properly honor the :math:`(N-1)` formula in error calculation
     if there were missing data in the original ``data_list`` in the ``jackknife`` function.
     """
     assert block_size >= 1
@@ -397,11 +396,10 @@ def sjk_avg(jk_arr):
     return jk_avg(jk_arr)
 
 def sjk_err(jk_arr, *, eps=1):
-    r"""
-    Return
-    $$
-    \frac{1}{eps} \sqrt{ \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
-    $$
+    """
+    Return\n
+    .. math::\n
+        \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 }.\n
     Note: ``len(jk_arr) = N + 1``.
     Same ``eps`` as the ``eps`` used in the ``jackknife`` function.
     """
@@ -1069,11 +1067,10 @@ def rjk_avg(jk_arr):
     return jk_avg(jk_arr)
 
 def rjk_err(jk_arr, eps=1):
-    r"""
-    Return
-    $$
-    \frac{1}{eps} \sqrt{ 1/N \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
-    $$
+    """
+    Return\n
+    .. math::\n
+        \\frac{1}{eps} \\sqrt{ 1/N \\sum_{i=1}^N (jk[i] - jk_avg)^2 }.\n
     Note: ``
     len(jk_arr) = N + 1.
     jk_avg = jk_arr[0]

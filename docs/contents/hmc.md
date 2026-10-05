@@ -41,6 +41,7 @@ $$
 $$
 
 where
+
 $$
 \ba
 {T^a}^\dagger &= - T^a
@@ -90,6 +91,7 @@ U(x,\mu) \gets e^{\pi(x,\mu) dt} U(x,\mu) = e^{\pi(x,\mu)^a T^a dt} U(x,\mu)
 $$
 
 Convention for gauge field change:
+
 $$
 U(x,\mu) \gets e^{d s (x,\mu)^a T^a} U(x,\mu)
 $$
@@ -123,6 +125,7 @@ $$
 $$
 
 where
+
 $$
 \ba
 C(x,\mu)

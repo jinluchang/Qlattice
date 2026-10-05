@@ -34,12 +34,15 @@ those involving the time direction), which is useful for scale setting
 procedures that require anisotropic flow.
 
 The module defines three flow observables:
+
 $$
 W_0(t) = t^2 \langle E(t) \rangle
 $$
+
 $$
 W_1(t) = W(t) = t \frac{d}{dt} (t^2 \langle E(t) \rangle)
 $$
+
 $$
 W_2(t) = -t^3 \frac{d}{dt} \langle E(t) \rangle
 $$

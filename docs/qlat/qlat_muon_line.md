@@ -34,7 +34,7 @@ $$
 $$
 
 that appears in the hadronic light-by-light (HLbL) scattering contribution
-to the muon anomalous magnetic moment :math:`(g-2)_\mu`.  The computation
+to the muon anomalous magnetic moment $(g-2)_\mu$.  The computation
 follows the method described in [arXiv:2304.04423](https://arxiv.org/abs/2304.04423), Eq.~(9).
 
 The module provides:
@@ -85,7 +85,7 @@ Useful for verifying that the integration library works correctly.
 
 Interpolations are pre-computed tables of the muon-line tensor stored on
 disk.  Once loaded they allow fast retrieval of
-:math:`\mathcal{M}_{i,\rho,\sigma,\lambda}` without re-evaluating the
+$\mathcal{M}_{i,\rho,\sigma,\lambda}$ without re-evaluating the
 integral.
 
 ### `clear_muon_line_interpolations()`
@@ -172,7 +172,7 @@ get_muon_line_m(x: CoordinateD, y: CoordinateD, z: CoordinateD,
 ```
 
 Return the muon-line tensor
-:math:`\mathcal{M}_{i,\rho,\sigma,\lambda}(x,y,z)`.
+$\mathcal{M}_{i,\rho,\sigma,\lambda}(x,y,z)$.
 
 | Parameter | Type | Description |
 |---|---|---|

@@ -52,6 +52,7 @@ $$
 ### Propagator
 
 Wall source propagator, with Coulomb gauge fixing:
+
 $$
 \begin{eqnarray}
   S (\vec{x}, t_{\text{snk}} ; t_{\text{src}}) & = & \sum_{\vec{y}} S
@@ -290,6 +291,7 @@ void reflect_field(Field<M>& f);
 ```
 
 From ``field-shuffle.h``
+
 $$
 H(x) \to H(-x)
 $$
@@ -350,6 +352,7 @@ H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 $$
 
 Some properties:
+
 $$
 \ba
 \big(H_\text{decay-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
@@ -452,6 +455,7 @@ S_4(x;y)
 $$
 
 Some properties:
+
 $$
 \ba
 &&\hspace{-2cm}
@@ -556,6 +560,7 @@ S_1(t_\text{snk};t_\text{src})
 $$
 
 Some properties:
+
 $$
 \text{ld-1-2}[t_\text{snk}][t_\text{src}]^\dagger
 =
@@ -585,6 +590,7 @@ S_2(y;x)\gamma^{\mathrm{va}}_\mu
 $$
 
 Some properties:
+
 $$
 H_\text{chvp-1-2} (x-y) [8\mu+\nu] = H_\text{chvp-2-1} (y-x)[8\nu+\mu]
 $$
@@ -653,7 +659,9 @@ S_4(y;x)\gamma^{\mathrm{va}}_\mu
 ]
 \ea
 $$
+
 Some properties:
+
 $$
 H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
 $$

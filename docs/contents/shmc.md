@@ -31,11 +31,13 @@ $$
 $$
 
 Let
+
 $$
 \ba
 U(x,\mu) = U_1(x,\mu) U_2^\dagger(x,\mu)
 \ea
 $$
+
 We can also treat $U_1$ and $U_2$ as the integration variable in the path integral.
 
 ### Gauge momentum convention
@@ -57,6 +59,7 @@ $$
 $$
 
 where
+
 $$
 \ba
 {T^a}^\dagger &= - T^a
@@ -114,6 +117,7 @@ e^{\pi_1(x,\mu)^a T^a dt} U(x,\mu) e^{-\pi_2(x,\mu)^a T^a dt}
 $$
 
 Conceptually:
+
 $$
 \ba
 U_1(x,\mu) \gets e^{\pi_1(x,\mu) dt} U(x,\mu) =& e^{\pi_1(x,\mu)^a T^a dt} U_1(x,\mu)
@@ -121,7 +125,9 @@ U_1(x,\mu) \gets e^{\pi_1(x,\mu) dt} U(x,\mu) =& e^{\pi_1(x,\mu)^a T^a dt} U_1(x
 U_2(x,\mu) \gets e^{\pi_2(x,\mu) dt} U(x,\mu) =& e^{\pi_2(x,\mu)^a T^a dt} U_2(x,\mu)
 \ea
 $$
+
 Convention for gauge field change:
+
 $$
 \ba
 U(x,\mu)
@@ -165,6 +171,7 @@ U(x,\mu)
 $$
 
 where we define
+
 $$
 \ba
 U^{ba}(x,\mu) T^a = U(x,\mu) T^b U^{-1}(x,\mu)
@@ -172,6 +179,7 @@ U^{ba}(x,\mu) T^a = U(x,\mu) T^b U^{-1}(x,\mu)
 $$
 
 therefore
+
 $$
 \ba
 U^{ba}(x,\mu) T^b = U^{-1}(x,\mu) T^a U(x,\mu)
@@ -207,6 +215,7 @@ $$
 $$
 
 Note:
+
 $$
 \ba
 \frac{\delta S}{\delta s_2(x,\mu)^a}
@@ -215,7 +224,9 @@ $$
 \frac{\delta S}{\delta s_1(x,\mu)^b}
 \ea
 $$
+
 Therefore
+
 $$
 \ba
 \frac{d}{dt}\pi_2(x,\mu)
@@ -232,7 +243,9 @@ $$
 - U^{-1}(x,\mu) \frac{d}{dt}\pi_1(x,\mu) U(x,\mu)
 \ea
 $$
+
 where
+
 $$
 \ba
 C(x,\mu)
