@@ -151,13 +151,13 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
     #
     f[:] == $G$
     #
-    \ba
+    \begin{aligned}
     G(\sigma, k) =
     \exp
     \Big(
     - \frac{2\sigma^2}{3} \sum_i \sin^2\big(\frac{k_i}{2}\big)
     \Big)
-    \ea
+    \end{aligned}
     where k[i] = 2 pi * n[i] / total_site[i]
     """
     assert isinstance(total_site, tuple)
@@ -236,11 +236,11 @@ def sphere_sum_field(field, radius, *, is_only_spatial=False):
     field must at least be complex type.
     #
     $$
-    \ba
+    \begin{aligned}
     f_\text{sphere-summed}(x)
     \approx
     \sum_{y} \theta(|x-y| < r) f(y)
-    \ea
+    \end{aligned}
     $$
     """
     total_site = field.geo.total_site
@@ -261,7 +261,7 @@ def smear_field(field, radius, *, is_only_spatial=False):
     field must at least be complex type.
     #
     $$
-    \ba
+    \begin{aligned}
     f_\text{smear}(x)
     \approx
     \frac{
@@ -269,7 +269,7 @@ def smear_field(field, radius, *, is_only_spatial=False):
     }{
     \sum_y \exp( - y^2 / (2 r^2) )
     }
-    \ea
+    \end{aligned}
     $$
     """
     total_site = field.geo.total_site

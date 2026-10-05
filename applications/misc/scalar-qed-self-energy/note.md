@@ -2,16 +2,6 @@
 
 > Luchang Jin
 
-$$
-\def \ra {\rangle}
-\def \la {\langle}
-\def \nn {\nonumber}
-\def \ba {\begin{eqnarray}}
-\def \ea {\end{eqnarray}}
-\def \a {a}
-\nn
-$$
-
 ## Propagator
 
 $$
@@ -20,10 +10,10 @@ $$
 
 Let $p= (iM_\pi , \vec 0)$, then:
 $$
-\ba
+\begin{eqnarray}
 \int d^4 x~e^{-i q \cdot x}
 {1 \over 2 M_\pi}
-\la \pi(\vec 0) | J_\mu(x) J_\nu(0) | \pi(\vec 0) \ra
+\langle \pi(\vec 0) | J_\mu(x) J_\nu(0) | \pi(\vec 0) \rangle
 &=&
 e^2
 {
@@ -39,7 +29,7 @@ F_\pi^2(q^2)
 \over
 (p + q)^2 + M_\pi^2
 }
-\nn\\
+\nonumber\\
 &&
 \hspace{3cm}
 -
@@ -50,17 +40,17 @@ F_\pi^2(q^2)
 }
 
 \Big]
-\ea
+\end{eqnarray}
 $$
 for zero spatial momentum, we set
 $$
-\ba
+\begin{eqnarray}
 \int d^3 x
 {1 \over 2 M_\pi}
-\la \pi(\vec 0) | J_t(x) J_t(0) | \pi(\vec 0) \ra
+\langle \pi(\vec 0) | J_t(x) J_t(0) | \pi(\vec 0) \rangle
 &=&
 e^2
-\ea
+\end{eqnarray}
 $$
 where
 $$

@@ -1,43 +1,34 @@
 # Heatbath for Scalar Field Theory
 
-$$
-\def \rr {\rangle}
-\def \ll {\langle}
-\def \nn {\nonumber}
-\def \ba {\begin{eqnarray}}
-\def \ea {\end{eqnarray}}
-\nn
-$$
-
 ## Action
 
 $$
-\ba
+\begin{eqnarray}
 S = \sum_x \Big(
 -\sum_\mu \phi(x+\mu)\phi(x)
 + \big(4+ \frac{1}{2}m^2\big) \phi^2(x)
 + \frac{1}{4!}\lambda \phi^4(x)
 \Big)
-\ea
+\end{eqnarray}
 $$
 
 ## Correlation functions
 
 $$
-\ba
-\phi^2 &=& \ll \phi^2(x) \rr
+\begin{eqnarray}
+\phi^2 &=& \langle \phi^2(x) \rangle
 \\
-C_2(t) &=& \ll \phi(t) \phi(0) \rr
+C_2(t) &=& \langle \phi(t) \phi(0) \rangle
 \\
-C_4(t) &=& \ll \phi^2(t) \phi^2(0) \rr
-\ea
+C_4(t) &=& \langle \phi^2(t) \phi^2(0) \rangle
+\end{eqnarray}
 $$
 
 where
 $$
-\ba
+\begin{eqnarray}
 \phi(t) = \sum_{\vec x} \sum_{t'=t}^{t+\delta t-1} \phi(\vec x, t')
-\ea
+\end{eqnarray}
 $$
 
 ## Observables
@@ -47,7 +38,7 @@ R_4(t) = \frac{C_4(t) - C_2^2(0)}{C_2^2(t)}
 $$
 
 $$
-\ba
+\begin{eqnarray}
 m_\text{eff}(t_1,t_2)
 &=&
 \frac{1}{t_2-t_1} \log\Bigg(\frac{C_2(t_1)}{C_2(t_2)} \Bigg)
@@ -58,7 +49,7 @@ V_\text{eff}(t_1,t_2)
 \log\Bigg(
 \frac{R_4(t_1)}{R_4(t_2)}
 \Bigg)
-\ea
+\end{eqnarray}
 $$
 
 ## Heatbath
@@ -70,11 +61,11 @@ $$
 $$
 
 $$
-\ba
+\begin{eqnarray}
 k_1 &=& 4+ \frac{1}{2}m^2
 \\
 k_2 &=& \frac{1}{4!}\lambda
-\ea
+\end{eqnarray}
 $$
 
 ### Sample results
@@ -116,43 +107,43 @@ n_traj=38629 ; m_eff=0.188785922011518 ; v_eff=0.018863497373480.
 ## HMC
 
 $$
-\ba
+\begin{eqnarray}
 H(\pi, \phi) = T(\pi) + S(\phi) 
-\ea
+\end{eqnarray}
 $$
 
 The kinetic term is
 $$
-\ba
+\begin{eqnarray}
 T(\pi) &=& \sum_p \frac{\pi(p)\pi(-p)}{2 \Big(4 \sin (\frac{p}{2})^2 + M^2\Big)}
 \\
 \pi(p) &=& \frac{1}{V} \sum_x \pi(x) e^{-i p \cdot x}
-\ea
+\end{eqnarray}
 $$
 Force is
 $$
-\ba
+\begin{eqnarray}
 F(x)
 &=& -\frac{\delta S(\phi)}{\delta \phi(x)}
-\nn\\
+\nonumber\\
 &=& \sum_\mu (\phi(x+\mu) + \phi(x-\mu)) - (8+m^2)\phi(x) - \frac{1}{6} \lambda \phi^3(x)
-\nn
-\ea
+\nonumber
+\end{eqnarray}
 $$
 
 ## Running of coupling
 
 $$
-\ba
+\begin{eqnarray}
 \frac{d}{d \log(1/a)} \frac{1}{\lambda(a)} = -\frac{3}{16\pi^2}
-\ea
+\end{eqnarray}
 $$
 
 After reduce $a$ by a factor of $2$, the change on $1/\lambda$ should be
 $$
-\ba
+\begin{eqnarray}
 \Delta\frac{1}{\lambda} = - \frac{3}{16\pi^2} \log(2) = 0.0132
-\ea
+\end{eqnarray}
 $$
 
 

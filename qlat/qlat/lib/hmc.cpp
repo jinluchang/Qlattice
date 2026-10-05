@@ -255,7 +255,7 @@ RealD gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
 // number of plaq: 6 * number of site
 // number of rect: 12 * number of site
 /*
-  \ba
+  \begin{eqnarray}
   S_\text{gauge}
   =&
   \frac{ \beta }{ 3 }
@@ -265,7 +265,7 @@ RealD gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
   c_1 \sum_R \mathrm{Re}\mathrm{Tr} (1 - U_R)
   \Big]
   \\
-  \ea
+  \end{eqnarray}
 */
 {
   TIMER("gf_hamilton_node_no_comm");

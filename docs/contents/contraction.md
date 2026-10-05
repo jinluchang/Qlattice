@@ -4,16 +4,6 @@
 
 > Luchang Jin
 
-$$
-\def \ra {\rangle}
-\def \la {\langle}
-\def \nn {\nonumber}
-\def \ba {\begin{eqnarray}}
-\def \ea {\end{eqnarray}}
-\def \a {a}
-\nn
-$$
-
 [TOC]
 
 ## Notation
@@ -182,14 +172,14 @@ inline LatData contract_two_point_wall_snk_function(
 ```
 
 $$
-\ba
+\begin{eqnarray}
 \text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
 &=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}}
 \sum_\vec y S_2(t_\text{src};\vec y,t_\text{snk})\big) \Gamma_{\text{op}_\text{snk}} \Big)
 \\
 &=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
 \sum_\vec y S_2(\vec y,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
-\ea
+\end{eqnarray}
 $$
 
 ### three point function
@@ -237,7 +227,7 @@ inline LatData contract_three_point_function(
 ```
 
 $$
-\ba
+\begin{eqnarray}
 \text{ld}[t_\text{sep}][t_\text{op}][\text{op}]
 = \text{Tr}
 \sum_\vec x
@@ -248,17 +238,17 @@ S_3(t_\text{src};t_\text{snk})
 \big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
 \Big)
 \Gamma_{\text{op}}
-\ea
+\end{eqnarray}
 $$
 
 ## ```contraction-field.h```
 
 $$
-\ba
+\begin{eqnarray}
 t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
 \\
 t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\ea
+\end{eqnarray}
 $$
 
 ### psel-fsel-distribution
@@ -338,7 +328,7 @@ inline void contract_meson_vv_acc(
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}
@@ -348,13 +338,13 @@ H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}
 [S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
-\ea
+\end{eqnarray}
 $$
 
 Some properties:
 
 $$
-\ba
+\begin{eqnarray}
 \big(H_\text{decay-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
 &=&
 \mathrm{Tr}
@@ -370,7 +360,7 @@ $$
 \\
 &=&
 \theta_\mu \theta_\nu H_\text{decay-2-1-3}(y-x)[8\nu+\mu]
-\ea
+\end{eqnarray}
 $$
 
 $$
@@ -380,7 +370,7 @@ $$
 $$
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 &\iff&
 \mathrm{Tr}
@@ -392,7 +382,7 @@ H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 \\
 &=&
 H_\text{decay-1-2-3}(y-x)[8\mu+\nu]
-\ea
+\end{eqnarray}
 $$
 
 Possible post processing:
@@ -434,7 +424,7 @@ inline void contract_meson_vv_meson_acc(
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}[
@@ -451,16 +441,16 @@ S_4(x;y)
 \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
 \gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
 ]
-\ea
+\end{eqnarray}
 $$
 
 Some properties:
 
 $$
-\ba
+\begin{eqnarray}
 &&\hspace{-2cm}
 \big(H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
-\nn\\
+\nonumber\\
 &=&
 \mathrm{Tr}[
 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
@@ -487,21 +477,21 @@ S_4(y;x)
 \\
 &=&
 \theta_\mu \theta_\nu H_\text{backward-2-1-3-4}(y-x)[8\nu+\mu]
-\ea
+\end{eqnarray}
 $$
 
 $$
-\ba
+\begin{eqnarray}
 \big(H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
 &=&
 \theta_\mu \theta_\nu H_\text{forward-2-1-3-4}(y-x)[8\nu+\mu]
-\ea
+\end{eqnarray}
 $$
 
 $$
-\ba
+\begin{eqnarray}
 &&\hspace{-2cm}H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
-\nn\\
+\nonumber\\
 &\iff&
 \mathrm{Tr}[
 S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu
@@ -520,7 +510,7 @@ S_4(y;x)
 \\
 &=&
 H_\text{forward-1-2-3-4}(y-x)[8\mu+\nu]
-\ea
+\end{eqnarray}
 $$
 
 Possible post processing:
@@ -596,7 +586,7 @@ H_\text{chvp-1-2} (x-y) [8\mu+\nu] = H_\text{chvp-2-1} (y-x)[8\nu+\mu]
 $$
 
 $$
-\ba
+\begin{eqnarray}
 \big(H_\text{chvp-1-2} (x-y) [8\mu+\nu] \big)^\dagger
 &=&
 \mathrm{Tr}[
@@ -612,7 +602,7 @@ H_\text{chvp-2-1}(x-y)[8\mu+\nu]
 &=&
 \theta_\mu \theta_\nu
 H_\text{chvp-1-2}(y-x)[8\nu+\mu]
-\ea
+\end{eqnarray}
 $$
 
 Possible post processing:
@@ -646,7 +636,7 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
 
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{1-2-3-4}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}[
@@ -657,7 +647,7 @@ S_1(t_\text{snk};t_\text{src})
 S_3(x;y)\gamma^{\mathrm{va}}_\nu
 S_4(y;x)\gamma^{\mathrm{va}}_\mu
 ]
-\ea
+\end{eqnarray}
 $$
 
 Some properties:
@@ -667,7 +657,7 @@ H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
 $$
 
 $$
-\ba
+\begin{eqnarray}
 \big(H_\text{1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
 &=&
 \mathrm{Tr}[
@@ -686,13 +676,13 @@ H_\text{2-1-4-3}(x-y)[8\mu+\nu]
 &=&
 \theta_\mu \theta_\nu
 H_\text{2-1-3-4}(y-x)[8\nu+\mu]
-\ea
+\end{eqnarray}
 $$
 
 $$
-\ba
+\begin{eqnarray}
 &&\hspace{-2cm}H_\text{1-2-3-4}(x-y)[8\mu+\nu]
-\nn\\
+\nonumber\\
 &\iff&
 \mathrm{Tr}[
 S_1(t_\text{src};t_\text{snk})
@@ -708,7 +698,7 @@ H_\text{2-1-3-4}(y-x)[8\mu+\nu]
 \\
 &=&
 \big(\theta_\mu \theta_\nu H_\text{1-2-3-4}(x-y)[8\nu+\mu]\big)^\dagger
-\ea
+\end{eqnarray}
 $$
 
 Possible post processing:
@@ -747,7 +737,7 @@ inline void contract_meson_v_v_meson_acc(
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{1-2-3-4}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}[
@@ -756,6 +746,6 @@ S_2(x;t_\text{src})\gamma_5
 S_3(t_\text{src};y) \gamma^{\mathrm{va}}_\nu 
 S_4(y;t_\text{snk})\gamma_5
 ]
-\ea
+\end{eqnarray}
 $$
 

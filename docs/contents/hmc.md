@@ -1,21 +1,5 @@
 :orphan:
 
-$$
-\def\ba#1\ea{\begin{align}#1\end{align}}
-\newcommand{\nn}{\nonumber}
-\newcommand{\ra}{\rangle}
-\newcommand{\la}{\langle}
-\newcommand{\bra}{\big\rangle}
-\newcommand{\bla}{\big\langle}
-\newcommand{\Bra}{\Big\rangle}
-\newcommand{\Bla}{\Big\langle}
-\newcommand{\ud}{\mathrm{d}}
-\newcommand{\a}{a}
-\nn
-$$
-
-
-
 # HMC formulation
 
 > Luchang Jin
@@ -43,7 +27,7 @@ $$
 where
 
 $$
-\ba
+\begin{align}
 {T^a}^\dagger &= - T^a
 \\
 \mathrm{tr}(T^a T^b) &= -2 \delta^{a,b}
@@ -51,13 +35,13 @@ $$
 \mathrm{tr}(T^a) &= 0
 \\
 T^a T^a &= -\frac{16}{3}
-\ea
+\end{align}
 $$
 
 ### Hamiltonian
 
 $$
-\ba
+\begin{align}
 S(U)
 =
 - \beta
@@ -65,15 +49,15 @@ S(U)
 (1 - 8 c_1) \sum_P \Big(\frac{1}{3} \mathrm{tr}(U_P) - 1\Big)
 + c_1 \sum_R \Big(\frac{1}{3} \mathrm{tr}(U_R) - 1\Big)
 \Big)
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 H(\pi^a, U) =
 \sum_{x,\mu} \big(\pi(x,\mu)^a\big)^2
 + S(U)
-\ea
+\end{align}
 $$
 
 Total number of plaq $P$ is $6 L^3 T$, total number of rectangular plaq $R$ is $12 L^3 T$​.
@@ -103,15 +87,15 @@ $$
 ### Gauge momentum evolve
 
 $$
-\ba
+\begin{align}
 \frac{d}{dt}s(x,\mu)^a &= \pi(x,\mu)^a
 \\
 \frac{d}{dt}\pi(x,\mu)^a &= - \frac{1}{2} \frac{\delta H}{\delta s(x,\mu)^a}
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 \frac{d}{dt}\pi(x,\mu)
 &=
 -\frac{1}{2} T^a \frac{\delta S}{\delta s(x,\mu)^a}
@@ -121,42 +105,42 @@ $$
 \\
 &=
 -\frac{\beta}{3} \mathcal P \big\{ U(x,\mu) C^\dagger(x,\mu) \big\}
-\ea
+\end{align}
 $$
 
 where
 
 $$
-\ba
+\begin{align}
 C(x,\mu)
 &=
 (1 - 8 c_1)
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x + \hat\nu,\mu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x+\hat\nu,\nu)U(x + 2\hat\nu,\mu)U(x + 2\hat\nu + \hat\mu,-\nu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,-\mu)U(x-\hat\mu,\nu)U(x-\hat\mu + \hat\nu,\mu)U(x + \hat\nu,\mu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x + \hat\nu,\mu)U(x + \hat\mu + \hat\nu,\mu)U(x + \hat\nu + 2\hat\mu,-\nu)U(x + 2\hat\mu,-\mu)
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 \mathcal P \{m\}
 =
 \frac{1}{2}(m - m^\dagger) - \frac{1}{6}\mathrm{tr}(m - m^\dagger)
-\ea
+\end{align}
 $$
 
 Note $\mathcal P\{T^a\} = T^a$.

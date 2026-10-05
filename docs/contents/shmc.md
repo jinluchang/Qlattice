@@ -1,21 +1,5 @@
 :orphan:
 
-$$
-\def\ba#1\ea{\begin{align}#1\end{align}}
-\newcommand{\nn}{\nonumber}
-\newcommand{\ra}{\rangle}
-\newcommand{\la}{\langle}
-\newcommand{\bra}{\big\rangle}
-\newcommand{\bla}{\big\langle}
-\newcommand{\Bra}{\Big\rangle}
-\newcommand{\Bla}{\Big\langle}
-\newcommand{\ud}{\mathrm{d}}
-\newcommand{\a}{a}
-\nn
-$$
-
-
-
 # SHMC formulation
 
 > Luchang Jin
@@ -33,9 +17,9 @@ $$
 Let
 
 $$
-\ba
+\begin{align}
 U(x,\mu) = U_1(x,\mu) U_2^\dagger(x,\mu)
-\ea
+\end{align}
 $$
 
 We can also treat $U_1$ and $U_2$ as the integration variable in the path integral.
@@ -43,25 +27,25 @@ We can also treat $U_1$ and $U_2$ as the integration variable in the path integr
 ### Gauge momentum convention
 
 $$
-\ba
+\begin{align}
 \pi_1(x,\mu) =& \pi_1(x,\mu)^a T^a
 \\
 \pi_2(x,\mu) =& \pi_2(x,\mu)^a T^a
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 \pi_1^a \sim N\Big(0,\frac{1}{\sqrt{2}}\Big) \sim e^{-(\pi_1^a)^2}
 \\
 \pi_2^a \sim N\Big(0,\frac{1}{\sqrt{2}}\Big) \sim e^{-(\pi_2^a)^2}
-\ea
+\end{align}
 $$
 
 where
 
 $$
-\ba
+\begin{align}
 {T^a}^\dagger &= - T^a
 \\
 \mathrm{tr}(T^a T^b) &= -2 \delta^{a,b}
@@ -69,13 +53,13 @@ $$
 \mathrm{tr}(T^a) &= 0
 \\
 T^a T^a &= -\frac{16}{3}
-\ea
+\end{align}
 $$
 
 ### Hamiltonian
 
 $$
-\ba
+\begin{align}
 S(U)
 =
 - \beta
@@ -83,17 +67,17 @@ S(U)
 (1 - 8 c_1) \sum_P \Big(\frac{1}{3} \mathrm{tr}(U_P) - 1\Big)
 + c_1 \sum_R \Big(\frac{1}{3} \mathrm{tr}(U_R) - 1\Big)
 \Big)
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 H(\pi^a, U) =
 \sum_{x,\mu} \big(\pi_1(x,\mu)^a\big)^2
 +
 \sum_{x,\mu} \big(\pi_2(x,\mu)^a\big)^2
 + S(U)
-\ea
+\end{align}
 $$
 
 Total number of plaq $P$ is $6 L^3 T$, total number of rectangular plaq $R$ is $12 L^3 T$​.
@@ -107,39 +91,39 @@ DBW2: $c_1 = -1.4008$
 ### Gauge evolve
 
 $$
-\ba
+\begin{align}
 U(x,\mu)
 \gets
 e^{\pi_1(x,\mu) dt} U(x,\mu) e^{-\pi_2(x,\mu) dt}
 =
 e^{\pi_1(x,\mu)^a T^a dt} U(x,\mu) e^{-\pi_2(x,\mu)^a T^a dt}
-\ea
+\end{align}
 $$
 
 Conceptually:
 
 $$
-\ba
+\begin{align}
 U_1(x,\mu) \gets e^{\pi_1(x,\mu) dt} U(x,\mu) =& e^{\pi_1(x,\mu)^a T^a dt} U_1(x,\mu)
 \\
 U_2(x,\mu) \gets e^{\pi_2(x,\mu) dt} U(x,\mu) =& e^{\pi_2(x,\mu)^a T^a dt} U_2(x,\mu)
-\ea
+\end{align}
 $$
 
 Convention for gauge field change:
 
 $$
-\ba
+\begin{align}
 U(x,\mu)
 \gets
 e^{d s_1 (x,\mu)^a T^a}
 U(x,\mu)
 e^{-d s_2 (x,\mu)^a T^a}
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 d U(x,\mu)
 \approx &
 d s_1(x,\mu)^a T^a
@@ -167,29 +151,29 @@ U^{ba}(x,\mu)
 \Big)
 T^a
 U(x,\mu)
-\ea
+\end{align}
 $$
 
 where we define
 
 $$
-\ba
+\begin{align}
 U^{ba}(x,\mu) T^a = U(x,\mu) T^b U^{-1}(x,\mu)
-\ea
+\end{align}
 $$
 
 therefore
 
 $$
-\ba
+\begin{align}
 U^{ba}(x,\mu) T^b = U^{-1}(x,\mu) T^a U(x,\mu)
-\ea
+\end{align}
 $$
 
 ### Gauge momentum evolve
 
 $$
-\ba
+\begin{align}
 \frac{d}{dt}s_1(x,\mu)^a &= \pi_1(x,\mu)^a
 \\
 \frac{d}{dt}s_2(x,\mu)^a &= \pi_2(x,\mu)^a
@@ -197,11 +181,11 @@ $$
 \frac{d}{dt}\pi_1(x,\mu)^a &= - \frac{1}{2} \frac{\delta H}{\delta s_1(x,\mu)^a}
 \\
 \frac{d}{dt}\pi_2(x,\mu)^a &= - \frac{1}{2} \frac{\delta H}{\delta s_2(x,\mu)^a}
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 \frac{d}{dt}\pi_1(x,\mu)
 &=
 -\frac{1}{2} T^a \frac{\delta S}{\delta s_1(x,\mu)^a}
@@ -211,24 +195,24 @@ $$
 \\
 &=
 -\frac{\beta}{3} \mathcal P \big\{ U(x,\mu) C^\dagger(x,\mu) \big\}
-\ea
+\end{align}
 $$
 
 Note:
 
 $$
-\ba
+\begin{align}
 \frac{\delta S}{\delta s_2(x,\mu)^a}
 =
 -U^{ba}(x,\mu)
 \frac{\delta S}{\delta s_1(x,\mu)^b}
-\ea
+\end{align}
 $$
 
 Therefore
 
 $$
-\ba
+\begin{align}
 \frac{d}{dt}\pi_2(x,\mu)
 &=
 -\frac{1}{2} T^b \frac{\delta S}{\delta s_2(x,\mu)^b}
@@ -241,42 +225,42 @@ $$
 \\
 &=
 - U^{-1}(x,\mu) \frac{d}{dt}\pi_1(x,\mu) U(x,\mu)
-\ea
+\end{align}
 $$
 
 where
 
 $$
-\ba
+\begin{align}
 C(x,\mu)
 &=
 (1 - 8 c_1)
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x + \hat\nu,\mu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x+\hat\nu,\nu)U(x + 2\hat\nu,\mu)U(x + 2\hat\nu + \hat\mu,-\nu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,-\mu)U(x-\hat\mu,\nu)U(x-\hat\mu + \hat\nu,\mu)U(x + \hat\nu,\mu)U(x + \hat\nu + \hat\mu,-\nu)
-\nn\\&\quad
+\nonumber\\&\quad
 +
 c_1
 \sum_{\nu\,(\nu\neq\mu)}
 U(x,\nu)U(x + \hat\nu,\mu)U(x + \hat\mu + \hat\nu,\mu)U(x + \hat\nu + 2\hat\mu,-\nu)U(x + 2\hat\mu,-\mu)
-\ea
+\end{align}
 $$
 
 $$
-\ba
+\begin{align}
 \mathcal P \{m\}
 =
 \frac{1}{2}(m - m^\dagger) - \frac{1}{6}\mathrm{tr}(m - m^\dagger)
-\ea
+\end{align}
 $$
 
 Note $\mathcal P\{T^a\} = T^a$.

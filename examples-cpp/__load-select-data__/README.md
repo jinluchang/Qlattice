@@ -2,16 +2,6 @@
 
 > Luchang Jin
 
-$$
-\def \ra {\rangle}
-\def \la {\langle}
-\def \nn {\nonumber}
-\def \ba {\begin{eqnarray}}
-\def \ea {\end{eqnarray}}
-\def \a {a}
-\nn
-$$
-
 [TOC]
 
 ## Contraction functions
@@ -103,14 +93,14 @@ ssprintf("/two-point-wall-snk-sparse-corrected-%d-%d.lat", type1, type2)
 ```
 
 $$
-\ba
+\begin{eqnarray}
 \text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
 &=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}}
 \sum_\vec y S_2(t_\text{src};\vec y,t_\text{snk})\big) \Gamma_{\text{op}_\text{snk}} \Big)
 \\
 &=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
 \sum_\vec y S_2(\vec y,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
-\ea
+\end{eqnarray}
 $$
 
 ## ``compute-three-point-func.h``
@@ -131,7 +121,7 @@ ssprintf("/three-point-%d-%d-%d.lat", type1, type2, type3)
 ```
 
 $$
-\ba
+\begin{eqnarray}
 \text{ld}[t_\text{sep}][t_\text{op}][\text{op}]
 = \text{Tr}
 \sum_\vec x
@@ -142,7 +132,7 @@ S_3(t_\text{src};t_\text{snk})
 \big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
 \Big)
 \Gamma_{\text{op}} 
-\ea
+\end{eqnarray}
 $$
 
 ## ``compute-psel-fsel-distribution.h``
@@ -192,20 +182,20 @@ ssprintf("/decay-%d-%d-%d.field", type1, type2, type3)
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
 &=&\mathrm{Tr}
 [S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
-\ea
+\end{eqnarray}
 $$
 
 where:
 $$
-\ba
+\begin{eqnarray}
 t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
 \\
 t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\ea
+\end{eqnarray}
 $$
 and for $t_\text{sep}$:
 
@@ -245,7 +235,7 @@ ssprintf("/forward-%d-%d-%d-%d.field", type1, type2, type3, type4)
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{forward}(x-y)[8\mu+\nu]
 &=&\mathrm{Tr}[
 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
@@ -253,16 +243,16 @@ S_4(x;y)
 \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
 \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
 ]
-\ea
+\end{eqnarray}
 $$
 
 where:
 $$
-\ba
+\begin{eqnarray}
 t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
 \\
 t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\ea
+\end{eqnarray}
 $$
 and for $t_\text{sep}$:
 
@@ -373,7 +363,7 @@ ssprintf("/mchvp-%d-%d-%d-%d.field", type1, type2, type3, type4);
 ```
 
 $$
-\ba
+\begin{eqnarray}
 H_\text{1-2-3-4}(x-y)[8\mu+\nu]
 &\texttt{ += }&
 \mathrm{Tr}[
@@ -384,16 +374,16 @@ S_1(t_\text{snk};t_\text{src})
 S_3(x;y)\gamma^{\mathrm{va}}_\nu
 S_4(y;x)\gamma^{\mathrm{va}}_\mu
 ]
-\ea
+\end{eqnarray}
 $$
 
 where:
 $$
-\ba
+\begin{eqnarray}
 t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
 \\
 t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\ea
+\end{eqnarray}
 $$
 and for $t_\text{sep}$:
 

@@ -2,16 +2,6 @@
 
 > Luchang Jin
 
-$$
-\def \ra {\rangle}
-\def \la {\langle}
-\def \nn {\nonumber}
-\def \ba {\begin{eqnarray}}
-\def \ea {\end{eqnarray}}
-\def \a {a}
-\nn
-$$
-
 [TOC]
 
 ## Notation
@@ -85,7 +75,7 @@ where $t_\text{sep} = t_\text{snk} - t_\text{src}$.
 ### ``three-point-{type1}-{type2}-{type3}``
 
 $$
-\ba
+\begin{eqnarray}
 \text{dataset}[t_\text{sep}][t_\text{op}]
 = \text{Tr}
 \sum_\vec x
@@ -96,7 +86,7 @@ S_3(t_\text{src};t_\text{snk})
 \big( \gamma_5 S_2(t_\text{snk};\vec x,t_\text{op})^\dagger \gamma_5 \big)
 \gamma_t
 \Big)
-\ea
+\end{eqnarray}
 $$
 
 where $t_\text{sep} = t_\text{snk} - t_\text{src}$.
@@ -105,7 +95,7 @@ where $t_\text{sep} = t_\text{snk} - t_\text{src}$.
 
 <img src="figs/matrix-elements/png/fig-3.png" width=400px />
 $$
-\ba
+\begin{eqnarray}
 H_\text{forward}[l][x_t-y_t][\mu][\nu]
 &=&
 \sum_\vec x
@@ -116,16 +106,16 @@ S_4(x;y)
 \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
 \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
 ]
-\ea
+\end{eqnarray}
 $$
 
 where:
 $$
-\ba
+\begin{eqnarray}
 t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
 \\
 t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\ea
+\end{eqnarray}
 $$
 and for $t_\text{sep}$:
 
