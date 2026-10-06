@@ -26,11 +26,11 @@ URL = {https://doi.org/10.1214/aos/1176350142}
 Below, we concisely describe our implementation of the method in the context of lattice QCD calculations. Let $C_j$ be the initial data, and $j$ is the index of the configuration. For example, $C_j$ can be a correlation function measured on the configuration $j$. For a particular $j$, $C_j$ can be one number or a set of numbers. The average of the data is:
 
 $$
-\begin{align}
+\begin{aligned}
 C_\text{avg} = \frac{1}{N} \sum_{j} C_j
 ,
 \\
-\end{align}
+\end{aligned}
 $$
 
 where the summation ranges over all available configurations, $N$ is the total number of available configurations for this observable $C$.
@@ -38,7 +38,7 @@ where the summation ranges over all available configurations, $N$ is the total n
 We intend to define the Jackknife-bootstrap hybrid (J-B hybrid) samples to fluctuate around $C_\text{avg}$ similar to how $C_\text{avg}$ fluctuate around the true expectation value of $C$. The total number of J-B hybrid samples is $N_\text{rs}$. Similar to the standard bootstrap procedure, this number is adjustable. The definition of the J-B hybrid samples is
 
 $$
-\begin{align}
+\begin{aligned}
 \overline{C}_{i}
 =
 C_\text{avg}
@@ -48,20 +48,20 @@ C_\text{avg}
 (C_j - C_\text{avg})
 ,
 \\
-\end{align}
+\end{aligned}
 $$
 
 where $i$ is the resampling sample index that ranges from $1$ to $N_\text{rs}$. The random weights $r_{i,j}$ follow the standard normal distribution with
 
 $$
-\begin{align}
+\begin{aligned}
 \mathrm{E}(r_{i,j}) =& 0
 ,
 \\
 \mathrm{E}(r_{i,j}^2) =& 1
 .
 \\
-\end{align}
+\end{aligned}
 $$
 
 The random numbers $r_{i,j}$ with different $i$ or $j$ indices are statistically independent. Note that the $j$ index should uniquely label the configuration, including both the ID for the ensemble and the trajectory number of the configuration within the ensemble.
@@ -69,14 +69,14 @@ The random numbers $r_{i,j}$ with different $i$ or $j$ indices are statistically
 After the J-B hybrid samples are obtained, we can calculate the estimation of the central value and the statistical error of observable $O$.
 
 $$
-\begin{align}
+\begin{aligned}
 O_\text{avg} =& O(C_\text{avg})
 ,
 \\
 O_\text{err} =& \sqrt{\frac{1}{N_\text{rs}}\sum_{i=1}^{N_\text{rs}} (O(\overline{C}_i) - O_\text{avg})^2}
 .
 \\
-\end{align}
+\end{aligned}
 $$
 
 ## Blocking
@@ -86,33 +86,33 @@ To deal with possible correlation between the data from different configurations
 We introduce the blocking function acting on the J-B hybrid sample index $i$ and the configuration index $j$
 
 $$
-\begin{align}
+\begin{aligned}
 b(i,j).
-\end{align}
+\end{aligned}
 $$
 
 The function should return unique label for the block that the configuration $j$ belongs to. Note that the blocking schemes can be different for different J-B hybrid sample index ($i$). Typically, we should keep the blocking size the same. However, we may choose different the blocking boundaries for different J-B hybrid samples. The number of configurations within a block is denoted as
 
 $$
-\begin{align}
+\begin{aligned}
 N_{b(i,j)}.
-\end{align}
+\end{aligned}
 $$
 
 With blocking, the definition of the average is the same as before,
 
 $$
-\begin{align}
+\begin{aligned}
 C_\text{avg} = \frac{1}{N} \sum_{j} C_j
 .
 \\
-\end{align}
+\end{aligned}
 $$
 
 The definition of the J-B hybrid samples is slightly altered as
 
 $$
-\begin{align}
+\begin{aligned}
 \overline{C}_{i}
 =
 C_\text{avg}
@@ -122,7 +122,7 @@ C_\text{avg}
 (C_j - C_\text{avg})
 .
 \\
-\end{align}
+\end{aligned}
 $$
 
 Note that the random weights $r_{i,b(i,j)}$ depends on the label of the block ($b(i,j)$), instead of the index of the configuration ($j$).
