@@ -333,6 +333,14 @@ The Sphinx site is built from `docs/` and deployed to
 - keep the guides consistent with the code when behavior changes;
 - use the same reStructuredText-ish style as the surrounding text.
 
+Sphinx does not report LaTeX that MathJax cannot render (for example a display
+environment such as `align` or `eqnarray` nested in the `split` wrapper Sphinx
+adds around display math that contains a line break): the equation silently
+becomes an error box in the html. After changing documentation with equations,
+build it (`nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat_docs -o tmp/result-docs`)
+and render it with `./nixpkgs/check-qlat-docs-math.py`, which opens every page
+that contains math in headless chromium and reports the failing expressions.
+
 ## Key Directories
 
 | Path | Contents |
