@@ -795,6 +795,35 @@ def get_gathered_jk_arr(jk_local, comm, num_node):
     )
     return jk_arr
 
+def get_jk_rows(fac_r_arr, data_diff):
+    r"""
+    Return the contribution of the local data to every sample, i.e.
+    ``sum_j fac_r_arr[i, j] data_diff[j]``, with shape ``(n_sample,
+    *data_diff.shape[1:])`` and ``n_sample = fac_r_arr.shape[0]``.\n
+    ``fac_r_arr`` has shape ``(n_sample, n_data)`` and ``data_diff`` has shape
+    ``(n_data_diff, *elem_shape)``; the contraction sums over the
+    ``n_data_diff`` data points of ``data_diff`` (``n_data`` and
+    ``n_data_diff`` usually agree, and a caller may restrict both to the same
+    subset of the data).\n
+    The contraction is a matrix product, which is evaluated by BLAS without
+    materializing the broadcast temporary of
+    ``fac_r_arr[:, :, None, ...] * data_diff[None]``: that temporary has
+    ``n_sample * n_data * prod(elem_shape)`` elements, while the result has
+    only ``n_sample * prod(elem_shape)``.  The matrix product is mathematically
+    identical to the broadcast contraction; it only changes the order of the
+    floating-point additions.  The node which holds no data (``n_data == 0``)
+    returns zeros.
+    """
+    n_sample, n_data = fac_r_arr.shape
+    n_data_diff = data_diff.shape[0]
+    elem_shape = tuple(data_diff.shape[1:])
+    if n_data == 0 or n_data_diff == 0:
+        return np.zeros((n_sample,) + elem_shape, dtype=data_diff.dtype)
+    return np.matmul(
+        fac_r_arr,
+        data_diff.reshape(n_data_diff, -1),
+    ).reshape((n_sample,) + elem_shape)
+
 @q.timer
 def rjackknife(
     data_list,
@@ -891,10 +920,8 @@ def rjackknife(
     fac_arr = -eps / np.sqrt(n * n_b_arr)
     fac_arr[n <= b_arr] = 0
     fac_r_arr = fac_arr * r_arr
-    pad_shape = (1,) * len(data_arr[0].shape)
-    fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
     data_diff = data_arr - avg
-    jk_rows = avg + np.sum(fac_r_arr * data_diff, axis=1)
+    jk_rows = avg + get_jk_rows(fac_r_arr, data_diff)
     jk_arr = np.empty(
         (
             1 + n_rand_sample,
@@ -981,10 +1008,13 @@ def rjackknife_distributed(
     fac_arr = -eps / np.sqrt(n * n_b_arr)
     fac_arr[n <= b_arr] = 0
     fac_r_arr = fac_arr * r_arr
-    pad_shape = (1,) * len(elem_shape)
-    fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
     data_diff = data_arr - avg
-    partial_arr[1:] = np.sum(fac_r_arr * data_diff, axis=1)
+    # The contraction is a matrix product (``get_jk_rows``), which does not
+    # materialize the broadcast temporary of
+    # ``fac_r_arr[:, :, None, ...] * data_diff[None]``, whose size
+    # ``n_rand_sample * n_local * prod(elem_shape)`` used to be the peak memory
+    # of the operation.
+    partial_arr[1:] = get_jk_rows(fac_r_arr, data_diff)
     return get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg)
 
 @q.timer

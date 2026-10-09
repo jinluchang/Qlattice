@@ -194,6 +194,15 @@ collective operation and every node must call it with the same parameters.
 The result agrees with `rjackknife` up to the floating-point roundoff but not
 bit-for-bit. `g_mk_jk_distributed` dispatches to it.
 
+The contribution of the local data to the samples is computed with a matrix
+product (`get_jk_rows`), which is evaluated by BLAS and does not materialize
+the broadcast temporary of `fac_r_arr[:, :, None, ...] * data_diff[None]`,
+whose size is `n_rand_sample * n_local * prod(elem_shape)` — the peak memory
+of the operation, several orders of magnitude larger than the result when the
+data point is a large array. The peak memory is then the `partial_arr` of
+`(1 + n_rand_sample, *elem_shape)` which is reduce-scattered (one full-size
+buffer per node, as before).
+
 ### `rjackknife_sync_node(data_list, jk_idx_list, *, avg=None, ...)`
 
 `rjackknife` as a collective MPI operation where every node has the whole
@@ -388,6 +397,15 @@ summed with `Reduce_scatter` and `avg` is added to the samples. `partial_arr`
 may be any array, in particular a non-contiguous view such as a column of a 2-D
 array (a contiguous copy is made when needed, since the buffer of the
 collective must be contiguous).
+
+### `get_jk_rows(fac_r_arr, data_diff)`
+
+Return `sum_j fac_r_arr[i, j] data_diff[j]`, the contribution of the local data
+to every sample, with `fac_r_arr` of shape `(n_sample, n_data)` and
+`data_diff` of shape `(n_data, *elem_shape)`. The contraction is a matrix
+product, so that BLAS evaluates it without the much larger broadcast temporary
+of `fac_r_arr[:, :, None, ...] * data_diff[None]`; the node which holds no data
+(`n_data == 0`) returns zeros.
 
 ### `get_gathered_jk_arr(jk_local, comm, num_node)`
 
