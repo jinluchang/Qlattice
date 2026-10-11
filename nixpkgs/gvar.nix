@@ -9,6 +9,7 @@
 , oldest-supported-numpy
 # dependencies
 , scipy
+, mpmath
 # tests
 #
 , use-gitee ? null
@@ -44,6 +45,7 @@ in buildPythonPackage rec {
   dependencies = [
     numpy
     scipy
+    mpmath
   ];
 
   meta = {
