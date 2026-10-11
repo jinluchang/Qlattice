@@ -210,7 +210,9 @@ on-disk persistence.
 | `is_sync_node` | `True` | Disk cache is sync'd across nodes |
 | `cache` | `None` | Provide an existing `LRUCache` instance to share across functions |
 
-The decorated function gains two attributes:
+The decorated function gains three attributes:
+- `func.func` — the original, uncached function (also available as
+  `func.__wrapped__`, which `functools.wraps` sets).
 - `func.cache` — the underlying `LRUCache` instance.
 - `func.clear()` — clears the in-memory cache.
 

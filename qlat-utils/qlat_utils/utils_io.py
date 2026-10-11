@@ -286,6 +286,7 @@ def cache_call(
         @cache_call(maxsize=128, get_state=lambda: (block_size, block_size_dict,), is_hash_args=True)
         def func(x):
             return x**2\n
+        func.func # return the original not cached function.
         func.cache # returns the underlying lru_cache object.
         func.clear() # clears the underlying lru_cache cache object.
     """
@@ -340,6 +341,7 @@ def cache_call(
                 save_bytes(func_args_str, fn_info, is_sync_node=is_sync_node)
             return ret
         #
+        func.func = f
         func.cache = cache
         func.clear = lambda: cache.clear()
         return func
