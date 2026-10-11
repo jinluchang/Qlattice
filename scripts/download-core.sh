@@ -56,7 +56,7 @@ fi
 if [ -d Grid-clehner ] ; then
     ( cd Grid-clehner ; git pull )
 else
-    git clone https://github.com/lehner/Grid.git Grid-clehner
+    git clone https://github.com/jinluchang/Grid-clehner.git Grid-clehner
 fi
 
 if [ -e Grid-clehner/configure ] ; then
@@ -80,7 +80,7 @@ fi
 if [ -d gpt ] ; then
     ( cd gpt ; git pull )
 else
-    git clone https://github.com/lehner/gpt.git
+    git clone https://github.com/jinluchang/gpt.git
 fi
 
 if [ -d gpt-ljin ] ; then
