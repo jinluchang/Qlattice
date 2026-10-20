@@ -59,7 +59,7 @@ in stdenv.mkDerivation {
     automake
     which
   ]
-  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ cudaPackages.cuda_nvcc ]
   ;
 
   propagatedBuildInputs = [
@@ -75,13 +75,13 @@ in stdenv.mkDerivation {
     mpfr
   ]
   ++ lib.optional stdenv.cc.isClang openmp
-  ++ lib.optionals cudaSupport (with cudaPackages; [
-    cuda_cccl
-    cuda_cudart
-    cuda_profiler_api
-    libcublas
-    libcufft
-  ])
+  ++ lib.optionals cudaSupport [
+    cudaPackages.cuda_cccl
+    cudaPackages.cuda_cudart
+    cudaPackages.cuda_profiler_api
+    cudaPackages.libcublas
+    cudaPackages.libcufft
+  ]
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
 

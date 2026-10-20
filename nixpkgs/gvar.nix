@@ -52,7 +52,7 @@ in buildPythonPackage rec {
     description = "Utilities for manipulating correlated Gaussian random variables.";
     homepage = "https://github.com/gplepage/gvar";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [];
+    maintainers = [];
   };
 
 }

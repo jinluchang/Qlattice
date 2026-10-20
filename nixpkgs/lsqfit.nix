@@ -54,7 +54,7 @@ in buildPythonPackage rec {
     description = "Utilities for nonlinear least-squares fits.";
     homepage = "https://github.com/gplepage/lsqfit";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [];
+    maintainers = [];
   };
 
 }

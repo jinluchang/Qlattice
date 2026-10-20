@@ -56,12 +56,9 @@ in let
   inherit (q-pkgs) nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
 
   pkgs = q-pkgs."pkgs${qlat-name}";
-  qlat = pkgs.qlat;
+  inherit (pkgs) bash git lib meson mpi mpiCheckPhaseHook ninja openssh pkg-config qlat time which;
   opts = pkgs.qlat-options;
   cudaSupport = opts.use-cuda-software;
-
-  lib = pkgs.lib;
-  mpi = pkgs.mpi;
 
 in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }) rec {
 
@@ -76,16 +73,16 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
   build-system = [ qlat ];
 
   nativeBuildInputs = [
-    pkgs.git
-    pkgs.time
+    git
+    time
     mpi
-    pkgs.mpiCheckPhaseHook
-    pkgs.openssh
-    pkgs.which
-    pkgs.meson
-    pkgs.ninja
-    pkgs.pkg-config
-  ] ++ lib.optionals cudaSupport (with pkgs.cudaPackages; [ cuda_nvcc ]);
+    mpiCheckPhaseHook
+    openssh
+    which
+    meson
+    ninja
+    pkg-config
+  ] ++ lib.optionals cudaSupport [ pkgs.cudaPackages.cuda_nvcc ];
 
   dependencies = [ qlat ];
 
@@ -104,7 +101,7 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
     '' + (if cudaSupport then gpu_extra else cpu_extra);
   in extra + ''
     export OMP_NUM_THREADS=2
-    export SHELL=${pkgs.bash}/bin/bash
+    export SHELL=${bash}/bin/bash
     export LD_LIBRARY_PATH="$(python3 -m qlat qlat-config --LD_LIBRARY_PATH)"
     make -f ../Makefile -C ${test-name} run-proj SHELL=$SHELL
     echo

@@ -58,7 +58,7 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
     which
     rsync
   ]
-  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ cudaPackages.cuda_nvcc ]
   ;
 
   propagatedBuildInputs = [

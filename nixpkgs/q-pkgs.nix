@@ -37,7 +37,7 @@ in let
     #
     pkgs = prev-g;
     #
-    lib = pkgs.lib;
+    inherit (pkgs) buildEnv buildFHSEnv cudaPackages lib mkShell;
     #
     is-linux = (lib.lists.elem builtins.currentSystem lib.platforms.linux);
     #
@@ -49,7 +49,7 @@ in let
     qlat-stdenv = if opts.use-clang
     then pkgs.clangStdenv
     else if opts.use-cuda
-    then pkgs.cudaPackages.backendStdenv
+    then cudaPackages.backendStdenv
     else pkgs.gccStdenv;
     #
     openmp = if qlat-stdenv.cc.isClang
@@ -72,10 +72,10 @@ in let
     (if opts.use-clang then { inherit openmp; } else {})
     //
     (if opts.use-cuda-software then ({
-      cuda_cudart = lib.meta.hiPrio pkgs.cudaPackages.cuda_cudart;
+      cuda_cudart = lib.meta.hiPrio cudaPackages.cuda_cudart;
     }
     // {
-      inherit (pkgs.cudaPackages)
+      inherit (cudaPackages)
       cuda_nvcc
       cuda_cccl
       cuda_profiler_api
@@ -101,7 +101,7 @@ in let
     })).override {
       enableCuda = opts.use-cuda-software;
     };
-    ucx-mt-dev = pkgs.buildEnv {
+    ucx-mt-dev = buildEnv {
       name = "ucx-mt-dev";
       paths = [ ucx-mt ];
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
@@ -116,7 +116,6 @@ in let
     else (pkgs.mpi.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags
       ++ (let
-        cudaPackages = pkgs.cudaPackages;
         cudaSupport = opts.use-cuda-software;
         use-ucx = opts.use-ucx;
       in [
@@ -393,18 +392,18 @@ in let
     }
     // qlat-dep-pkgs
     // qlat-dep-pkgs-extra;
-    qlat-tests = pkgs.buildEnv {
+    qlat-tests = buildEnv {
       name = "qlat-tests${qlat-name}";
       paths = builtins.attrValues qlat-tests-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
     };
-    qlat-env = pkgs.buildEnv {
+    qlat-env = buildEnv {
       name = "qlat-env${qlat-name}";
       paths = builtins.attrValues qlat-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       # ignoreCollisions = true;
     };
-    qlat-sh = pkgs.mkShell rec {
+    qlat-sh = mkShell rec {
       name = "qlat-sh${qlat-name}";
       packages = [ qlat-env ];
       inputsFrom = packages;
@@ -412,7 +411,7 @@ in let
       shellHook = ''
       '';
     };
-    qlat-fhs = pkgs.buildFHSEnv {
+    qlat-fhs = buildFHSEnv {
       name = "qlat-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-env
@@ -655,7 +654,7 @@ in let
     // qlat-dep-pkgs
     // qlat-dep-pkgs-extra
     );
-    qlat-jhub-env = pkgs.buildEnv {
+    qlat-jhub-env = buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
@@ -675,7 +674,7 @@ in let
         EOF
       '';
     };
-    qlat-jhub-sh = pkgs.mkShell rec {
+    qlat-jhub-sh = mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
       inputsFrom = packages;
@@ -683,7 +682,7 @@ in let
       shellHook = ''
       '';
     };
-    qlat-jhub-fhs = pkgs.buildFHSEnv {
+    qlat-jhub-fhs = buildFHSEnv {
       name = "qlat-jhub-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-jhub-env

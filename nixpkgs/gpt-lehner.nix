@@ -64,7 +64,7 @@ buildPythonPackage {
     flock
     rsync
   ]
-  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ cudaPackages.cuda_nvcc ]
   ;
 
   propagatedBuildInputs = [

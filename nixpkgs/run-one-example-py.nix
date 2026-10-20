@@ -56,12 +56,10 @@ in let
   inherit (q-pkgs) nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
 
   pkgs = q-pkgs."pkgs${qlat-name}";
-  qlat = pkgs.qlat;
   opts = pkgs.qlat-options;
   cudaSupport = opts.use-cuda-software;
 
-  lib = pkgs.lib;
-  mpi = pkgs.mpi;
+  inherit (pkgs) bash git lib mpi mpiCheckPhaseHook openssh qlat time which;
 
 in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }) rec {
 
@@ -76,13 +74,13 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
   build-system = [ qlat ];
 
   nativeBuildInputs = [
-    pkgs.git
-    pkgs.time
+    git
+    time
     mpi
-    pkgs.mpiCheckPhaseHook
-    pkgs.openssh
-    pkgs.which
-  ] ++ lib.optionals cudaSupport (with pkgs.cudaPackages; [ cuda_nvcc ]);
+    mpiCheckPhaseHook
+    openssh
+    which
+  ] ++ lib.optionals cudaSupport [ pkgs.cudaPackages.cuda_nvcc ];
 
   dependencies = [ qlat ];
 
@@ -101,7 +99,7 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
     '' + (if cudaSupport then gpu_extra else cpu_extra);
   in extra + ''
     export OMP_NUM_THREADS=2
-    export SHELL=${pkgs.bash}/bin/bash
+    export SHELL=${bash}/bin/bash
     make -B ${test-name}.log SHELL=$SHELL
     echo
     if [ ! -d "${test-name}.py.p" ] ; then

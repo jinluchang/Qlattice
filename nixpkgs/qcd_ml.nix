@@ -42,7 +42,7 @@ in buildPythonPackage rec {
     description = "Machine learning tools for QCD";
     homepage = "https://github.com/daknuett/qcd_ml";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [];
+    maintainers = [];
   };
 
 }

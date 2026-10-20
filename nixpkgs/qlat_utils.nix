@@ -57,7 +57,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     which
     bash
   ]
-  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ cudaPackages.cuda_nvcc ]
   ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
@@ -66,13 +66,13 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     eigen
   ]
   ++ lib.optional stdenv.cc.isClang openmp
-  ++ lib.optionals cudaSupport (with cudaPackages; [
-    cuda_cccl
-    cuda_cudart
-    cuda_profiler_api
-    libcublas
-    libcufft
-  ])
+  ++ lib.optionals cudaSupport [
+    cudaPackages.cuda_cccl
+    cudaPackages.cuda_cudart
+    cudaPackages.cuda_profiler_api
+    cudaPackages.libcublas
+    cudaPackages.libcufft
+  ]
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
 

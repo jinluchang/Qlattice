@@ -44,7 +44,7 @@ in buildPythonPackage rec {
     description = "Tools for adaptive multidimensional Monte Carlo integration.";
     homepage = "https://github.com/gplepage/vegas";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [];
+    maintainers = [];
   };
 
 }

@@ -45,7 +45,7 @@ in buildPythonPackage rec {
     description = "Utilities for fitting correlators in lattice QCD.";
     homepage = "https://github.com/gplepage/corrfitter";
     license = lib.licenses.gpl3Plus;
-    maintainers = with lib.maintainers; [];
+    maintainers = [];
   };
 
 }
