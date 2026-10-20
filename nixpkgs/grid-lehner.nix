@@ -43,7 +43,6 @@ let
     ref = "feature/gpt";
     rev = version;
   };
-  src-local = builtins.fetchGit ../distfiles/Grid-ljin;
 in stdenv.mkDerivation {
 
   inherit pname version;

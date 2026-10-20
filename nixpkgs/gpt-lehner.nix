@@ -37,7 +37,6 @@ let
     ref = "master";
     rev = version;
   };
-  src-local = builtins.fetchGit ../distfiles/gpt-ljin;
 in
 
 buildPythonPackage {
