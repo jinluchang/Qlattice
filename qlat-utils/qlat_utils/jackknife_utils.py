@@ -422,7 +422,7 @@ def sjk_avg_err(jk_arr, *, eps=1):
 # ----------
 
 @q.timer
-def fill_garr_dict(
+def _fill_garr_dict(
     rng_state,
     garr_dict,
     name_list,
@@ -451,7 +451,7 @@ def fill_garr_dict(
             assert abs(q.qnorm(garr) / n_rand_sample - 1) < 1e-8
         garr_dict[name] = garr
 
-def apply_jk_fac(r_arr, b_arr, n, eps):
+def _apply_jk_fac(r_arr, b_arr, n, eps):
     r"""
     Multiply ``r_arr`` in place by the jackknife factor.\n
     The factor is ``-eps / sqrt(n * n_b)`` with ``n_b = n - b_arr``, where the
@@ -472,6 +472,7 @@ def apply_jk_fac(r_arr, b_arr, n, eps):
     fac_arr[b_arr >= n] = 0
     r_arr *= fac_arr
 
+@q.timer
 def mk_r_i_j_mat(
     n_rand_sample,
     jk_idx_list,
@@ -765,7 +766,7 @@ def mk_r_i_j_mat(
     # between the sample blocks of a chunked computation).
     if garr_dict is None:
         garr_dict = dict()
-    fill_garr_dict(
+    _fill_garr_dict(
         rs,
         garr_dict,
         [names[code] for code in cell_codes],
@@ -1039,10 +1040,11 @@ def get_jk_rows(fac_r_arr, data_diff, out=None):
     returns zeros.\n
     ``out`` (default ``None``) is an optional array with the shape of the
     result, the dtype of ``data_diff`` and C-contiguous storage.  It is written
-    in place and returned, so a caller which already owns a buffer (e.g.
-    ``partial_arr[1:]`` in the (randomized) Super-Jackknife) does not pay for
-    the extra ``n_sample * prod(elem_shape)`` result array.  With ``out=None``
-    a new array is returned, exactly as before.
+    in place and returned, so a caller which already owns a buffer (e.g. the
+    contribution buffer of the (randomized) Super-Jackknife, which passes a
+    slice of it so that its first row stays untouched) does not pay for the
+    extra ``n_sample * prod(elem_shape)`` result array.  With ``out=None`` a
+    new array is returned, exactly as before.
     """
     n_sample, n_data = fac_r_arr.shape
     n_data_diff = data_diff.shape[0]
@@ -1232,7 +1234,7 @@ def rjackknife(
         is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
-    apply_jk_fac(r_arr, b_arr, n, eps)
+    _apply_jk_fac(r_arr, b_arr, n, eps)
     data_diff = data_arr - avg
     jk_arr = np.empty(
         (
@@ -1326,7 +1328,7 @@ def rjackknife_distributed(
     R, n_block, block_list = _get_jk_sample_blocks(total_size, num_node)
     # One stream cache for the whole loop, so that every random stream is
     # generated once instead of once per block; the cache is filled lazily
-    # (``fill_garr_dict``, called by ``mk_r_i_j_mat``) with the streams of the
+    # (``_fill_garr_dict``, called by ``mk_r_i_j_mat``) with the streams of the
     # names it needs.  With a single block the mk call keeps its private dict.
     garr_dict = dict() if n_block > 1 else None
     # ``data_arr`` is a private copy made by ``get_distributed_jk_input``, so
@@ -1365,7 +1367,7 @@ def rjackknife_distributed(
             jk_idx_list_for_count=jk_idx_list_glb,
             garr_dict=garr_dict,
         )
-        apply_jk_fac(r_blk, b_blk, n, eps)
+        _apply_jk_fac(r_blk, b_blk, n, eps)
         # The contraction is a matrix product (``get_jk_rows``), which does not
         # materialize the broadcast temporary of
         # ``r_blk[:, :, None, ...] * data_diff[None]``, whose size
