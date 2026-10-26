@@ -206,16 +206,28 @@ that contribution buffer (send buffer plus the MPI transient) drops by about
 every node derives the same block list from `T` and `N`, so every node issues
 the same calls in the same order.
 
-This is not a factor `N` on the overall per-rank peak: the data, the local part
-of the result, the local output and the per-name stream cache stay. The
-measured improvement factor of the whole peak is about `0.71 * N + 0.29` — for the
-documented payload (`n_rand_sample = 1024`, `elem_shape = (33, 7169)`,
-complex128) at `N = 2` it is 11.53 GB → 7.74 GB, a factor of 1.49 — and the
-win grows with `num_node`. The price is wall time at small `N`: `K`
-`Reduce_scatter` calls instead of one and the stream cache kept alive across
-the blocks cost 17–29 % on that payload at `N = 2` and about 45 % for a small
-`(16,)` element shape at `N = 2`. At `N = 1` there is a single block and
-neither the memory nor the time changes.
+This is not a factor `N` on the overall per-rank peak: only the block-wise
+contribution buffer shrinks with `N`. An idealized model of that part alone —
+the send buffer of one block with its MPI transient, about `2.5 * R * P_d` with
+`P_d = prod(elem_shape) * itemsize` and the measured transient factor 1.5,
+together with the local output `L * P_d`, `L ~= T / N` — gives a new/old peak
+ratio of `3.5 / (2.5 * N + 1)`, i.e. an improvement ceiling of
+`(2.5 * N + 1) / 3.5` (about `0.71 * N` for large `N`; 1.71 at `N = 2`, about
+23 at `N = 32`). The ceiling ignores the local data, the per-name stream cache
+and the process baseline, so the measured improvement of the whole per-rank
+peak is smaller and is the number that matters: for the documented payload
+(`n_rand_sample = 1024`, `elem_shape = (33, 7169)`, complex128) at `N = 2` it
+is 11.53 GB → 7.74 GB, a factor of 1.49, and the win grows with `num_node`
+(2.50× at `N = 32` for a `(10000,)` float64 payload, 249 → 100 MB). The fixed
+terms — the local data, the local output, the process baseline and in
+particular the per-name stream cache (`U * S * 8` bytes for `U` streams and
+`S = n_rand_sample`, which does not shrink with `N` and is the memory floor for
+large `U * S`) — explain the gap between the ceiling and the measured number.
+
+The price is wall time at small `N`: `K` `Reduce_scatter` calls instead of one
+and the stream cache kept alive across the blocks cost 17–29 % on that payload
+at `N = 2` and about 45 % for a small `(16,)` element shape at `N = 2`. At
+`N = 1` there is a single block and neither the memory nor the time changes.
 
 The random numbers are bit-identical to the ones of a full-range call (a block
 only selects rows; the per-name random streams do not depend on the block),
