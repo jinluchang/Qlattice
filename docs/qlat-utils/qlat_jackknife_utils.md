@@ -200,17 +200,29 @@ rows in total and `N` nodes, a block holds `R = ceil(T / N)` rows and there are
 automatic — it only depends on `T` and `N` and there is no parameter to change
 it. Each block is contracted and reduce-scattered on its own, so the send
 buffer of one `Reduce_scatter` and the contribution buffer of one block hold
-`R` rows (`R * prod(elem_shape)` elements) instead of `T` rows, and the peak
-memory of the contribution buffer drops by about `N`. The number of
-`Reduce_scatter` calls becomes `K`; they are collective and every node derives
-the same block list from `T` and `N`, so every node issues the same calls in
-the same order. The random numbers are bit-identical to the ones of a
-full-range call (a block only selects rows; the per-name random streams do not
-depend on the block), but the order of the floating-point sums over the nodes
-changes, so for `N > 1` the result differs from previous releases at the
-roundoff level (relative difference ~1e-15); for `N == 1` there is a single
-block and the result is bit-identical. The average in sample 0 and the single
-addition of `avg` after the reduction are unchanged.
+`R` rows (`R * prod(elem_shape)` elements) instead of `T` rows: the peak of
+that contribution buffer (send buffer plus the MPI transient) drops by about
+`N`. The number of `Reduce_scatter` calls becomes `K`; they are collective and
+every node derives the same block list from `T` and `N`, so every node issues
+the same calls in the same order.
+
+This is not a factor `N` on the overall per-rank peak: the data, the local part
+of the result, the local output and the per-name stream cache stay. The
+measured improvement factor of the whole peak is about `0.71 * N + 0.29` — for the
+documented payload (`n_rand_sample = 1024`, `elem_shape = (33, 7169)`,
+complex128) at `N = 2` it is 11.53 GB → 7.74 GB, a factor of 1.49 — and the
+win grows with `num_node`. The price is wall time at small `N`: `K`
+`Reduce_scatter` calls instead of one and the stream cache kept alive across
+the blocks cost 17–29 % on that payload at `N = 2` and about 45 % for a small
+`(16,)` element shape at `N = 2`. At `N = 1` there is a single block and
+neither the memory nor the time changes.
+
+The random numbers are bit-identical to the ones of a full-range call (a block
+only selects rows; the per-name random streams do not depend on the block),
+but the order of the floating-point sums over the nodes changes, so for
+`N > 1` the result differs from previous releases at the roundoff level
+(relative difference ~1e-15). The average in sample 0 and the single addition
+of `avg` after the reduction are unchanged.
 
 The contribution of one block is computed with a matrix product
 (`get_jk_rows`), which is evaluated by BLAS and does not materialize the
@@ -232,8 +244,9 @@ called on the local parts and the parts are gathered, so that every node
 obtains the complete `jk_arr`. The result agrees with `rjackknife` up to the
 floating-point roundoff but not bit-for-bit. The local part is computed with
 the same sample blocks as `rjackknife_distributed` (`R = ceil(T / num_node)`
-rows per block), so its memory is one block of samples. `g_mk_jk_sync_node`
-dispatches to it.
+rows per block), so its memory is one block of samples, with the same
+overall-peak trade-off as described there. `g_mk_jk_sync_node` dispatches to
+it.
 
 ### `rjk_avg(jk_arr)` / `rjk_err(jk_arr, eps=1)` / `rjk_avg_err(rjk_list, eps=1)`
 
@@ -431,8 +444,10 @@ of `fac_r_arr[:, :, None, ...] * data_diff[None]`; the node which holds no data
 (`n_data == 0`) returns zeros.
 
 `out` (default `None`) is an optional array which receives the result in place
-and is returned as well, so a caller which already owns a buffer (e.g.
-`partial_arr[1:]` in `rjackknife_distributed`) does not pay for the extra
+and is returned as well, so a caller which already owns a buffer (e.g. the
+first block's contribution buffer in the randomized Super-Jackknife, which
+passes a slice of it so that its first row — the sample 0 slot holding
+`avg` — stays untouched) does not pay for the extra
 `n_sample * prod(elem_shape)` result array. It must be C-contiguous, with the
 shape of the result and the dtype of `data_diff` (the mismatch is asserted); a
 node which owns no sample (`n_sample == 0`) leaves the empty buffer zeroed.
