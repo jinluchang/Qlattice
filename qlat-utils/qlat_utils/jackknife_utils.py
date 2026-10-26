@@ -1039,19 +1039,26 @@ def get_jk_rows(fac_r_arr, data_diff, out=None):
     floating-point additions.  The node which holds no data (``n_data == 0``)
     returns zeros.\n
     ``out`` (default ``None``) is an optional array with the shape of the
-    result, the dtype of ``data_diff`` and C-contiguous storage.  It is written
-    in place and returned, so a caller which already owns a buffer (e.g. the
-    contribution buffer of the (randomized) Super-Jackknife, which passes a
-    slice of it so that its first row stays untouched) does not pay for the
-    extra ``n_sample * prod(elem_shape)`` result array.  With ``out=None`` a
-    new array is returned, exactly as before.
+    result and C-contiguous storage, which is written in place and returned, so
+    a caller which already owns a buffer (e.g. the contribution buffer of the
+    (randomized) Super-Jackknife, which passes a slice of it so that its first
+    row stays untouched) does not pay for the extra ``n_sample *
+    prod(elem_shape)`` result array.  Its dtype is the dtype in which the
+    result is returned: when it is the dtype of ``data_diff`` (the usual case,
+    equal to ``np.result_type(fac_r_arr.dtype, data_diff.dtype)`` there) the
+    contraction is written into it in place, exactly as before; when it is
+    narrower than the contraction (e.g. float32 data with a float64 ``avg``,
+    which widens ``data_diff``) the contraction is still computed in its
+    natural dtype and cast on the assignment into ``out``, which is what a
+    caller doing ``out[...] = get_jk_rows(...)`` used to get.  With
+    ``out=None`` a new array of the natural dtype is returned, exactly as
+    before.
     """
     n_sample, n_data = fac_r_arr.shape
     n_data_diff = data_diff.shape[0]
     elem_shape = tuple(data_diff.shape[1:])
     if out is not None:
         assert out.shape == (n_sample,) + elem_shape
-        assert out.dtype == data_diff.dtype
         assert out.flags.c_contiguous
     if n_data == 0 or n_data_diff == 0:
         if out is None:
@@ -1069,11 +1076,20 @@ def get_jk_rows(fac_r_arr, data_diff, out=None):
         # and the caller copies nothing, so keep the empty buffer zeroed.
         out[...] = 0
         return out
-    np.matmul(
-        fac_r_arr,
-        data_diff.reshape(n_data_diff, -1),
-        out=out.reshape(n_sample, -1),
-    )
+    fac_r_mat = fac_r_arr
+    data_mat = data_diff.reshape(n_data_diff, -1)
+    result_dtype = np.result_type(fac_r_arr.dtype, data_diff.dtype)
+    if out.dtype == data_diff.dtype or out.dtype == result_dtype:
+        # ``out`` receives the contraction without a cast (the usual case, and
+        # the one which was already supported): keep the in-place matmul.
+        np.matmul(fac_r_mat, data_mat, out=out.reshape(n_sample, -1))
+        return out
+    # ``out`` is narrower than the contraction (e.g. float32 data with a
+    # float64 ``avg``, which widens ``data_diff``): compute the contraction in
+    # its natural dtype and cast on the assignment, which is exactly what the
+    # pre-``out=`` callers got from ``out[...] = get_jk_rows(...)``.  Casting
+    # the inputs first would change the rounding.
+    out[...] = np.matmul(fac_r_mat, data_mat).reshape((n_sample,) + elem_shape)
     return out
 
 def _get_jk_sample_blocks(total_size, num_node):

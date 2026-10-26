@@ -338,6 +338,41 @@ q.json_results_append(f"distributed without get_comm raises = {comm_raised}")
 assert comm_raised
 assert q.get_comm() is saved_comm
 
+# ---- float32 data with a float64 ``avg`` keeps the data dtype ----
+# ``data_diff = data_arr - avg`` widens to float64 when ``avg`` is a float64
+# array while the contribution buffer keeps the dtype of the data, so the
+# contraction has to be computed in the wide dtype and cast on the assignment
+# (the pre-``out=`` behaviour) instead of rejecting the wider input.
+setup_g_jk_kwargs(
+    n_rand_sample=16,
+    block_size=1,
+    block_size_dict={"job_tag_1": 1},
+)
+n_data_f32 = 5 * comm.size
+data_f32 = (
+    q.RngState("distributed-seed-f32").g_rand_arr((n_data_f32, 3)).astype(np.float32)
+)
+jk_idx_list_f32 = [("job_tag_1", traj) for traj in range(n_data_f32)]
+avg_f64 = np.mean(data_f32.astype(np.float64), axis=0)
+jk_f32 = q.g_mk_jk_distributed(
+    get_local_part(data_f32, comm.rank, comm.size),
+    get_local_part(jk_idx_list_f32, comm.rank, comm.size),
+    avg=avg_f64,
+)
+jk_f32_glb = np.concatenate(comm.allgather(jk_f32))
+jk_f64_glb = np.concatenate(
+    comm.allgather(
+        q.g_mk_jk_distributed(
+            get_local_part(data_f32.astype(np.float64), comm.rank, comm.size),
+            get_local_part(jk_idx_list_f32, comm.rank, comm.size),
+            avg=avg_f64,
+        )
+    )
+)
+assert jk_f32_glb.dtype == data_f32.dtype, (jk_f32_glb.dtype, data_f32.dtype)
+max_diff_f32 = float(np.max(np.abs(jk_f32_glb - jk_f64_glb)))
+assert max_diff_f32 < 1e-5 * max(1.0, float(np.max(np.abs(jk_f64_glb)))), max_diff_f32
+
 q.timer_display()
 if q.is_test():
     q.check_log_json(__file__, check_eps=1e-10)
