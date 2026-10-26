@@ -199,9 +199,11 @@ product (`get_jk_rows`), which is evaluated by BLAS and does not materialize
 the broadcast temporary of `fac_r_arr[:, :, None, ...] * data_diff[None]`,
 whose size is `n_rand_sample * n_local * prod(elem_shape)` — the peak memory
 of the operation, several orders of magnitude larger than the result when the
-data point is a large array. The peak memory is then the `partial_arr` of
-`(1 + n_rand_sample, *elem_shape)` which is reduce-scattered (one full-size
-buffer per node, as before).
+data point is a large array. The contraction writes straight into
+`partial_arr[1:]` (`get_jk_rows(..., out=partial_arr[1:])`), so the result
+array of the contraction is not materialized either. The peak memory is then
+the `partial_arr` of `(1 + n_rand_sample, *elem_shape)` which is
+reduce-scattered (one full-size buffer per node, as before).
 
 ### `rjackknife_sync_node(data_list, jk_idx_list, *, avg=None, ...)`
 
@@ -398,7 +400,7 @@ may be any array, in particular a non-contiguous view such as a column of a 2-D
 array (a contiguous copy is made when needed, since the buffer of the
 collective must be contiguous).
 
-### `get_jk_rows(fac_r_arr, data_diff)`
+### `get_jk_rows(fac_r_arr, data_diff, out=None)`
 
 Return `sum_j fac_r_arr[i, j] data_diff[j]`, the contribution of the local data
 to every sample, with `fac_r_arr` of shape `(n_sample, n_data)` and
@@ -406,6 +408,14 @@ to every sample, with `fac_r_arr` of shape `(n_sample, n_data)` and
 product, so that BLAS evaluates it without the much larger broadcast temporary
 of `fac_r_arr[:, :, None, ...] * data_diff[None]`; the node which holds no data
 (`n_data == 0`) returns zeros.
+
+`out` (default `None`) is an optional array which receives the result in place
+and is returned as well, so a caller which already owns a buffer (e.g.
+`partial_arr[1:]` in `rjackknife_distributed`) does not pay for the extra
+`n_sample * prod(elem_shape)` result array. It must be C-contiguous, with the
+shape of the result and the dtype of `data_diff` (the mismatch is asserted); a
+node which owns no sample (`n_sample == 0`) leaves the empty buffer zeroed.
+With `out=None` a new array is allocated and returned, exactly as before.
 
 ### `get_gathered_jk_arr(jk_local, comm, num_node)`
 
