@@ -1074,6 +1074,73 @@ def get_jk_rows(fac_r_arr, data_diff, out=None):
     )
     return out
 
+def _get_jk_sample_blocks(total_size, num_node):
+    r"""
+    Return ``(R, K, blocks)`` for the block-wise random-sample loop.\n
+    ``R = ceil(total_size / num_node)`` rows per block, ``K = ceil(total_size /
+    R)`` blocks, and ``blocks`` is the list of ``(b0, b1)`` row ranges, which
+    are consecutive and cover ``range(total_size)`` exactly once.\n
+    The result only depends on the job-wide sizes (``total_size = 1 +
+    n_rand_sample`` and ``num_node``), so every node of a collective call
+    derives the same list without any communication.  ``K <= num_node`` and
+    ``total_size <= num_node`` gives one row per block; the first ``K - 1``
+    blocks have exactly ``R`` rows and the last has the remainder in
+    ``[1, R]``.\n
+    One block per node: the sample axis is distributed with the same ``ceil``
+    arithmetic that already distributes the output, so the send buffer of one
+    block is of the order of the local output instead of the whole sample
+    axis, and the peak memory of the contribution buffer drops by about
+    ``num_node``.
+    """
+    assert total_size >= 1
+    assert num_node >= 1
+    R = -(-int(total_size) // int(num_node))
+    K = -(-int(total_size) // R)
+    blocks = [(b * R, min((b + 1) * R, total_size)) for b in range(K)]
+    assert blocks[0][0] == 0
+    assert blocks[-1][1] == total_size
+    assert all(b1 > b0 for b0, b1 in blocks)
+    assert all(blocks[b][1] == blocks[b + 1][0] for b in range(K - 1))
+    assert K <= num_node
+    return R, K, blocks
+
+def _get_reduce_scattered_jk_block(
+    partial_blk, jk_view, block_start, block_end, total_size, comm
+):
+    r"""
+    Sum the local contributions of the samples in ``range(block_start,
+    block_end)`` over the nodes and write this node's part into ``jk_view``.\n
+    ``partial_blk`` is the ``(block_end - block_start, *elem_shape)``
+    C-contiguous contribution of the local data (the send buffer) and
+    ``jk_view`` is the matching C-contiguous slice ``jk_arr[off:off +
+    n_rows]`` of the local output (possibly empty).  The average is added by
+    the caller after the loop.\n
+    ``Reduce_scatter`` has no ``displs``: the send buffer is the concatenation
+    of the node segments in node order, which matches the row order because
+    ``get_distributed_range`` returns contiguous, node-ordered ranges.  A node
+    with no row in the block gets ``recvcounts[node] == 0`` and passes a
+    0-length array, which is a legal ``Reduce_scatter`` argument.
+    """
+    from mpi4py import MPI
+    #
+    partial_blk = np.ascontiguousarray(partial_blk)
+    elem_size = 1
+    for x in partial_blk.shape[1:]:
+        elem_size *= x
+    recvcounts = []
+    for r in range(comm.size):
+        r_start, r_end = get_distributed_range(total_size, r, comm.size)
+        n_rows = min(block_end, r_end) - max(block_start, r_start)
+        recvcounts.append(max(0, n_rows) * elem_size)
+    assert sum(recvcounts) == partial_blk.size
+    assert jk_view.size == recvcounts[comm.rank]
+    comm.Reduce_scatter(
+        partial_blk.reshape(-1),
+        jk_view.reshape(-1),
+        recvcounts,
+        op=MPI.SUM,
+    )
+
 @q.timer
 def rjackknife(
     data_list,
@@ -1219,9 +1286,19 @@ def rjackknife_distributed(
     roundoff, but not bit-for-bit: the average and the sums over the data set
     are reduced across the nodes, which changes the order of the
     floating-point additions.\n
+    The samples are built one block of rows at a time, so the contribution
+    buffer of one call is ``R`` rows instead of the whole sample axis ``T = 1 +
+    n_rand_sample``: with ``N = num_node`` rows per block ``R = ceil(T / N)``
+    and ``K = ceil(T / R) <= N`` blocks, i.e. about one block per node (the
+    rule is automatic, there is no option to change it).  The blocks are a
+    pure function of ``T`` and ``N``, so every node issues the same ``K``
+    ``Reduce_scatter`` calls in the same order, and the peak memory of the
+    contribution buffer drops by about ``N``.  The random numbers are
+    bit-identical to the ones of a full-range call; only the order of the
+    floating-point sums over the nodes changes, at the roundoff level.\n
     ``rjackknife_sync_node`` performs the corresponding collective operation
-    for the case where every node has the whole input; ``g_mk_jk_distributed``
-    dispatches to this function.
+    for the case where every node has the whole input and inherits the same
+    sample blocks; ``g_mk_jk_distributed`` dispatches to this function.
     """
     fname = "rjackknife_distributed"
     comm, id_node, num_node = get_collective_comm(fname)
@@ -1241,44 +1318,76 @@ def rjackknife_distributed(
     #
     total_size = 1 + n_rand_sample
     i_start, i_end = get_distributed_range(total_size, id_node, num_node)
-    # ``partial_arr`` holds the contribution of the local data to every sample
-    partial_arr = np.zeros((total_size,) + elem_shape, dtype=dtype)
-    if i_start == 0 and i_end > i_start:
-        # the sample 0 is the average and must be counted only once
-        partial_arr[0] = avg
-    #
-    r_arr, b_arr = mk_r_i_j_mat(
-        n_rand_sample,
-        jk_idx_list_local,
-        rng_state,
-        jk_blocking_func=jk_blocking_func,
-        is_normalizing_rand_sample=is_normalizing_rand_sample,
-        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
-        is_use_old_rand_alg=is_use_old_rand_alg,
-        jk_idx_list_for_count=jk_idx_list_glb,
-    )
-    apply_jk_fac(r_arr, b_arr, n, eps)
+    jk_arr = np.empty((i_end - i_start,) + elem_shape, dtype=dtype)
+    # The sample blocks are a pure function of the job-wide sizes: every node
+    # derives the same list and the loop issues the same ``K`` Reduce_scatter
+    # calls in the same order on every node (no collective is needed to agree
+    # on ``R``, and there is no per-node decision).
+    R, n_block, block_list = _get_jk_sample_blocks(total_size, num_node)
+    # One stream cache for the whole loop, so that every random stream is
+    # generated once instead of once per block; the cache is filled lazily
+    # (``fill_garr_dict``, called by ``mk_r_i_j_mat``) with the streams of the
+    # names it needs.  With a single block the mk call keeps its private dict.
+    garr_dict = dict() if n_block > 1 else None
     # ``data_arr`` is a private copy made by ``get_distributed_jk_input``, so
     # the average can be subtracted in place (same elementwise result as the
-    # separate ``data_diff`` array, without the extra buffer).
+    # separate ``data_diff`` array, without the extra buffer).  The branch is
+    # rank independent: the dtype comes from the allgathered element info and
+    # ``avg`` is collective input or an ``Allreduce`` result.
     if data_arr.dtype == np.asarray(avg).dtype:
         data_arr -= avg
         data_diff = data_arr
     else:
         data_diff = data_arr - avg
-    # The contraction is a matrix product (``get_jk_rows``), which does not
-    # materialize the broadcast temporary of
-    # ``r_arr[:, :, None, ...] * data_diff[None]``, whose size
-    # ``n_rand_sample * n_local * prod(elem_shape)`` used to be the peak memory
-    # of the operation; ``out=partial_arr[1:]`` writes the result straight into
-    # the array that is reduced, so the result array is not materialized either
-    # and the peak is one element-shape array instead of two.
-    get_jk_rows(
-        r_arr,
-        data_diff,
-        out=partial_arr[1:],
-    )
-    return get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg)
+    #
+    for b0, b1 in block_list:
+        # samples 1..n_rand_sample are the mk rows 0..n_rand_sample-1
+        mk_i0 = max(b0 - 1, 0)
+        mk_i1 = max(b1 - 1, 0)
+        if b0 == 0:
+            partial_blk = np.zeros((b1,) + elem_shape, dtype=dtype)
+            if i_start == 0 and i_end > i_start:
+                # the sample 0 is the average and must be counted only once
+                partial_blk[0] = avg
+            out_blk = partial_blk[1:]
+        else:
+            partial_blk = np.empty((b1 - b0,) + elem_shape, dtype=dtype)
+            out_blk = partial_blk
+        r_blk, b_blk = mk_r_i_j_mat(
+            n_rand_sample,
+            jk_idx_list_local,
+            rng_state,
+            jk_blocking_func=jk_blocking_func,
+            is_normalizing_rand_sample=is_normalizing_rand_sample,
+            is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
+            is_use_old_rand_alg=is_use_old_rand_alg,
+            i_range=(mk_i0, mk_i1),
+            jk_idx_list_for_count=jk_idx_list_glb,
+            garr_dict=garr_dict,
+        )
+        apply_jk_fac(r_blk, b_blk, n, eps)
+        # The contraction is a matrix product (``get_jk_rows``), which does not
+        # materialize the broadcast temporary of
+        # ``r_blk[:, :, None, ...] * data_diff[None]``, whose size
+        # ``n_sample * n_local * prod(elem_shape)`` used to be the peak memory
+        # of the operation; ``out=out_blk`` writes the result straight into the
+        # send buffer of the ``Reduce_scatter``, so the result array is not
+        # materialized either and the peak is one block of element shapes.
+        get_jk_rows(r_blk, data_diff, out=out_blk)
+        off = max(b0, i_start) - i_start
+        n_mine = max(0, min(b1, i_end) - max(b0, i_start))
+        _get_reduce_scattered_jk_block(
+            partial_blk,
+            jk_arr[off : off + n_mine],
+            b0,
+            b1,
+            total_size,
+            comm,
+        )
+    #
+    if i_end - i_start > 0 and i_end > 1:
+        jk_arr[max(1 - i_start, 0) :] += avg
+    return jk_arr
 
 @q.timer
 def rjackknife_sync_node(
@@ -1303,6 +1412,9 @@ def rjackknife_sync_node(
     are then gathered with ``Allgatherv``, so that every node obtains the
     complete ``jk_arr`` of ``rjackknife``.  The result agrees with the one of
     ``rjackknife`` up to the floating-point roundoff, but not bit-for-bit.\n
+    The local part is computed with the sample blocks of
+    ``rjackknife_distributed`` (``R = ceil(T / num_node)`` rows per block), so
+    the memory is one block of samples instead of the whole sample axis.\n
     ``g_mk_jk_sync_node`` dispatches to this function.
     """
     comm, id_node, num_node = get_collective_comm("rjackknife_sync_node")

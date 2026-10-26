@@ -194,16 +194,35 @@ collective operation and every node must call it with the same parameters.
 The result agrees with `rjackknife` up to the floating-point roundoff but not
 bit-for-bit. `g_mk_jk_distributed` dispatches to it.
 
-The contribution of the local data to the samples is computed with a matrix
-product (`get_jk_rows`), which is evaluated by BLAS and does not materialize
-the broadcast temporary of `fac_r_arr[:, :, None, ...] * data_diff[None]`,
-whose size is `n_rand_sample * n_local * prod(elem_shape)` — the peak memory
-of the operation, several orders of magnitude larger than the result when the
-data point is a large array. The contraction writes straight into
-`partial_arr[1:]` (`get_jk_rows(..., out=partial_arr[1:])`), so the result
-array of the contraction is not materialized either. The peak memory is then
-the `partial_arr` of `(1 + n_rand_sample, *elem_shape)` which is
-reduce-scattered (one full-size buffer per node, as before).
+The samples are built one block of rows at a time. With `T = 1 + n_rand_sample`
+rows in total and `N` nodes, a block holds `R = ceil(T / N)` rows and there are
+`K = ceil(T / R) <= N` blocks, i.e. about one block per node. The rule is
+automatic — it only depends on `T` and `N` and there is no parameter to change
+it. Each block is contracted and reduce-scattered on its own, so the send
+buffer of one `Reduce_scatter` and the contribution buffer of one block hold
+`R` rows (`R * prod(elem_shape)` elements) instead of `T` rows, and the peak
+memory of the contribution buffer drops by about `N`. The number of
+`Reduce_scatter` calls becomes `K`; they are collective and every node derives
+the same block list from `T` and `N`, so every node issues the same calls in
+the same order. The random numbers are bit-identical to the ones of a
+full-range call (a block only selects rows; the per-name random streams do not
+depend on the block), but the order of the floating-point sums over the nodes
+changes, so for `N > 1` the result differs from previous releases at the
+roundoff level (relative difference ~1e-15); for `N == 1` there is a single
+block and the result is bit-identical. The average in sample 0 and the single
+addition of `avg` after the reduction are unchanged.
+
+The contribution of one block is computed with a matrix product
+(`get_jk_rows`), which is evaluated by BLAS and does not materialize the
+broadcast temporary of `r_blk[:, :, None, ...] * data_diff[None]`, whose size
+would be `R * n_local * prod(elem_shape)` — the peak memory of the operation,
+several orders of magnitude larger than the result when the data point is a
+large array. The contraction writes straight into the block's send buffer
+(`get_jk_rows(..., out=...)`), so the result array of the contraction is not
+materialized either; the per-block buffers are released before the next block,
+so the peak is one block of rows. A node with no row in a block passes a
+0-length buffer to the `Reduce_scatter` (`recvcounts` are per block, no
+padding).
 
 ### `rjackknife_sync_node(data_list, jk_idx_list, *, avg=None, ...)`
 
@@ -211,8 +230,10 @@ reduce-scattered (one full-size buffer per node, as before).
 input: the input is split between the nodes, `rjackknife_distributed` is
 called on the local parts and the parts are gathered, so that every node
 obtains the complete `jk_arr`. The result agrees with `rjackknife` up to the
-floating-point roundoff but not bit-for-bit. `g_mk_jk_sync_node` dispatches to
-it.
+floating-point roundoff but not bit-for-bit. The local part is computed with
+the same sample blocks as `rjackknife_distributed` (`R = ceil(T / num_node)`
+rows per block), so its memory is one block of samples. `g_mk_jk_sync_node`
+dispatches to it.
 
 ### `rjk_avg(jk_arr)` / `rjk_err(jk_arr, eps=1)` / `rjk_avg_err(rjk_list, eps=1)`
 
