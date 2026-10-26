@@ -795,7 +795,7 @@ def get_gathered_jk_arr(jk_local, comm, num_node):
     )
     return jk_arr
 
-def get_jk_rows(fac_r_arr, data_diff):
+def get_jk_rows(fac_r_arr, data_diff, out=None):
     r"""
     Return the contribution of the local data to every sample, i.e.
     ``sum_j fac_r_arr[i, j] data_diff[j]``, with shape ``(n_sample,
@@ -812,17 +812,43 @@ def get_jk_rows(fac_r_arr, data_diff):
     only ``n_sample * prod(elem_shape)``.  The matrix product is mathematically
     identical to the broadcast contraction; it only changes the order of the
     floating-point additions.  The node which holds no data (``n_data == 0``)
-    returns zeros.
+    returns zeros.\n
+    ``out`` (default ``None``) is an optional array with the shape of the
+    result, the dtype of ``data_diff`` and C-contiguous storage.  It is written
+    in place and returned, so a caller which already owns a buffer (e.g.
+    ``partial_arr[1:]`` in the (randomized) Super-Jackknife) does not pay for
+    the extra ``n_sample * prod(elem_shape)`` result array.  With ``out=None``
+    a new array is returned, exactly as before.
     """
     n_sample, n_data = fac_r_arr.shape
     n_data_diff = data_diff.shape[0]
     elem_shape = tuple(data_diff.shape[1:])
+    if out is not None:
+        assert out.shape == (n_sample,) + elem_shape
+        assert out.dtype == data_diff.dtype
+        assert out.flags.c_contiguous
     if n_data == 0 or n_data_diff == 0:
-        return np.zeros((n_sample,) + elem_shape, dtype=data_diff.dtype)
-    return np.matmul(
+        if out is None:
+            return np.zeros((n_sample,) + elem_shape, dtype=data_diff.dtype)
+        out[...] = 0
+        return out
+    if out is None:
+        return np.matmul(
+            fac_r_arr,
+            data_diff.reshape(n_data_diff, -1),
+        ).reshape((n_sample,) + elem_shape)
+    if n_sample == 0:
+        # A node which owns no sample has an empty result (``n_rand_sample ==
+        # 0`` is the extreme case); the allocating path returns an empty array
+        # and the caller copies nothing, so keep the empty buffer zeroed.
+        out[...] = 0
+        return out
+    np.matmul(
         fac_r_arr,
         data_diff.reshape(n_data_diff, -1),
-    ).reshape((n_sample,) + elem_shape)
+        out=out.reshape(n_sample, -1),
+    )
+    return out
 
 @q.timer
 def rjackknife(
@@ -1013,8 +1039,14 @@ def rjackknife_distributed(
     # materialize the broadcast temporary of
     # ``fac_r_arr[:, :, None, ...] * data_diff[None]``, whose size
     # ``n_rand_sample * n_local * prod(elem_shape)`` used to be the peak memory
-    # of the operation.
-    partial_arr[1:] = get_jk_rows(fac_r_arr, data_diff)
+    # of the operation; ``out=partial_arr[1:]`` writes the result straight into
+    # the array that is reduced, so the result array is not materialized either
+    # and the peak is one element-shape array instead of two.
+    get_jk_rows(
+        fac_r_arr,
+        data_diff,
+        out=partial_arr[1:],
+    )
     return get_reduce_scattered_jk_arr(partial_arr, comm, id_node, num_node, avg)
 
 @q.timer
