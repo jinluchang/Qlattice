@@ -422,6 +422,56 @@ def sjk_avg_err(jk_arr, *, eps=1):
 # ----------
 
 @q.timer
+def fill_garr_dict(
+    rng_state,
+    garr_dict,
+    name_list,
+    *,
+    n_rand_sample,
+    is_normalizing_rand_sample,
+):
+    r"""
+    Fill ``garr_dict`` with the random arrays of the jackknife streams.\n
+    For every name in ``name_list`` which is not in ``garr_dict`` yet, add
+    ``garr_dict[name] = rng_state.split(name).g_rand_arr(n_rand_sample)``,
+    normalized to ``\sum_i r_i^2 = n_rand_sample`` when
+    ``is_normalizing_rand_sample`` is True.  A stream only depends on its
+    name, so the dict may be reused between calls (e.g. between the sample
+    blocks of a chunked computation) to generate every stream only once.\n
+    ``name_list`` may contain ``None`` entries, which are skipped.
+    """
+    for name in name_list:
+        if name is None or name in garr_dict:
+            continue
+        garr = rng_state.split(name).g_rand_arr(n_rand_sample)
+        if is_normalizing_rand_sample:
+            # garr_qnorm \approx n_rand_sample
+            garr_qnorm = q.qnorm(garr)
+            garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
+            assert abs(q.qnorm(garr) / n_rand_sample - 1) < 1e-8
+        garr_dict[name] = garr
+
+def apply_jk_fac(r_arr, b_arr, n, eps):
+    r"""
+    Multiply ``r_arr`` in place by the jackknife factor.\n
+    The factor is ``-eps / sqrt(n * n_b)`` with ``n_b = n - b_arr``, where the
+    entries with ``n_b <= 0`` are replaced by 1 and the factor is set to 0
+    there (a block which holds the whole data set contributes nothing).
+    ``r_arr`` and ``b_arr`` have shape ``(n_sample, n_data)`` and may be views
+    (e.g. one sample block of a chunked computation); ``n`` is the size of the
+    whole data set and ``eps`` the overall scale.\n
+    The factor is built in a single float64 buffer, keeping ``n * n_b`` in it,
+    so no extra ``(n_sample, n_data)`` array and no ``n_b`` int64 array are
+    allocated and the rounding is the same as with the separate arrays.
+    """
+    fac_arr = np.asarray(n - b_arr, dtype=np.float64)
+    np.maximum(fac_arr, 1, out=fac_arr)
+    fac_arr *= n
+    np.sqrt(fac_arr, out=fac_arr)
+    fac_arr = -eps / fac_arr
+    fac_arr[b_arr >= n] = 0
+    r_arr *= fac_arr
+
 def mk_r_i_j_mat(
     n_rand_sample,
     jk_idx_list,
@@ -433,6 +483,7 @@ def mk_r_i_j_mat(
     is_use_old_rand_alg,
     i_range=None,
     jk_idx_list_for_count=None,
+    garr_dict=None,
 ):
     """
     Return ``(r_arr, b_arr)``.\n
@@ -446,7 +497,13 @@ def mk_r_i_j_mat(
     list over which the block sizes ``b_arr`` are counted; the columns of
     ``r_arr`` and ``b_arr`` always correspond to ``jk_idx_list``.  This is used
     by ``g_mk_jk_distributed`` where the columns are the locally held
-    ``jk_idx`` while the block sizes must be counted over the whole data set.
+    ``jk_idx`` while the block sizes must be counted over the whole data set.\n
+    ``garr_dict`` (default ``None``) is the dict of the random streams keyed by
+    the ``rng_state.split`` name; when it is given, the streams already in it
+    are reused and only the missing names are generated, so a caller which
+    calls this function once per ``i_range`` block can pass the same dict and
+    generate every stream only once.  ``None`` uses a private dict, which is
+    discarded together with the returned arrays.
     """
     assert n_rand_sample >= 0
     if i_range is None:
@@ -471,64 +528,225 @@ def mk_r_i_j_mat(
         ),
         dtype=np.int32,
     )
-    jk_idx_str_arr = np.empty(
+    codes = np.empty(
         (
             n_sample,
             n,
         ),
-        dtype=object,
+        dtype=np.int32,
     )
-    jk_idx_str_set = set()
     if jk_blocking_func is None:
         is_apply_rand_sample_jk_idx_blocking_shift = False
     # ``b_arr`` counts the blocks of ``jk_idx_list_for_count`` (default
     # ``jk_idx_list``); the columns of ``r_arr`` and ``b_arr`` always
     # correspond to ``jk_idx_list``.
     is_separate_count = jk_idx_list_for_count is not None
+    count_jk_idx_list = (
+        jk_idx_list if jk_idx_list_for_count is None else jk_idx_list_for_count
+    )
+    #
+    # ``codes[i, j]`` identifies the blocked ``jk_idx`` of the cell ``(i, j)``
+    # with a small int, and ``names[code] == str(blocked_jk_idx)`` is the name
+    # of its random stream.  The name is what the random numbers are keyed by,
+    # but building a fresh ``str(blocked_jk_idx)`` for every cell used to
+    # dominate the runtime, so it is built once per distinct name and reused
+    # through ``code_dict``/``name_dict``.
+    names = list()
+    code_dict = dict()
+    name_dict = dict()
+    cell_codes = set()
+    #
+    def get_code(blocked_jk_idx, *, is_cell):
+        try:
+            code = code_dict.get(blocked_jk_idx)
+        except TypeError:
+            # an unhashable blocked jk_idx: fall back to keying on the name
+            code = None
+        if code is None:
+            name = str(blocked_jk_idx)
+            code = name_dict.get(name)
+            if code is None:
+                code = len(names)
+                name_dict[name] = code
+                names.append(name)
+            try:
+                code_dict[blocked_jk_idx] = code
+            except TypeError:
+                pass
+        if is_cell:
+            cell_codes.add(code)
+        return code
+    #
+    def is_plain_jk_idx(jk_idx):
+        if type(jk_idx) is int:
+            return True
+        return (
+            type(jk_idx) is tuple
+            and len(jk_idx) == 2
+            and type(jk_idx[0]) is str
+            and type(jk_idx[1]) is int
+        )
+    #
+    def try_set_jk_idx_default_shift():
+        # For the default blocking function, ``jk_blocking_func_default(i + 1,
+        # jk_idx)`` (with ``i`` the zero based sample) depends on ``i`` only
+        # through ``b_shift = shift % block_size``, where ``shift =
+        # jk_blocking_traj_shift_arr[i % len(jk_blocking_traj_shift_arr)]``.
+        # One call of the real blocking function per distinct ``(block_size,
+        # b_shift)`` pair therefore reproduces every cell exactly, so the
+        # ``n_sample * n`` per-cell calls are replaced by a few such calls and
+        # vectorized fills.
+        if jk_blocking_func is not jk_blocking_func_default:
+            return False
+        for jk_idx in jk_idx_list:
+            if not is_plain_jk_idx(jk_idx):
+                return False
+        for jk_idx in count_jk_idx_list:
+            if not is_plain_jk_idx(jk_idx):
+                return False
+        block_size = default_g_jk_kwargs.get("block_size")
+        if not isinstance(block_size, q.int_types):
+            return False
+        block_size_dict = default_g_jk_kwargs.get("block_size_dict")
+        if block_size_dict is None:
+            block_size_dict = dict()
+        all_jk_idx_set = default_g_jk_kwargs.get("all_jk_idx_set")
+        if all_jk_idx_set is not None:
+            # ``jk_blocking_func_default`` adds every ``jk_idx`` it sees to
+            # this set; the content is the same when each one is added once.
+            for jk_idx in jk_idx_list:
+                all_jk_idx_set.add(jk_idx)
+            for jk_idx in count_jk_idx_list:
+                all_jk_idx_set.add(jk_idx)
+        #
+        def get_block_size(jk_idx):
+            if type(jk_idx) is int:
+                return block_size
+            return block_size_dict.get(jk_idx[0], block_size)
+        #
+        block_size_list = sorted({get_block_size(jk_idx) for jk_idx in jk_idx_list})
+        count_block_size_list = sorted(
+            {get_block_size(jk_idx) for jk_idx in count_jk_idx_list}
+        )
+        all_block_size_list = sorted(set(block_size_list).union(count_block_size_list))
+        i_arr = np.arange(i_start, i_end)
+        shift_arr = jk_blocking_traj_shift_arr[i_arr % len(jk_blocking_traj_shift_arr)]
+        # The rows of ``codes`` and ``b_arr`` only depend on the tuple of the
+        # ``b_shift`` values, so group them and call the blocking function once
+        # per group (the group representative) instead of once per cell.
+        rows_of_key = dict()
+        rep_i_of_key = dict()
+        for i_local in range(n_sample):
+            key = tuple(int(shift_arr[i_local]) % bs for bs in all_block_size_list)
+            rows_of_key.setdefault(key, list()).append(i_local)
+            if key not in rep_i_of_key:
+                rep_i_of_key[key] = i_start + i_local
+        cells_of_block_size = dict()
+        for bs in block_size_list:
+            cells_of_block_size[bs] = np.asarray(
+                [
+                    j
+                    for j, jk_idx in enumerate(jk_idx_list)
+                    if get_block_size(jk_idx) == bs
+                ],
+                dtype=np.int64,
+            )
+        code_arr_of = dict()
+        for key, i_rep in rep_i_of_key.items():
+            row = np.empty(n, dtype=np.int32)
+            for bs, b_shift in zip(all_block_size_list, key):
+                cols = cells_of_block_size.get(bs)
+                if cols is None:
+                    continue
+                code_arr = code_arr_of.get((bs, b_shift))
+                if code_arr is None:
+                    code_arr = np.empty(len(cols), dtype=np.int32)
+                    for pos, j in enumerate(cols.tolist()):
+                        code_arr[pos] = get_code(
+                            jk_blocking_func(i_rep + 1, jk_idx_list[j]),
+                            is_cell=True,
+                        )
+                    code_arr_of[(bs, b_shift)] = code_arr
+                row[cols] = code_arr
+            for i_local in rows_of_key[key]:
+                codes[i_local, :] = row
+        for key, i_rep in rep_i_of_key.items():
+            if count_jk_idx_list:
+                count_codes = np.empty(len(count_jk_idx_list), dtype=np.int32)
+                for pos, jk_idx in enumerate(count_jk_idx_list):
+                    count_codes[pos] = get_code(
+                        jk_blocking_func(i_rep + 1, jk_idx), is_cell=False
+                    )
+                counts = np.bincount(count_codes, minlength=len(names))
+            else:
+                counts = np.zeros(0, dtype=np.int64)
+            row = codes[rows_of_key[key][0], :]
+            rows = np.asarray(rows_of_key[key], dtype=np.int64)
+            b_arr[rows, :] = counts[row].astype(np.int32)
+        return True
+    #
+    def set_jk_idx_generic_shift():
+        for i_local in range(n_sample):
+            i_arg = i_start + i_local + 1
+            row = codes[i_local]
+            blocked_cache = dict()
+            for j in range(n):
+                jk_idx = jk_idx_list[j]
+                blocked_jk_idx = jk_blocking_func(i_arg, jk_idx)
+                try:
+                    blocked_cache[jk_idx] = blocked_jk_idx
+                except TypeError:
+                    pass
+                row[j] = get_code(blocked_jk_idx, is_cell=True)
+            count_dict = dict()
+            if is_separate_count:
+                for jk_idx in count_jk_idx_list:
+                    try:
+                        blocked_jk_idx = blocked_cache[jk_idx]
+                    except (KeyError, TypeError):
+                        blocked_jk_idx = jk_blocking_func(i_arg, jk_idx)
+                    code = get_code(blocked_jk_idx, is_cell=False)
+                    count_dict[code] = count_dict.get(code, 0) + 1
+            else:
+                for j in range(n):
+                    code = row[j]
+                    count_dict[code] = count_dict.get(code, 0) + 1
+            for j in range(n):
+                b_arr[i_local, j] = count_dict[row[j]]
+    #
+    def set_jk_idx_no_shift():
+        row = np.empty(n, dtype=np.int32)
+        for j in range(n):
+            jk_idx = jk_idx_list[j]
+            if jk_blocking_func is not None:
+                jk_idx = jk_blocking_func(0, jk_idx)
+            row[j] = get_code(jk_idx, is_cell=True)
+        count_dict = dict()
+        if is_separate_count:
+            for jk_idx in count_jk_idx_list:
+                if jk_blocking_func is not None:
+                    jk_idx = jk_blocking_func(0, jk_idx)
+                code = get_code(jk_idx, is_cell=False)
+                count_dict[code] = count_dict.get(code, 0) + 1
+        else:
+            for j in range(n):
+                code = row[j]
+                count_dict[code] = count_dict.get(code, 0) + 1
+        if n_sample > 0:
+            # the blocked jk_idx does not depend on the sample: every row of
+            # ``codes`` and ``b_arr`` is the same
+            codes[:, :] = row
+            for j in range(n):
+                b_arr[:, j] = count_dict[row[j]]
     #
     @q.timer
     def set_jk_idx():
         if is_apply_rand_sample_jk_idx_blocking_shift:
-            for i_local in range(n_sample):
-                i = i_start + i_local
-                for j in range(n):
-                    jk_idx = jk_blocking_func(i + 1, jk_idx_list[j])
-                    jk_idx_str = str(jk_idx)
-                    jk_idx_str_arr[i_local, j] = jk_idx_str
-                    jk_idx_str_set.add(jk_idx_str)
-                count_dict = dict()
-                if is_separate_count:
-                    for jk_idx in jk_idx_list_for_count:
-                        jk_idx_str = str(jk_blocking_func(i + 1, jk_idx))
-                        count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
-                else:
-                    for j in range(n):
-                        jk_idx_str = jk_idx_str_arr[i_local, j]
-                        count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
-                for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[i_local, j]
-                    b_arr[i_local, j] = count_dict[jk_idx_str]
+            if try_set_jk_idx_default_shift():
+                return
+            set_jk_idx_generic_shift()
         else:
-            count_dict = dict()
-            for j in range(n):
-                jk_idx = jk_idx_list[j]
-                if jk_blocking_func is not None:
-                    jk_idx = jk_blocking_func(0, jk_idx)
-                jk_idx_str = str(jk_idx)
-                jk_idx_str_arr[:, j] = jk_idx_str
-                jk_idx_str_set.add(jk_idx_str)
-                if not is_separate_count:
-                    count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
-            if is_separate_count:
-                for jk_idx in jk_idx_list_for_count:
-                    if jk_blocking_func is not None:
-                        jk_idx = jk_blocking_func(0, jk_idx)
-                    jk_idx_str = str(jk_idx)
-                    count_dict[jk_idx_str] = count_dict.get(jk_idx_str, 0) + 1
-            if n_sample > 0:
-                for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[0, j]
-                    b_arr[:, j] = count_dict[jk_idx_str]
+            set_jk_idx_no_shift()
     #
     set_jk_idx()
     if is_use_old_rand_alg == "v1":
@@ -536,45 +754,51 @@ def mk_r_i_j_mat(
         for i_local in range(n_sample):
             i = i_start + i_local
             rsi = rs.split(str(i))
-            r = [
-                rsi.split(jk_idx_str).g_rand_gen()
-                for jk_idx_str in jk_idx_str_arr[i_local]
-            ]
+            row = codes[i_local]
             for j in range(n):
-                r_arr[i_local, j] = r[j]
+                r_arr[i_local, j] = rsi.split(names[row[j]]).g_rand_gen()
         return r_arr, b_arr
     assert not is_use_old_rand_alg
-    r_arr_dict = dict()
     #
-    @q.timer
-    def set_r():
-        for jk_idx_str in jk_idx_str_set:
-            rsi = rs.split(jk_idx_str)
-            garr = rsi.g_rand_arr(n_rand_sample)
-            if is_normalizing_rand_sample:
-                # garr_qnorm \approx n_rand_sample
-                garr_qnorm = q.qnorm(garr)
-                garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
-                assert abs(q.qnorm(garr) / n_rand_sample - 1) < 1e-8
-            r_arr_dict[jk_idx_str] = garr
-    #
-    set_r()
+    # The random stream of a blocked ``jk_idx`` only depends on its name; the
+    # caller may pass ``garr_dict`` to keep the streams between calls (e.g.
+    # between the sample blocks of a chunked computation).
+    if garr_dict is None:
+        garr_dict = dict()
+    fill_garr_dict(
+        rs,
+        garr_dict,
+        [names[code] for code in cell_codes],
+        n_rand_sample=n_rand_sample,
+        is_normalizing_rand_sample=is_normalizing_rand_sample,
+    )
+    garr_of_code = dict()
+    for code in cell_codes:
+        garr_of_code[code] = garr_dict[names[code]]
     #
     @q.timer
     def set_r_arr():
-        if is_apply_rand_sample_jk_idx_blocking_shift:
-            for i_local in range(n_sample):
-                i = i_start + i_local
-                for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[i_local, j]
-                    garr = r_arr_dict[jk_idx_str]
-                    r_arr[i_local, j] = garr[i]
-        else:
+        if not is_apply_rand_sample_jk_idx_blocking_shift:
             if n_sample > 0:
                 for j in range(n):
-                    jk_idx_str = jk_idx_str_arr[0, j]
-                    garr = r_arr_dict[jk_idx_str]
-                    r_arr[:, j] = garr[i_start:i_end]
+                    r_arr[:, j] = garr_of_code[int(codes[0, j])][i_start:i_end]
+            return
+        # Group the rows which share the same blocked codes, so that every
+        # column is filled with one slice/gather per group instead of one
+        # element per cell.
+        rows_of_key = dict()
+        for i_local in range(n_sample):
+            rows_of_key.setdefault(codes[i_local].tobytes(), list()).append(i_local)
+        for rows in rows_of_key.values():
+            row = codes[rows[0]]
+            if len(rows) == n_sample:
+                for j in range(n):
+                    r_arr[:, j] = garr_of_code[int(row[j])][i_start:i_end]
+            else:
+                rows_arr = np.asarray(rows, dtype=np.int64)
+                glb_rows = rows_arr + i_start
+                for j in range(n):
+                    r_arr[rows_arr, j] = garr_of_code[int(row[j])][glb_rows]
     #
     set_r_arr()
     return r_arr, b_arr
@@ -941,13 +1165,8 @@ def rjackknife(
         is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
-    n_b_arr = n - b_arr
-    n_b_arr[n <= b_arr] = 1
-    fac_arr = -eps / np.sqrt(n * n_b_arr)
-    fac_arr[n <= b_arr] = 0
-    fac_r_arr = fac_arr * r_arr
+    apply_jk_fac(r_arr, b_arr, n, eps)
     data_diff = data_arr - avg
-    jk_rows = avg + get_jk_rows(fac_r_arr, data_diff)
     jk_arr = np.empty(
         (
             1 + n_rand_sample,
@@ -956,7 +1175,16 @@ def rjackknife(
         dtype=dtype,
     )
     jk_arr[0] = avg
-    jk_arr[1:] = jk_rows
+    if np.result_type(r_arr.dtype, data_diff.dtype) == jk_arr.dtype:
+        # Write the contraction straight into the result array; adding ``avg``
+        # afterwards is elementwise the same as ``avg + get_jk_rows(...)``.
+        get_jk_rows(r_arr, data_diff, out=jk_arr[1:])
+        jk_arr[1:] += avg
+    else:
+        # ``jk_arr`` has a narrower dtype than the contraction (e.g. float32
+        # data): keep the two step computation so that the rounding does not
+        # change.
+        jk_arr[1:] = avg + get_jk_rows(r_arr, data_diff)
     return jk_arr
 
 @q.timer
@@ -1029,21 +1257,24 @@ def rjackknife_distributed(
         is_use_old_rand_alg=is_use_old_rand_alg,
         jk_idx_list_for_count=jk_idx_list_glb,
     )
-    n_b_arr = n - b_arr
-    n_b_arr[n <= b_arr] = 1
-    fac_arr = -eps / np.sqrt(n * n_b_arr)
-    fac_arr[n <= b_arr] = 0
-    fac_r_arr = fac_arr * r_arr
-    data_diff = data_arr - avg
+    apply_jk_fac(r_arr, b_arr, n, eps)
+    # ``data_arr`` is a private copy made by ``get_distributed_jk_input``, so
+    # the average can be subtracted in place (same elementwise result as the
+    # separate ``data_diff`` array, without the extra buffer).
+    if data_arr.dtype == np.asarray(avg).dtype:
+        data_arr -= avg
+        data_diff = data_arr
+    else:
+        data_diff = data_arr - avg
     # The contraction is a matrix product (``get_jk_rows``), which does not
     # materialize the broadcast temporary of
-    # ``fac_r_arr[:, :, None, ...] * data_diff[None]``, whose size
+    # ``r_arr[:, :, None, ...] * data_diff[None]``, whose size
     # ``n_rand_sample * n_local * prod(elem_shape)`` used to be the peak memory
     # of the operation; ``out=partial_arr[1:]`` writes the result straight into
     # the array that is reduced, so the result array is not materialized either
     # and the peak is one element-shape array instead of two.
     get_jk_rows(
-        fac_r_arr,
+        r_arr,
         data_diff,
         out=partial_arr[1:],
     )
