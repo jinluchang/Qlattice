@@ -184,6 +184,7 @@ __all__ += [
 
 __all__ += [
         'gf_ape_smear',
+        'gf_simple_no_proj_smear',
         'gf_spatial_ape_smear',
         'gf_hyp_smear',
         'prop_smear',

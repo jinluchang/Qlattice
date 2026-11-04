@@ -28,6 +28,15 @@ def gf_ape_smear(GaugeField gf, double alpha, int steps=1):
     cc.gf_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, steps)
     return gf1
 
+def gf_simple_no_proj_smear(GaugeField gf, cc.RealD alpha, cc.Int steps=1):
+    """
+    Similar to `gf_ape_smear` but the SU(3) projection step is omitted.
+    Returns a new gauge field; `gf` is not modified.
+    """
+    cdef GaugeField gf1 = gf.copy()
+    cc.gf_simple_no_proj_smear(gf1.xxx().val(), gf.xxx().val(), alpha, steps)
+    return gf1
+
 def gf_spatial_ape_smear(GaugeField gf, double alpha, int steps=1):
     """
     used value: alpha = 0.5, steps = 30
