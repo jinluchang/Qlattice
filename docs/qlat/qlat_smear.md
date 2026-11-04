@@ -9,6 +9,7 @@ Source: `qlat/qlat/smear.pyx`
 1. [Overview](#overview)
 2. [Gauge-Field Smearing](#gauge-field-smearing)
    - [`gf_ape_smear`](#gf_ape_smear)
+   - [`gf_simple_no_proj_smear`](#gf_simple_no_proj_smear)
    - [`gf_spatial_ape_smear`](#gf_spatial_ape_smear)
    - [`gf_hyp_smear`](#gf_hyp_smear)
 3. [Propagator and Fermion-Field Smearing](#propagator-and-fermion-field-smearing)
@@ -34,7 +35,9 @@ Two families of operations are provided:
   quark propagators and fermion fields, used to construct extended hadron
   operators with improved overlap onto ground-state hadrons.
 
-All functions return new objects and leave the inputs unchanged.
+All gauge-field smearing functions return new objects and leave the inputs
+unchanged. `prop_smear` also returns a new object, while
+`prop_spatial_smear_no_comm` smears the given fermion fields in place.
 
 ---
 
@@ -57,6 +60,31 @@ U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
 
 The result is re-projected to SU(3). After `steps` iterations the smeared
 field is returned.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field |
+| `alpha` | `float` | — | Smearing weight (0 = no smearing, 1 = full staple) |
+| `steps` | `int` | `1` | Number of smearing iterations |
+| **Returns** | `GaugeField` | | Smeared gauge field (new object) |
+
+---
+
+### `gf_simple_no_proj_smear`
+
+```python
+gf_simple_no_proj_smear(gf: GaugeField, alpha: float, steps: int = 1) -> GaugeField
+```
+
+Perform an APE-like smearing that omits the SU(3) projection step. It uses
+the same weighted link/staple combination as `gf_ape_smear`:
+
+```
+U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
+```
+
+but does not re-project the result to SU(3). After `steps` iterations the
+smeared field is returned. The input `gf` is not modified.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
@@ -217,6 +245,10 @@ gf.set_unit()  # placeholder
 # APE smearing: alpha=0.5, 30 iterations
 gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
+
+# APE-like smearing without the SU(3) projection
+gf_no_proj = q.gf_simple_no_proj_smear(gf, 0.5, 3)
+print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 
 # HYP smearing with paper parameters
 gf_hyp = q.gf_hyp_smear(gf, 0.75, 0.6, 0.3)

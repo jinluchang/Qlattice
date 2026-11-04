@@ -3,6 +3,9 @@
 import qlat as q
 import numpy as np
 
+def check_input_preserved(gf, sig_before):
+    assert np.all(q.get_data_sig_arr(gf, q.RngState(), 3) == sig_before)
+
 size_node_list = [
     [1, 1, 1, 1],
     [1, 1, 1, 2],
@@ -32,14 +35,16 @@ q.json_results_append("gf-init", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 gf0 = gf.copy()
 
 gf @= gf0
-q.gf_block_stout_smear(gf, q.Coordinate(), 0.1)
-q.json_results_append("gf_block_stout_smear after plaq", gf.plaq(), 1e-8)
+sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
+gf_bs = q.gf_block_stout_smear(gf, q.Coordinate(), 0.1)
+check_input_preserved(gf, sig_before)
+q.json_results_append("gf_block_stout_smear after plaq", gf_bs.plaq(), 1e-8)
 q.json_results_append(
-    "gf_block_stout_smear after", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_block_stout_smear after", q.get_data_sig_arr(gf_bs, q.RngState(), 3), 1e-8
 )
 
 gf @= gf0
-q.gf_block_stout_smear(
+gf_bs = q.gf_block_stout_smear(
     gf,
     q.Coordinate(
         [
@@ -51,13 +56,13 @@ q.gf_block_stout_smear(
     ),
     0.1,
 )
-q.json_results_append("gf_block_stout_smear after block plaq", gf.plaq(), 1e-8)
+q.json_results_append("gf_block_stout_smear after block plaq", gf_bs.plaq(), 1e-8)
 q.json_results_append(
-    "gf_block_stout_smear after block", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_block_stout_smear after block", q.get_data_sig_arr(gf_bs, q.RngState(), 3), 1e-8
 )
 
 gf @= gf0
-q.gf_block_stout_smear(
+gf_bs = q.gf_block_stout_smear(
     gf,
     q.Coordinate(
         [
@@ -69,28 +74,27 @@ q.gf_block_stout_smear(
     ),
     0.1,
 )
-q.json_results_append("gf_block_stout_smear after block 4 plaq", gf.plaq(), 1e-8)
+q.json_results_append("gf_block_stout_smear after block 4 plaq", gf_bs.plaq(), 1e-8)
 q.json_results_append(
-    "gf_block_stout_smear after block 4", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_block_stout_smear after block 4",
+    q.get_data_sig_arr(gf_bs, q.RngState(), 3),
+    1e-8,
 )
 
 gf @= gf0
-q.gf_stout_smear(gf, 0.1, 3)
-q.json_results_append("gf_stout_smear plaq", gf.plaq(), 1e-8)
-q.json_results_append("gf_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
-
-gf @= gf0
-q.gf_stout_smear(gf, 0.1, 3, method="wilson-flow")
-q.json_results_append("gf_stout_smear wilson-flow plaq", gf.plaq(), 1e-8)
+sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
+gf_stout = q.gf_stout_smear(gf, 0.1, 3)
+check_input_preserved(gf, sig_before)
+q.json_results_append("gf_stout_smear plaq", gf_stout.plaq(), 1e-8)
 q.json_results_append(
-    "gf_stout_smear wilson-flow", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_stout_smear", q.get_data_sig_arr(gf_stout, q.RngState(), 3), 1e-8
 )
 
 gf @= gf0
-q.gf_stout_smear(gf, 0.1, 3, method="force")
-q.json_results_append("gf_stout_smear force plaq", gf.plaq(), 1e-8)
+gf_stout = q.gf_stout_smear(gf, 0.1, 5)
+q.json_results_append("gf_stout_smear steps=5 plaq", gf_stout.plaq(), 1e-8)
 q.json_results_append(
-    "gf_stout_smear force", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_stout_smear steps=5", q.get_data_sig_arr(gf_stout, q.RngState(), 3), 1e-8
 )
 
 gf @= gf0
@@ -134,7 +138,8 @@ q.json_results_append(
 assert np.all(gf_sig_before == gf_sig_after)
 
 gf @= gf0
-q.gf_local_stout_smear(
+sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
+gf_ls = q.gf_local_stout_smear(
     gf,
     q.Coordinate(
         [
@@ -146,13 +151,16 @@ q.gf_local_stout_smear(
     ),
     0.1,
 )
-q.json_results_append("gf_local_stout_smear after block 4 plaq", gf.plaq(), 1e-8)
+check_input_preserved(gf, sig_before)
+q.json_results_append("gf_local_stout_smear after block 4 plaq", gf_ls.plaq(), 1e-8)
 q.json_results_append(
-    "gf_local_stout_smear after block 4", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_local_stout_smear after block 4",
+    q.get_data_sig_arr(gf_ls, q.RngState(), 3),
+    1e-8,
 )
 
 gf @= gf0
-q.gf_local_stout_smear(
+gf_ls = q.gf_local_stout_smear(
     gf,
     q.Coordinate(
         [
@@ -164,9 +172,11 @@ q.gf_local_stout_smear(
     ),
     0.1,
 )
-q.json_results_append("gf_local_stout_smear after block 2 plaq", gf.plaq(), 1e-8)
+q.json_results_append("gf_local_stout_smear after block 2 plaq", gf_ls.plaq(), 1e-8)
 q.json_results_append(
-    "gf_local_stout_smear after block 2", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+    "gf_local_stout_smear after block 2",
+    q.get_data_sig_arr(gf_ls, q.RngState(), 3),
+    1e-8,
 )
 
 fc = q.FieldChar(geo, 1)
@@ -212,7 +222,7 @@ gf_list = q.shuffle_field(
     ),
 )
 q.json_results_append(f"shuffle_field {len(gf_list)}")
-for gf_local in gf_list:
+gf_list = [
     q.gf_local_stout_smear(
         gf_local,
         q.Coordinate(
@@ -225,6 +235,8 @@ for gf_local in gf_list:
         ),
         0.1,
     )
+    for gf_local in gf_list
+]
 q.shuffle_field_back(
     gf,
     gf_list,
@@ -330,9 +342,9 @@ f_dir_list = [
 ]
 gt_inv_list = []
 q.json_results_append(f"shuffle_field {len(gf_list)}")
-for gf_local, f_dir in zip(gf_list, f_dir_list):
+for index, (gf_local, f_dir) in enumerate(zip(gf_list, f_dir_list)):
     for step in range(1):
-        q.gf_local_stout_smear(
+        gf_local = q.gf_local_stout_smear(
             gf_local,
             q.Coordinate(
                 [
@@ -344,6 +356,7 @@ for gf_local, f_dir in zip(gf_list, f_dir_list):
             ),
             0.1,
         )
+    gf_list[index] = gf_local
     gt_inv = q.gt_local_tree_gauge(gf_local, f_dir, 4)
     gt_inv_list.append(gt_inv)
 q.shuffle_field_back(

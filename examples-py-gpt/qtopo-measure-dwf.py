@@ -366,7 +366,7 @@ def measure_topo_dwf(
     stout_smear_steps = params.get("stout_smear_steps", 0)
     stout_smear_step_size = params.get("stout_smear_step_size", 0.1)
     if stout_smear_steps > 0:
-        q.gf_stout_smear(gf, stout_smear_step_size, stout_smear_steps)
+        gf = q.gf_stout_smear(gf, stout_smear_step_size, stout_smear_steps)
         q.json_results_append(
             f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.plaq()",
             gf.plaq(),

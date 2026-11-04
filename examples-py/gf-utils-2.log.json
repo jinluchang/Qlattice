@@ -145,56 +145,27 @@
   1e-08
  ],
  [
-  "gf_stout_smear wilson-flow plaq",
-  0.4665894330446553,
+  "gf_stout_smear steps=5 plaq",
+  0.6227729301096022,
   1e-08
  ],
  [
-  "gf_stout_smear wilson-flow",
+  "gf_stout_smear steps=5",
   {
    "value": [
     {
-     "real": -32.33212517771774,
-     "imag": 49.72525151342177,
+     "real": -19.75139453911472,
+     "imag": 46.77986234101135,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -5.541919035187846,
-     "imag": 4.0992049274469675,
+     "real": -9.636161788837384,
+     "imag": 3.937300870063753,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 58.75183893217453,
-     "imag": -24.191926608554482,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-08
- ],
- [
-  "gf_stout_smear force plaq",
-  0.4665894330446553,
-  1e-08
- ],
- [
-  "gf_stout_smear force",
-  {
-   "value": [
-    {
-     "real": -32.33212517771774,
-     "imag": 49.72525151342177,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -5.541919035187846,
-     "imag": 4.0992049274469675,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 58.75183893217453,
-     "imag": -24.191926608554482,
+     "real": 53.25137724530634,
+     "imag": -19.672229794136136,
      "__extended_json_type__": "complex"
     }
    ],

@@ -205,18 +205,13 @@
   1e-10
  ],
  [
-  "gf_stout_smear force plaq",
-  0.4665894330446553,
+  "gf_simple_no_proj_smear steps=1 plaq",
+  0.04070315206924724,
   1e-10
  ],
  [
-  "gf_stout_smear stout plaq",
-  0.4665894330446553,
-  1e-10
- ],
- [
-  "gf_stout_smear wilson-flow plaq",
-  0.4665894330446553,
+  "gf_simple_no_proj_smear steps=3 plaq",
+  0.0004100896200715955,
   1e-10
  ],
  [

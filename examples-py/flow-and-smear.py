@@ -123,35 +123,38 @@ for a1, a2, a3 in alpha_sets:
     gf_test = q.gf_hyp_smear(gf, a1, a2, a3)
     q.json_results_append(f"gf_hyp_smear {a1},{a2},{a3} plaq", gf_test.plaq(), 1e-10)
 
+# ---- gf_simple_no_proj_smear ----
+
+for steps in [1, 3]:
+    gf_test = q.gf_simple_no_proj_smear(gf, 0.5, steps)
+    q.json_results_append(
+        f"gf_simple_no_proj_smear steps={steps} plaq", gf_test.plaq(), 1e-10
+    )
+
 # ---- gf_stout_smear ----
 
-for method in ["force", "stout", "wilson-flow"]:
-    gf_test = gf.copy()
-    q.gf_stout_smear(gf_test, 0.1, 3, method=method)
-    q.json_results_append(f"gf_stout_smear {method} plaq", gf_test.plaq(), 1e-10)
-
+gf_sig = q.get_data_sig_arr(gf, q.RngState(), 3)
 for num_step in [1, 3, 5]:
-    gf_test = gf.copy()
-    q.gf_stout_smear(gf_test, 0.1, num_step)
+    gf_test = q.gf_stout_smear(gf, 0.1, num_step)
     q.json_results_append(
         f"gf_stout_smear steps={num_step} plaq", gf_test.plaq(), 1e-10
     )
+assert np.all(q.get_data_sig_arr(gf, q.RngState(), 3) == gf_sig)
 
 # ---- gf_block_stout_smear ----
 
-gf_bs = gf.copy()
-q.gf_block_stout_smear(gf_bs, q.Coordinate(), 0.1)
+gf_bs = q.gf_block_stout_smear(gf, q.Coordinate(), 0.1)
 q.json_results_append("gf_block_stout_smear plaq", gf_bs.plaq(), 1e-10)
 
-gf_bs2 = gf.copy()
-q.gf_block_stout_smear(gf_bs2, q.Coordinate([2, 2, 2, 2]), 0.1)
+gf_bs2 = q.gf_block_stout_smear(gf, q.Coordinate([2, 2, 2, 2]), 0.1)
 q.json_results_append("gf_block_stout_smear block=[2,2,2,2] plaq", gf_bs2.plaq(), 1e-10)
 
 # ---- gf_local_stout_smear ----
 
-gf_ls = gf.copy()
-q.gf_local_stout_smear(gf_ls, q.Coordinate(), 0.1)
+gf_ls = q.gf_local_stout_smear(gf, q.Coordinate(), 0.1)
 q.json_results_append("gf_local_stout_smear plaq", gf_ls.plaq(), 1e-10)
+
+assert np.all(q.get_data_sig_arr(gf, q.RngState(), 3) == gf_sig)
 
 # ---- smear_field (Gaussian smearing) ----
 
