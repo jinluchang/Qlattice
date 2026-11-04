@@ -1,3 +1,9 @@
+CHECK: gf_stout_smear vs gf_block_stout_smear (no blocking): qnorm(diff) = 0.00E+00
+CHECK: gf_stout_smear with gf == gf0: qnorm(diff) = 0.00E+00
+CHECK: gf_simple_no_proj_smear steps = 2 vs two steps = 1: qnorm(diff) = 0.00E+00
+CHECK: gf_simple_no_proj_smear with alpha = 0: qnorm(diff) = 0.00E+00
+CHECK: gf_simple_no_proj_smear with gf == gf0: qnorm(diff) = 0.00E+00
+CHECK: smear functions leave the input gauge field unchanged: qnorm(diff) = 0.00E+00
 CHECK: Consistency: orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00
 CHECK: Reference (field_shift_direct): orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00
 CHECK: Reference (field_shift_steps): orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00

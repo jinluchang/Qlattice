@@ -10,6 +10,9 @@ namespace qlat
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
                   const Long steps = 1);
 
+void gf_simple_no_proj_smear(GaugeField& gf, const GaugeField& gf0,
+                             const RealD alpha, const Long steps);
+
 void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
                           const double alpha, const Long steps = 1);
 

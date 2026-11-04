@@ -120,6 +120,49 @@ void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
   }
 }
 
+static qacc ColorMatrix gf_link_simple_no_proj_smear_no_comm(
+    const GaugeField& gf, const Coordinate& xl, const Int mu, const RealD alpha)
+// Same as `gf_link_ape_smear_no_comm` but without the SU(3) projection.
+{
+  return (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
+         (ComplexD)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu);
+}
+
+static void gf_simple_no_proj_smear_no_comm(GaugeField& gf,
+                                            const GaugeField& gf0,
+                                            const RealD alpha)
+{
+  TIMER_VERBOSE("gf_simple_no_proj_smear_no_comm");
+  Qassert(&gf != &gf0);
+  const Geometry geo0 = gf0.get_geo();
+  const Geometry geo = geo_resize(geo0);
+  gf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = gf.get_elems(xl);
+    for (Int mu = 0; mu < DIMN; ++mu) {
+      v[mu] = gf_link_simple_no_proj_smear_no_comm(gf0, xl, mu, alpha);
+    }
+  });
+}
+
+void gf_simple_no_proj_smear(GaugeField& gf, const GaugeField& gf0,
+                             const RealD alpha, const Long steps)
+// Same as `gf_ape_smear` but without the SU(3) projection step.
+// gf can be the same object as gf0.
+{
+  TIMER_VERBOSE("gf_simple_no_proj_smear");
+  gf = gf0;
+  GaugeField gf1;
+  gf1.init(geo_resize(gf0.geo(), 1));
+  for (Long i = 0; i < steps; ++i) {
+    gf1 = gf;
+    refresh_expanded(gf1);
+    gf_simple_no_proj_smear_no_comm(gf, gf1, alpha);
+  }
+}
+
 static qacc ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
                                                           const Coordinate& xl,
                                                           const Int mu,

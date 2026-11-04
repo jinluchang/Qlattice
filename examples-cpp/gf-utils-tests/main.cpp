@@ -50,6 +50,57 @@ void simple_tests()
   prop_smear(prop, gfs1, 0.5, 10);
   //
   {
+    TIMER_VERBOSE("test-gf-stout-smear");
+    GaugeField gf_orig;
+    gf_orig = gf;
+    GaugeField gfs_stout, gfs_block, gfs_stout_alias;
+    gf_stout_smear(gfs_stout, gf, 0.1);
+    gf_block_stout_smear(gfs_block, gf, Coordinate(), 0.1);
+    gfs_block -= gfs_stout;
+    displayln_info(
+        ssprintf("CHECK: gf_stout_smear vs gf_block_stout_smear "
+                 "(no blocking): qnorm(diff) = %.2E",
+                 qnorm(gfs_block)));
+    gfs_stout_alias = gf;
+    gf_stout_smear(gfs_stout_alias, gfs_stout_alias, 0.1);
+    gfs_stout_alias -= gfs_stout;
+    displayln_info(
+        ssprintf("CHECK: gf_stout_smear with gf == gf0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_stout_alias)));
+    GaugeField gfs_no_proj, gfs_no_proj_2, gfs_no_proj_zero, gfs_no_proj_alias;
+    gf_simple_no_proj_smear(gfs_no_proj, gf, 0.1, 1);
+    gf_simple_no_proj_smear(gfs_no_proj_2, gfs_no_proj, 0.1, 1);
+    gf_simple_no_proj_smear(gfs_no_proj_alias, gf, 0.1, 2);
+    gfs_no_proj_2 -= gfs_no_proj_alias;
+    displayln_info(
+        ssprintf("CHECK: gf_simple_no_proj_smear steps = 2 vs two "
+                 "steps = 1: qnorm(diff) = %.2E",
+                 qnorm(gfs_no_proj_2)));
+    gfs_no_proj_zero = gf;
+    gf_simple_no_proj_smear(gfs_no_proj_zero, gfs_no_proj_zero, 0.0, 1);
+    gfs_no_proj_zero -= gf;
+    displayln_info(
+        ssprintf("CHECK: gf_simple_no_proj_smear with alpha = 0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_no_proj_zero)));
+    GaugeField gfs_no_proj_alias2;
+    gfs_no_proj_alias2 = gf;
+    gf_simple_no_proj_smear(gfs_no_proj_alias2, gfs_no_proj_alias2, 0.1, 1);
+    gfs_no_proj_alias2 -= gfs_no_proj;
+    displayln_info(
+        ssprintf("CHECK: gf_simple_no_proj_smear with gf == gf0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_no_proj_alias2)));
+    GaugeField gf_after;
+    gf_after = gf;
+    gf_after -= gf_orig;
+    displayln_info(
+        ssprintf("CHECK: smear functions leave the input gauge "
+                 "field unchanged: qnorm(diff) = %.2E",
+                 qnorm(gf_after)));
+  }
+  {
     TIMER_VERBOSE("test-field_shift");
     GaugeField gf1, gf2;
     const Coordinate c1(1, 2, 3, 4);
