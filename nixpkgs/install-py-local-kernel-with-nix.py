@@ -14,11 +14,15 @@ That is what the old bash script did, and it keeps the nix store path alive
 through the indirect gc root nix registers for the out link.  The repo link
 './result-py-local<variant>' points at that out link, so it stays usable.\n
 When the user level kernel directory is not writable, the Jupyter kernel spec,
-the nix cache and the nom state directory fall back to '<repo>/tmp/', so that
+the nix cache, the nom state directory and the temporary directory of the nix
+and ipykernel subprocesses ('$TMPDIR') fall back to '<repo>/tmp/', so that
 nothing outside of the repo is written to.  The out link still lives under
 '<repo>/tmp/jupyter' because nix registers its indirect gc root there, but the
 repo link './result-py-local<variant>' points at the nix store path directly
-instead of going through that out link.
+instead of going through that out link.  Files that the subprocesses would put
+in a temporary directory ('$TMPDIR', by default '/tmp') then go to
+'<repo>/tmp/tmp', and the IPython config directory of the kernel install goes to
+'<repo>/tmp/jupyter/ipython', because some runners discard '/tmp'.
 """
 
 import argparse
@@ -91,6 +95,9 @@ outputs:
                                           not writable
   ./tmp/nix-cache, ./tmp/nix-state        nix and nom caches, used when the
                                           user level directories are not writable
+  ./tmp/tmp                               '$TMPDIR' of the nix and ipykernel
+                                          subprocesses, used when the user level
+                                          directories are not writable
 
 The out link and the kernel spec are installed for the current user when the
 user level kernel directory ('$JUPYTER_DATA_DIR/kernels', by default
@@ -271,8 +278,10 @@ def setup_cache_fallbacks(env):
     """Point the nix and nom cache directories into the repo when they are not writable.\n
     nix keeps its evaluation and git cache in '$XDG_CACHE_HOME/nix' (by default
     '$HOME/.cache/nix') and nom keeps its build reports in '$XDG_STATE_HOME' (by
-    default '$HOME/.local/state').
+    default '$HOME/.local/state').\n
+    Return True when at least one of the two directories fell back into the repo.
     """
+    used_repo_fallback = False
     user_cache_home = Path(env.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     if not can_write_dir(user_cache_home):
         repo_cache = REPO_PATH / "tmp" / "nix-cache"
@@ -281,6 +290,7 @@ def setup_cache_fallbacks(env):
         )
         env["XDG_CACHE_HOME"] = str(repo_cache)
         seed_nix_cache(user_cache_home / "nix", repo_cache)
+        used_repo_fallback = True
     #
     user_state_home = Path(
         env.get("XDG_STATE_HOME") or Path.home() / ".local" / "state"
@@ -291,6 +301,29 @@ def setup_cache_fallbacks(env):
             f"The user state directory is not writable. Using 'XDG_STATE_HOME={repo_state}'."
         )
         env["XDG_STATE_HOME"] = str(repo_state)
+        used_repo_fallback = True
+    #
+    return used_repo_fallback
+
+def setup_tmpdir(env):
+    """Point '$TMPDIR' into the repo so that the subprocesses write their temp files there.\n
+    nix, nom and the ipykernel install write their temporary files to '$TMPDIR'
+    (by default '/tmp').  When the user level directories are not writable the
+    script keeps everything else in '<repo>/tmp', so this directory has to
+    follow; otherwise the writes land in '/tmp', which some runners discard
+    together with the process that made them.  A '$TMPDIR' that is already set
+    is left alone.
+    """
+    if env.get("TMPDIR"):
+        return
+    tmp_dir = REPO_PATH / "tmp" / "tmp"
+    try:
+        tmp_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        print(f"WARNING: Could not create '{tmp_dir}': {e}", file=sys.stderr)
+        return
+    env["TMPDIR"] = str(tmp_dir)
+    print(f"Using 'TMPDIR={tmp_dir}' for the subprocesses.")
 
 def setup_kernel_install(kernel_prefix):
     """Return '(kernels_dir, use_user_install)' for the out link and kernel spec.\n
@@ -401,6 +434,11 @@ def install_kernel(variant, out_link, kernel_prefix, use_user_install, env):
         cmd.append("--user")
     else:
         cmd += ["--prefix", str(kernel_prefix)]
+        # '$HOME' is not writable, so IPython would put its config directory in a
+        # temporary directory outside of the repo; keep it in the repo instead.
+        ipython_dir = (kernel_prefix / "ipython").resolve()
+        ipython_dir.mkdir(parents=True, exist_ok=True)
+        env = dict(env, IPYTHONDIR=str(ipython_dir))
     cmd += ipykernel_env_args(variant, out_link)
     cmd.append(f"--name={kernel_name}")
     run(cmd, env)
@@ -448,8 +486,10 @@ def main(argv=None):
         die(f"'{NIXPKGS_FILE}' not found.  This script belongs in 'nixpkgs/'.")
     #
     env = dict(os.environ)
-    setup_cache_fallbacks(env)
+    used_repo_cache = setup_cache_fallbacks(env)
     kernels_dir, use_user_install = setup_kernel_install(args.kernel_prefix)
+    if used_repo_cache or not use_user_install:
+        setup_tmpdir(env)
     #
     bulk_build = len(args.variants) > 1
     if bulk_build:
