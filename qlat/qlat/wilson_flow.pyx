@@ -120,15 +120,10 @@ def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1):
     Return a new gauge field obtained by applying `num_step` steps of global
     stout smearing (no blocking) with step size `step_size`.
     The input `gf` is not modified.
+    The loop over `num_step` is performed by the C++ `gf_stout_smear`.
     """
-    cdef Geometry geo = gf.geo
     cdef GaugeField gf1 = gf.copy()
-    cdef GaugeField gf2
-    cdef cc.Int step
-    for step in range(num_step):
-        gf2 = GaugeField(geo)
-        cc.gf_stout_smear(gf2.xxx().val(), gf1.xxx().val(), step_size)
-        gf1 = gf2
+    cc.gf_stout_smear(gf1.xxx().val(), gf.xxx().val(), step_size, num_step)
     return gf1
 
 @q.timer

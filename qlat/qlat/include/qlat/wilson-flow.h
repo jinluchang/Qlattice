@@ -30,7 +30,7 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
                      const Field<RealD>& plaq_factor);
 
 void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                    const RealD step_size);
+                    const RealD step_size, const Long steps);
 
 void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
                           const Coordinate& block_site, const RealD step_size);

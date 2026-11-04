@@ -312,40 +312,44 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
 }
 
 void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                    const RealD step_size)
+                    const RealD step_size, const Long steps)
 // Global (non-blocking) stout smear.
+// `steps` is the number of stout-smearing iterations.
 // gf can be the same object as gf0.
 {
   TIMER("gf_stout_smear");
   Qassert(gf0.multiplicity == 4);
   const Geometry geo = gf0.geo();
   Qassert(geo.is_only_local);
+  gf = gf0;
   GaugeField gf_ext;
   gf_ext.init(geo_resize(geo, 1));
   Qassert(gf_ext.multiplicity == 4);
-  gf_ext = gf0;
-  refresh_expanded(gf_ext, set_marks_field_gm_force, "plaq");
   GaugeMomentum gm;
   gm.init(geo);
-  set_zero(gm);
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    for (Int mu = 0; mu < 4; ++mu) {
-      ColorMatrix acc;
-      set_zero(acc);
-      for (Int nu = -4; nu < 4; ++nu) {
-        if (nu == mu or -nu - 1 == mu) {
-          continue;
+  for (Long i = 0; i < steps; ++i) {
+    gf_ext = gf;
+    refresh_expanded(gf_ext, set_marks_field_gm_force, "plaq");
+    set_zero(gm);
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      for (Int mu = 0; mu < 4; ++mu) {
+        ColorMatrix acc;
+        set_zero(acc);
+        for (Int nu = -4; nu < 4; ++nu) {
+          if (nu == mu or -nu - 1 == mu) {
+            continue;
+          }
+          acc += gf_wilson_line_no_comm(gf_ext, xl,
+                                        make_array<int>(nu, mu, -nu - 1));
         }
-        acc += gf_wilson_line_no_comm(gf_ext, xl,
-                                      make_array<int>(nu, mu, -nu - 1));
+        const ColorMatrix force =
+            -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
+        gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
       }
-      const ColorMatrix force = -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
-      gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
-    }
-  });
-  gf = gf0;
-  gf_evolve(gf, gm, step_size);
+    });
+    gf_evolve(gf, gm, step_size);
+  }
 }
 
 void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,

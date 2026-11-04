@@ -54,7 +54,7 @@ void simple_tests()
     GaugeField gf_orig;
     gf_orig = gf;
     GaugeField gfs_stout, gfs_block, gfs_stout_alias;
-    gf_stout_smear(gfs_stout, gf, 0.1);
+    gf_stout_smear(gfs_stout, gf, 0.1, 1);
     gf_block_stout_smear(gfs_block, gf, Coordinate(), 0.1);
     gfs_block -= gfs_stout;
     displayln_info(
@@ -62,12 +62,27 @@ void simple_tests()
                  "(no blocking): qnorm(diff) = %.2E",
                  qnorm(gfs_block)));
     gfs_stout_alias = gf;
-    gf_stout_smear(gfs_stout_alias, gfs_stout_alias, 0.1);
+    gf_stout_smear(gfs_stout_alias, gfs_stout_alias, 0.1, 1);
     gfs_stout_alias -= gfs_stout;
     displayln_info(
         ssprintf("CHECK: gf_stout_smear with gf == gf0: "
                  "qnorm(diff) = %.2E",
                  qnorm(gfs_stout_alias)));
+    GaugeField gfs_stout_1, gfs_stout_2, gfs_stout_12, gfs_stout_zero;
+    gf_stout_smear(gfs_stout_1, gf, 0.1, 1);
+    gf_stout_smear(gfs_stout_2, gfs_stout_1, 0.1, 1);
+    gf_stout_smear(gfs_stout_12, gf, 0.1, 2);
+    gfs_stout_12 -= gfs_stout_2;
+    displayln_info(
+        ssprintf("CHECK: gf_stout_smear steps = 2 vs two steps = 1: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_stout_12)));
+    gf_stout_smear(gfs_stout_zero, gf, 0.1, 0);
+    gfs_stout_zero -= gf;
+    displayln_info(
+        ssprintf("CHECK: gf_stout_smear with steps = 0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_stout_zero)));
     GaugeField gfs_no_proj, gfs_no_proj_2, gfs_no_proj_zero, gfs_no_proj_alias;
     gf_simple_no_proj_smear(gfs_no_proj, gf, 0.1, 1);
     gf_simple_no_proj_smear(gfs_no_proj_2, gfs_no_proj, 0.1, 1);
