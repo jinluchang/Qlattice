@@ -133,8 +133,8 @@ q.begin_with_mpi(size_node_list)
 rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 4])
 geo = q.Geometry(total_site)
-# Single-node geometry: `field_smear_step_local` works without communication and
-# requires `geo.num_node == 1`, also when this test runs on several MPI ranks.
+# Rank-local geometry: `field_smear_step_local` works without communication
+# whenever every site is rank-local, on any number of MPI ranks.
 geo_local = q.Geometry(0, q.Coordinate([1, 1, 1, 1]), q.Coordinate([4, 4, 4, 4]))
 
 # ---- signature contract ----
@@ -244,15 +244,12 @@ check_returns_new_object(
 
 f_r_local = q.FieldRealD(geo_local, 1)
 f_r_local.set_rand(rs.split("f_r_local"))
-if q.get_num_node() == 1:
-    check_returns_new_object(
-        "field_smear_step_local",
-        lambda: q.field_smear_step_local(f_r_local, 0.5, num_step=1),
-        f_r_local,
-        get_local_field_sig,
-    )
-else:
-    q.json_results_append("field_smear_step_local: behavior skipped on multi-node run")
+check_returns_new_object(
+    "field_smear_step_local",
+    lambda: q.field_smear_step_local(f_r_local, 0.5, num_step=1),
+    f_r_local,
+    get_local_field_sig,
+)
 
 # ---- momentum-space kernels ----
 

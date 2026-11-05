@@ -109,5 +109,13 @@
    "__extended_json_type__": "complex"
   },
   1e-10
+ ],
+ [
+  "field_smear_step_local vs field_smear_step: qnorm(diff)",
+  5.351774129463251e-30,
+  1e-10
+ ],
+ [
+  "field_smear_step_local matches field_smear_step = True"
  ]
 ]

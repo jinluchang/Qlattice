@@ -56,22 +56,29 @@ new field without modifying its input.
 ### `mk_shift_xg_idx_arr`
 
 ```python
-mk_shift_xg_idx_arr(total_site: tuple, xg_shift: tuple) -> np.ndarray
+mk_shift_xg_idx_arr(
+    total_site: tuple, xg_shift: tuple, geo: Geometry | None = None
+) -> np.ndarray
 ```
 
 Build an index array that maps each site to the site shifted by
-`xg_shift` (with periodic boundary conditions). Only works when the
-field lives on a single MPI node (no communication).
+`xg_shift` (with periodic boundary conditions). With `geo=None` the run's
+global geometry is used (the historical behavior); passing `geo` expresses
+the result in `geo`'s local index order, so the helper also works for a
+rank-local geometry under MPI. Every shifted site must be local to `geo`,
+and `eo != 0` geometries are rejected.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `total_site` | `tuple[int, ...]` | Lattice dimensions, e.g. `(4, 4, 4, 8)` |
 | `xg_shift` | `tuple[int, ...]` | Shift in each direction |
+| `geo` | `Geometry \| None` | Geometry whose local index order is used; `None` means the run's global geometry |
 
-Returns an integer `np.ndarray` of shape `(total_volume,)` suitable for
+Returns an integer `np.ndarray` of shape `(geo.local_volume(),)` suitable for
 advanced indexing: `field[shift_idx]` yields the shifted field.
 
-Results are cached (up to 16 entries).
+Results are cached (up to 16 entries), keyed on the full geometry so a cached
+array is never reused for a different geometry.
 
 ---
 
@@ -96,7 +103,15 @@ all 4 directions).
 
 Returns a new field; the input is not modified.
 
-**Note:** Requires `geo.num_node() == 1`.
+**No communication; rank-local geometry required.** This function builds
+local index arrays and never performs communication, so it is correct whenever
+every site of the field's lattice is held by the calling rank — for example a
+replicated single-node geometry built with
+`q.Geometry(0, q.Coordinate([1, 1, 1, 1]), node_site)` — no matter how many MPI
+ranks are running. For a distributed lattice use `field_smear_step` instead:
+it is the shift-based MPI-capable variant (it uses `field.shift`). If a
+shifted neighbour is not local to the rank, `field_smear_step_local` now raises
+an error instead of silently mis-indexing the field.
 
 ### `field_smear_step`
 

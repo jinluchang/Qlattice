@@ -114,7 +114,10 @@
   "field_smear_step: input field left unchanged = True"
  ],
  [
-  "field_smear_step_local: behavior skipped on multi-node run"
+  "field_smear_step_local: returns a new object = True"
+ ],
+ [
+  "field_smear_step_local: input field left unchanged = True"
  ],
  [
   "mk_field_smear_mom_kernel: returns field = True"

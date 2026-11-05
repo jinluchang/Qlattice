@@ -121,6 +121,33 @@ for i in range(4):
     check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel)
     check_convolution_3d(f1, f2, idx1, idx2, ff3d, xg_rel)
 
+# ---- field_smear_step_local on a rank-local geometry ----
+#
+# `field_smear_step_local` performs no communication: it is correct whenever
+# every site of the field is rank-local, e.g. a replicated single-node
+# geometry, whatever the number of MPI ranks.  Pin that it agrees with
+# `field_smear_step`, the shift-based MPI-capable variant (uses `field.shift`).
+geo_rank_local = q.Geometry(
+    0,
+    q.Coordinate([1, 1, 1, 1]),
+    q.Coordinate([4, 4, 4, 4]),
+)
+f_rank_local = q.FieldRealD(geo_rank_local, 1)
+f_rank_local.set_rand(rs.split("f-rank-local"))
+smear_coef = 0.25
+f_step_local = q.field_smear_step_local(f_rank_local, smear_coef, num_step=1)
+f_step_shift = q.field_smear_step(f_rank_local, smear_coef, num_step=1)
+f_step_diff = f_step_local.copy()
+f_step_diff -= f_step_shift
+step_diff_norm = float(f_step_diff.qnorm())
+q.json_results_append(
+    "field_smear_step_local vs field_smear_step: qnorm(diff)", step_diff_norm, 1e-10
+)
+q.json_results_append(
+    f"field_smear_step_local matches field_smear_step = {step_diff_norm < 1e-10}"
+)
+assert step_diff_norm < 1e-10, step_diff_norm
+
 q.timer_display()
 if q.is_test():
     q.check_log_json(__file__)
