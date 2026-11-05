@@ -44,7 +44,7 @@ void simple_tests()
     }
     //
     const double coef = 3.0 * width * width / (2 * nsmear);
-    prop_smear_qlat_convension(prop_vec, gf, coef, nsmear, mom,
+    prop_smear_qlat_convention(prop_vec, gf, coef, nsmear, mom,
                                smear_in_time_dir);
     //
     set_left_expanded_gauge_field(gf1, gf);

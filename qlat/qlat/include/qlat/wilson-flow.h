@@ -30,13 +30,15 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
                      const Field<RealD>& plaq_factor);
 
 void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                    const RealD step_size, const Long steps);
+                    const RealD step_size, const Long num_step = 1);
 
-void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const Coordinate& block_site, const RealD step_size);
+void gf_stout_smear_block(GaugeField& gf, const GaugeField& gf0,
+                          const Coordinate& block_site, const RealD step_size,
+                          const Long num_step = 1);
 
-void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const Coordinate& block_site, const RealD step_size);
+void gf_stout_smear_local(GaugeField& gf, const GaugeField& gf0,
+                          const Coordinate& block_site, const RealD step_size,
+                          const Long num_step = 1);
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
                                 const Coordinate& block_site,

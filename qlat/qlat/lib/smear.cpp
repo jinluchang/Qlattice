@@ -107,32 +107,33 @@ static void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 }
 
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
-                  const Long steps)
+                  const Long num_step)
 {
   TIMER_VERBOSE("gf_ape_smear");
   gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), 1));
-  for (Long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < num_step; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
     gf_ape_smear_no_comm(gf, gf1, alpha);
   }
 }
 
-static qacc ColorMatrix gf_link_simple_no_proj_smear_no_comm(
-    const GaugeField& gf, const Coordinate& xl, const Int mu, const RealD alpha)
+static qacc ColorMatrix gf_link_ape_smear_no_proj_no_comm(const GaugeField& gf,
+                                                          const Coordinate& xl,
+                                                          const Int mu,
+                                                          const RealD alpha)
 // Same as `gf_link_ape_smear_no_comm` but without the SU(3) projection.
 {
   return (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
          (ComplexD)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu);
 }
 
-static void gf_simple_no_proj_smear_no_comm(GaugeField& gf,
-                                            const GaugeField& gf0,
-                                            const RealD alpha)
+static void gf_ape_smear_no_proj_no_comm(GaugeField& gf, const GaugeField& gf0,
+                                         const RealD alpha)
 {
-  TIMER_VERBOSE("gf_simple_no_proj_smear_no_comm");
+  TIMER_VERBOSE("gf_ape_smear_no_proj_no_comm");
   Qassert(&gf != &gf0);
   const Geometry geo0 = gf0.get_geo();
   const Geometry geo = geo_resize(geo0);
@@ -142,28 +143,28 @@ static void gf_simple_no_proj_smear_no_comm(GaugeField& gf,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (Int mu = 0; mu < DIMN; ++mu) {
-      v[mu] = gf_link_simple_no_proj_smear_no_comm(gf0, xl, mu, alpha);
+      v[mu] = gf_link_ape_smear_no_proj_no_comm(gf0, xl, mu, alpha);
     }
   });
 }
 
-void gf_simple_no_proj_smear(GaugeField& gf, const GaugeField& gf0,
-                             const RealD alpha, const Long steps)
+void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
+                          const RealD alpha, const Long num_step)
 // Same as `gf_ape_smear` but without the SU(3) projection step.
 // gf can be the same object as gf0.
 {
-  TIMER_VERBOSE("gf_simple_no_proj_smear");
+  TIMER_VERBOSE("gf_ape_smear_no_proj");
   gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), 1));
-  for (Long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < num_step; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
-    gf_simple_no_proj_smear_no_comm(gf, gf1, alpha);
+    gf_ape_smear_no_proj_no_comm(gf, gf1, alpha);
   }
 }
 
-static qacc ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
+static qacc ColorMatrix gf_link_ape_smear_spatial_no_comm(const GaugeField& gf,
                                                           const Coordinate& xl,
                                                           const Int mu,
                                                           const double alpha)
@@ -174,10 +175,10 @@ static qacc ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
       (ComplexD)(alpha / multi) * gf_spatial_staple_no_comm(gf, xl, mu));
 }
 
-static void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
+static void gf_ape_smear_spatial_no_comm(GaugeField& gf, const GaugeField& gf0,
                                          const double alpha)
 {
-  TIMER_VERBOSE("gf_spatial_ape_smear_no_comm");
+  TIMER_VERBOSE("gf_ape_smear_spatial_no_comm");
   Qassert(&gf != &gf0);
   const Geometry geo0 = gf0.get_geo();
   const Geometry geo = geo_resize(geo0);
@@ -188,24 +189,24 @@ static void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (Int mu = 0; mu < 3; ++mu) {
       // No need to smear the temperal link (mu == 3)
-      v[mu] = gf_link_spatial_ape_smear_no_comm(gf0, xl, mu, alpha);
+      v[mu] = gf_link_ape_smear_spatial_no_comm(gf0, xl, mu, alpha);
     }
   });
 }
 
-void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
-                          const double alpha, const Long steps)
+void gf_ape_smear_spatial(GaugeField& gf, const GaugeField& gf0,
+                          const double alpha, const Long num_step)
 {
-  TIMER_VERBOSE("gf_spatial_ape_smear");
+  TIMER_VERBOSE("gf_ape_smear_spatial");
   gf = gf0;
   const Coordinate expan_left(1, 1, 1, 0);
   const Coordinate expan_right(1, 1, 1, 0);
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), expan_left, expan_right));
-  for (Long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < num_step; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
-    gf_spatial_ape_smear_no_comm(gf, gf1, alpha);
+    gf_ape_smear_spatial_no_comm(gf, gf1, alpha);
   }
 }
 
@@ -316,21 +317,25 @@ void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 }
 
 void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
-                  const double alpha2, const double alpha3)
+                  const double alpha2, const double alpha3, const Long num_step)
 // values in paper is 0.75 0.6 0.3
 // 10.1103/PhysRevD.64.034504 Eq(4)
+// gf can be the same object as gf0.
 {
   TIMER_VERBOSE("gf_hyp_smear");
+  gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), 1));
-  gf1 = gf0;
-  refresh_expanded(gf1);
-  gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);
+  for (Long i = 0; i < num_step; ++i) {
+    gf1 = gf;
+    refresh_expanded(gf1);
+    gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);
+  }
 }
 
 template <class T>
 static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
-                       const double coef, const Int step,
+                       const double coef, const Int num_step,
                        const CoordinateD& mom = CoordinateD(),
                        const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
@@ -340,8 +345,8 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   TIMER_FLOPS("prop_smear");
   const Int n_avg = smear_in_time_dir ? 8 : 6;
   const Long v_gb = prop.geo().local_volume() * 12 * 4;
-  timer.flops += v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
-  if (0 == step) {
+  timer.flops += v_gb * num_step * n_avg * (3 * (3 * 6 + 2 * 2));
+  if (0 == num_step) {
     return;
   }
   const Geometry& geo = prop.geo();
@@ -360,7 +365,7 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   }
   Propagator4dT<T> prop1;
   prop1.init(geo1);
-  for (Int i = 0; i < step; ++i) {
+  for (Int i = 0; i < num_step; ++i) {
     prop1 = prop;
     refresh_expanded_1(prop1);
     qacc_for(index, geo.local_volume(), {
@@ -381,27 +386,27 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 }
 
 void prop_smear(Propagator4dT<RealD>& prop, const GaugeFieldT<RealD>& gf1,
-                const double coef, const Int step, const CoordinateD& mom,
+                const double coef, const Int num_step, const CoordinateD& mom,
                 const bool smear_in_time_dir)
 {
-  prop_smear<RealD>(prop, gf1, coef, step, mom, smear_in_time_dir);
+  prop_smear<RealD>(prop, gf1, coef, num_step, mom, smear_in_time_dir);
 }
 
-void prop_smear_qlat_convension(Propagator4dT<RealD>& prop,
+void prop_smear_qlat_convention(Propagator4dT<RealD>& prop,
                                 const GaugeFieldT<RealD>& gf, const double coef,
-                                const Int step, const CoordinateD& mom,
+                                const Int num_step, const CoordinateD& mom,
                                 const bool smear_in_time_dir, const Int mode)
 {
-  prop_smear_qlat_convension<RealD, RealD>(prop, gf, coef, step, mom,
+  prop_smear_qlat_convension<RealD, RealD>(prop, gf, coef, num_step, mom,
                                            smear_in_time_dir, mode);
 }
 
-void prop_smear_qlat_convension(Propagator4dT<RealF>& prop,
+void prop_smear_qlat_convention(Propagator4dT<RealF>& prop,
                                 const GaugeFieldT<RealF>& gf, const double coef,
-                                const Int step, const CoordinateD& mom,
+                                const Int num_step, const CoordinateD& mom,
                                 const bool smear_in_time_dir, const Int mode)
 {
-  prop_smear_qlat_convension<RealF, RealF>(prop, gf, coef, step, mom,
+  prop_smear_qlat_convension<RealF, RealF>(prop, gf, coef, num_step, mom,
                                            smear_in_time_dir, mode);
 }
 

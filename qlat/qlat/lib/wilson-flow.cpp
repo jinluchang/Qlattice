@@ -262,12 +262,12 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
   qassert(z.multiplicity == 4);
 }
 
-static void set_marks_field_block_stout_smear(CommMarks& marks,
+static void set_marks_field_stout_smear_block(CommMarks& marks,
                                               const Geometry& geo,
                                               const Int multiplicity,
                                               const std::string& tag)
 {
-  TIMER_VERBOSE("set_marks_field_block_stout_smear");
+  TIMER_VERBOSE("set_marks_field_stout_smear_block");
   Qassert(multiplicity == 4);
   marks.init();
   marks.init(geo, multiplicity);
@@ -312,9 +312,9 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
 }
 
 void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                    const RealD step_size, const Long steps)
+                    const RealD step_size, const Long num_step)
 // Global (non-blocking) stout smear.
-// `steps` is the number of stout-smearing iterations.
+// `num_step` is the number of stout-smearing iterations.
 // gf can be the same object as gf0.
 {
   TIMER("gf_stout_smear");
@@ -327,7 +327,7 @@ void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
   Qassert(gf_ext.multiplicity == 4);
   GaugeMomentum gm;
   gm.init(geo);
-  for (Long i = 0; i < steps; ++i) {
+  for (Long i = 0; i < num_step; ++i) {
     gf_ext = gf;
     refresh_expanded(gf_ext, set_marks_field_gm_force, "plaq");
     set_zero(gm);
@@ -352,11 +352,12 @@ void gf_stout_smear(GaugeField& gf, const GaugeField& gf0,
   }
 }
 
-void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const Coordinate& block_site, const RealD step_size)
+void gf_stout_smear_block(GaugeField& gf, const GaugeField& gf0,
+                          const Coordinate& block_site, const RealD step_size,
+                          const Long num_step)
 // gf can be the same object as gf0
 {
-  TIMER("gf_block_stout_smear");
+  TIMER("gf_stout_smear_block");
   Qassert(gf0.multiplicity == 4);
   const Geometry geo = gf0.geo();
   Qassert(geo.is_only_local);
@@ -384,59 +385,63 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   Qassert(gf_ext.multiplicity == 4);
-  gf_ext = gf0;
   const std::string tag_comm = show(block_site);
   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan =
-      get_comm_plan(set_marks_field_block_stout_smear, tag_comm, gf_ext.geo(),
+      get_comm_plan(set_marks_field_stout_smear_block, tag_comm, gf_ext.geo(),
                     gf_ext.multiplicity);
   QLAT_DIAGNOSTIC_POP;
-  refresh_expanded(gf_ext, plan);
   GaugeMomentum gm;
   gm.init(geo);
-  set_zero(gm);
-  qacc_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    Coordinate xl_block;
-    if (is_block_site) {
-      xl_block = xg % block_site;
-    }
-    for (Int mu = 0; mu < 4; ++mu) {
-      if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
-        continue;
-      }
-      ColorMatrix acc;
-      set_zero(acc);
-      for (Int nu = -4; nu < 4; ++nu) {
-        if (nu == mu or -nu - 1 == mu) {
-          continue;
-        }
-        if (is_block_site and
-            (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
-          continue;
-        }
-        if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
-          continue;
-        }
-        acc += gf_wilson_line_no_comm(gf_ext, xl,
-                                      make_array<int>(nu, mu, -nu - 1));
-      }
-      const ColorMatrix force = -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
-      gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
-    }
-  });
   gf = gf0;
-  gf_evolve(gf, gm, step_size);
+  for (Long i = 0; i < num_step; ++i) {
+    gf_ext = gf;
+    refresh_expanded(gf_ext, plan);
+    set_zero(gm);
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      Coordinate xl_block;
+      if (is_block_site) {
+        xl_block = xg % block_site;
+      }
+      for (Int mu = 0; mu < 4; ++mu) {
+        if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
+          continue;
+        }
+        ColorMatrix acc;
+        set_zero(acc);
+        for (Int nu = -4; nu < 4; ++nu) {
+          if (nu == mu or -nu - 1 == mu) {
+            continue;
+          }
+          if (is_block_site and
+              (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
+            continue;
+          }
+          if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
+            continue;
+          }
+          acc += gf_wilson_line_no_comm(gf_ext, xl,
+                                        make_array<int>(nu, mu, -nu - 1));
+        }
+        const ColorMatrix force =
+            -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
+        gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
+      }
+    });
+    gf_evolve(gf, gm, step_size);
+  }
 }
 
-void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const Coordinate& block_site, const RealD step_size)
+void gf_stout_smear_local(GaugeField& gf, const GaugeField& gf0,
+                          const Coordinate& block_site, const RealD step_size,
+                          const Long num_step)
 // gf can be the same object as gf0
 // perform stout smear on each local object separately
 // intended to be used after `shuffle_field(gf_vec, gf, new_size_node)`
 {
-  TIMER("gf_local_stout_smear");
+  TIMER("gf_stout_smear_local");
   Qassert(gf0.multiplicity == 4);
   const Geometry& geo = gf0.geo();
   Qassert(geo.is_only_local);
@@ -446,36 +451,37 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
   Qassert(node_site % block_site_ == Coordinate());
   GaugeMomentum gm;
   gm.init(geo);
-  set_zero(gm);
-  qacc_for(index, geo.local_volume(), {
-    const Geometry& geo = gf0.geo();
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xl_block = xl % block_site_;
-    for (Int mu = 0; mu < 4; ++mu) {
-      if (xl_block[mu] == block_site_[mu] - 1) {
-        continue;
-      }
-      ColorMatrix acc;
-      set_zero(acc);
-      for (Int nu = -4; nu < 4; ++nu) {
-        if (nu == mu or -nu - 1 == mu) {
-          continue;
-        }
-        if (nu >= 0 and xl_block[nu] == block_site_[nu] - 1) {
-          continue;
-        }
-        if (nu < 0 and xl_block[-nu - 1] == 0) {
-          continue;
-        }
-        acc +=
-            gf_wilson_line_no_comm(gf0, xl, make_array<int>(nu, mu, -nu - 1));
-      }
-      const ColorMatrix force = -gf0.get_elem(xl, mu) * matrix_adjoint(acc);
-      gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
-    }
-  });
   gf = gf0;
-  gf_evolve(gf, gm, step_size);
+  for (Long i = 0; i < num_step; ++i) {
+    set_zero(gm);
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl_block = xl % block_site_;
+      for (Int mu = 0; mu < 4; ++mu) {
+        if (xl_block[mu] == block_site_[mu] - 1) {
+          continue;
+        }
+        ColorMatrix acc;
+        set_zero(acc);
+        for (Int nu = -4; nu < 4; ++nu) {
+          if (nu == mu or -nu - 1 == mu) {
+            continue;
+          }
+          if (nu >= 0 and xl_block[nu] == block_site_[nu] - 1) {
+            continue;
+          }
+          if (nu < 0 and xl_block[-nu - 1] == 0) {
+            continue;
+          }
+          acc +=
+              gf_wilson_line_no_comm(gf, xl, make_array<int>(nu, mu, -nu - 1));
+        }
+        const ColorMatrix force = -gf.get_elem(xl, mu) * matrix_adjoint(acc);
+        gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
+      }
+    });
+    gf_evolve(gf, gm, step_size);
+  }
 }
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
