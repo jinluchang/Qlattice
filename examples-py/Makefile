@@ -118,6 +118,7 @@ tests = \
 		gf-flow-topo.log \
 		test-mk-gf-truncated-evolve.log \
 		flow-and-smear.log \
+		smear-api.log \
 		free-invert.log \
 		free-scalar-invert.log \
 		cqlat-qm-action.log \

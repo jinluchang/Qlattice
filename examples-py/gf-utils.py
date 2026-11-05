@@ -57,7 +57,7 @@ gf_ape_list.append(gf_ape)
 gf_ape = q.gf_ape_smear(gf_ape, 0.5, 30)
 gf_ape_list.append(gf_ape)
 
-gf_ape = q.gf_spatial_ape_smear(gf_ape, 0.5, 30)
+gf_ape = q.gf_ape_smear_spatial(gf_ape, 0.5, 30)
 gf_ape_list.append(gf_ape)
 
 for i, gf_ape in enumerate(gf_ape_list):

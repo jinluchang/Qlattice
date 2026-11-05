@@ -84,7 +84,7 @@ def benchmark_prop_spatial_smear(total_site, seed):
             prop_sig = q.get_data_sig_arr(prop, rs, 3)
             q.json_results_append("prop sig", prop_sig, 1e-10)
         gf1 = q.mk_left_expanded_field(gf)
-        ss_prop = q.prop_smear(prop, gf1, coef, step, mom, mode_smear=0)
+        ss_prop = q.prop_smear(prop, gf1, coef, step, mom, mode="standard")
         if is_show_sig:
             ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
             q.json_results_append("ss_prop reference sig", ss_prop_sig, 1e-10)

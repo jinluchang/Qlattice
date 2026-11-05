@@ -41,7 +41,7 @@ fsel.set_rand(total_site, n_per_tslice, rs)
 fselc = fsel.copy()
 fselc.add_psel(psel)
 
-gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
+gf_ape = q.gf_ape_smear_spatial(gf, 0.5, 30)
 gf_ape = q.mk_left_expanded_field(gf_ape)
 
 inv_type = 1

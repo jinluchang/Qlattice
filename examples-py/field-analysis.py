@@ -37,13 +37,13 @@ q.json_results_append("f1 data sig", q.get_data_sig(f1, rs), check_eps)
 q.json_results_append("f2 data sig", q.get_data_sig(f2, rs), check_eps)
 
 radius = 2.0
-sf1 = q.smear_field(f1, radius)
-sf2 = q.smear_field(f2, radius, is_only_spatial=True)
+sf1 = q.field_smear(f1, radius)
+sf2 = q.field_smear(f2, radius, spatial_only=True)
 q.json_results_append("sf1 data sig", q.get_data_sig(sf1, rs), check_eps)
 q.json_results_append("sf2 data sig", q.get_data_sig(sf2, rs), check_eps)
 
-sf1p = q.smear_field(f2, radius)
-sf2p = q.smear_field(f1, radius, is_only_spatial=True)
+sf1p = q.field_smear(f2, radius)
+sf2p = q.field_smear(f1, radius, spatial_only=True)
 q.json_results_append("sf1p data sig", q.get_data_sig(sf1p, rs), check_eps)
 q.json_results_append("sf2p data sig", q.get_data_sig(sf2p, rs), check_eps)
 

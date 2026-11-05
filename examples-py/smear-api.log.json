@@ -1,0 +1,142 @@
+[
+ [
+  "signature gf_ape_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_ape_smear_spatial: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_ape_smear_no_proj: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_hyp_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_stout_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_stout_smear_block: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_stout_smear_local: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature prop_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature prop_spatial_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature field_smear: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature field_smear_step: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature field_smear_step_local: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature prop_smear: mode default = 'qlat'"
+ ],
+ [
+  "signature field_smear: keyword `spatial_only` = True"
+ ],
+ [
+  "old smear names absent = True (9 checked)"
+ ],
+ [
+  "module names `q.smear` and `q.smear_prop` kept = True"
+ ],
+ [
+  "gf_ape_smear: returns a new object = True"
+ ],
+ [
+  "gf_ape_smear: input field left unchanged = True"
+ ],
+ [
+  "gf_ape_smear_spatial: returns a new object = True"
+ ],
+ [
+  "gf_ape_smear_spatial: input field left unchanged = True"
+ ],
+ [
+  "gf_ape_smear_no_proj: returns a new object = True"
+ ],
+ [
+  "gf_ape_smear_no_proj: input field left unchanged = True"
+ ],
+ [
+  "gf_hyp_smear: returns a new object = True"
+ ],
+ [
+  "gf_hyp_smear: input field left unchanged = True"
+ ],
+ [
+  "gf_stout_smear: returns a new object = True"
+ ],
+ [
+  "gf_stout_smear: input field left unchanged = True"
+ ],
+ [
+  "gf_stout_smear_block: returns a new object = True"
+ ],
+ [
+  "gf_stout_smear_block: input field left unchanged = True"
+ ],
+ [
+  "gf_stout_smear_local: returns a new object = True"
+ ],
+ [
+  "gf_stout_smear_local: input field left unchanged = True"
+ ],
+ [
+  "prop_smear: returns a new object = True"
+ ],
+ [
+  "prop_smear: input field left unchanged = True"
+ ],
+ [
+  "prop_spatial_smear: returns a new object = True"
+ ],
+ [
+  "prop_spatial_smear: input field left unchanged = True"
+ ],
+ [
+  "field_smear: returns a new object = True"
+ ],
+ [
+  "field_smear: input field left unchanged = True"
+ ],
+ [
+  "field_smear_step: returns a new object = True"
+ ],
+ [
+  "field_smear_step: input field left unchanged = True"
+ ],
+ [
+  "field_smear_step_local: behavior skipped on multi-node run"
+ ],
+ [
+  "mk_field_smear_mom_kernel: returns field = True"
+ ],
+ [
+  "mk_field_smear_mom_kernel_spatial: returns field = True"
+ ],
+ [
+  "prop_spatial_smear_no_comm: returns None = True"
+ ],
+ [
+  "prop_spatial_smear_no_comm: smears in place = True"
+ ],
+ [
+  "prop_spatial_smear_no_comm is the only in-place None-returning smear = True"
+ ],
+ [
+  "field_smear num_step=2 vs two num_step=1 qnorm diff",
+  0.0,
+  1e-10
+ ],
+ [
+  "field_smear num_step composition ok = True"
+ ]
+]

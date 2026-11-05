@@ -578,7 +578,7 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
         ss_prop = q.prop_smear(prop, gf, coef, step, mom)
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
         q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
-        ss_prop = q.prop_smear(prop, gf, coef, step, mom, mode_smear=0)
+        ss_prop = q.prop_smear(prop, gf, coef, step, mom, mode="standard")
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
         q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
 

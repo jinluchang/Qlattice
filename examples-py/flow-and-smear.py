@@ -104,10 +104,10 @@ for alpha in [0.25, 0.5, 0.75]:
     gf_test = q.gf_ape_smear(gf, alpha, 3)
     q.json_results_append(f"gf_ape_smear alpha={alpha} plaq", gf_test.plaq(), 1e-10)
 
-# ---- gf_spatial_ape_smear ----
+# ---- gf_ape_smear_spatial ----
 
 for steps in [1, 3, 5]:
-    gf_test = q.gf_spatial_ape_smear(gf, 0.5, steps)
+    gf_test = q.gf_ape_smear_spatial(gf, 0.5, steps)
     q.json_results_append(
         f"gf_spatial_ape_smear steps={steps} plaq", gf_test.plaq(), 1e-10
     )
@@ -123,10 +123,10 @@ for a1, a2, a3 in alpha_sets:
     gf_test = q.gf_hyp_smear(gf, a1, a2, a3)
     q.json_results_append(f"gf_hyp_smear {a1},{a2},{a3} plaq", gf_test.plaq(), 1e-10)
 
-# ---- gf_simple_no_proj_smear ----
+# ---- gf_ape_smear_no_proj ----
 
 for steps in [1, 3]:
-    gf_test = q.gf_simple_no_proj_smear(gf, 0.5, steps)
+    gf_test = q.gf_ape_smear_no_proj(gf, 0.5, steps)
     q.json_results_append(
         f"gf_simple_no_proj_smear steps={steps} plaq", gf_test.plaq(), 1e-10
     )
@@ -141,44 +141,44 @@ for num_step in [1, 3, 5]:
     )
 assert np.all(q.get_data_sig_arr(gf, q.RngState(), 3) == gf_sig)
 
-# ---- gf_block_stout_smear ----
+# ---- gf_stout_smear_block ----
 
-gf_bs = q.gf_block_stout_smear(gf, q.Coordinate(), 0.1)
+gf_bs = q.gf_stout_smear_block(gf, q.Coordinate(), 0.1)
 q.json_results_append("gf_block_stout_smear plaq", gf_bs.plaq(), 1e-10)
 
-gf_bs2 = q.gf_block_stout_smear(gf, q.Coordinate([2, 2, 2, 2]), 0.1)
+gf_bs2 = q.gf_stout_smear_block(gf, q.Coordinate([2, 2, 2, 2]), 0.1)
 q.json_results_append("gf_block_stout_smear block=[2,2,2,2] plaq", gf_bs2.plaq(), 1e-10)
 
-# ---- gf_local_stout_smear ----
+# ---- gf_stout_smear_local ----
 
-gf_ls = q.gf_local_stout_smear(gf, q.Coordinate(), 0.1)
+gf_ls = q.gf_stout_smear_local(gf, q.Coordinate(), 0.1)
 q.json_results_append("gf_local_stout_smear plaq", gf_ls.plaq(), 1e-10)
 
 assert np.all(q.get_data_sig_arr(gf, q.RngState(), 3) == gf_sig)
 
-# ---- smear_field (Gaussian smearing) ----
+# ---- field_smear (Gaussian smearing) ----
 
 f1 = q.FieldComplexD(geo, 3)
 f1.set_rand(rs.split("f1"))
 for radius in [1.0, 2.0, 3.0]:
-    sf = q.smear_field(f1, radius)
+    sf = q.field_smear(f1, radius)
     q.json_results_append(
         f"smear_field r={radius} sig",
         q.get_data_sig(sf, rs.split(f"sf{radius}")),
         1e-10,
     )
 
-sf_sp = q.smear_field(f1, 2.0, is_only_spatial=True)
+sf_sp = q.field_smear(f1, 2.0, spatial_only=True)
 q.json_results_append(
     "smear_field spatial sig", q.get_data_sig(sf_sp, rs.split("sfsp")), 1e-10
 )
 
-# ---- smear_field_step (density field smearing) ----
+# ---- field_smear_step (density field smearing) ----
 
 f_real = q.FieldRealD(geo, 1)
 f_real.set_rand(rs.split("f_real"))
 for coef in [0.5, 0.8]:
-    sf_step = q.smear_field_step(f_real, coef, 3)
+    sf_step = q.field_smear_step(f_real, coef, 3)
     q.json_results_append(
         f"smear_field_step coef={coef} sig",
         q.get_data_sig(sf_step, rs.split(f"sfs{coef}")),
@@ -202,7 +202,7 @@ q.json_results_append(
 
 # ---- prop_smear ----
 
-gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 3)
+gf_ape = q.gf_ape_smear_spatial(gf, 0.5, 3)
 gf1 = q.mk_left_expanded_field(gf_ape)
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-init"))
@@ -210,8 +210,9 @@ mom = q.CoordinateD([0.0, 0.1, -0.2, 0.2])
 coef = 0.9375
 step = 10
 
+mode_name_dict = {0: "standard", 1: "qlat"}
 for mode in [0, 1]:
-    sp = q.prop_smear(prop, gf1, coef, step, mom, mode_smear=mode)
+    sp = q.prop_smear(prop, gf1, coef, step, mom, mode=mode_name_dict[mode])
     q.json_results_append(
         f"prop_smear mode={mode} sig",
         q.get_data_sig_arr(sp, rs.split(f"psm{mode}"), 3),

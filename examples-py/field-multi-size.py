@@ -64,11 +64,11 @@ for total_site in total_site_list:
         prop.set_rand(rs)
         gf = q.GaugeField(geo)
         gf.set_rand(rs)
-        gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 3)
+        gf_ape = q.gf_ape_smear_spatial(gf, 0.5, 3)
         gf1 = q.mk_left_expanded_field(gf_ape)
         coef = 0.9375
         step = 3
-        prop0 = q.prop_smear(prop, gf1, coef, step, mode_smear=0)
+        prop0 = q.prop_smear(prop, gf1, coef, step, mode="standard")
         prop1 = q.prop_smear(prop, gf1, coef, step)
         q.json_results_append(
             f"smear {total_site} {seed} prop", q.get_data_sig_arr(prop, rs, 2), 1e-12

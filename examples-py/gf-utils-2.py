@@ -36,7 +36,7 @@ gf0 = gf.copy()
 
 gf @= gf0
 sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
-gf_bs = q.gf_block_stout_smear(gf, q.Coordinate(), 0.1)
+gf_bs = q.gf_stout_smear_block(gf, q.Coordinate(), 0.1)
 check_input_preserved(gf, sig_before)
 q.json_results_append("gf_block_stout_smear after plaq", gf_bs.plaq(), 1e-8)
 q.json_results_append(
@@ -44,7 +44,7 @@ q.json_results_append(
 )
 
 gf @= gf0
-gf_bs = q.gf_block_stout_smear(
+gf_bs = q.gf_stout_smear_block(
     gf,
     q.Coordinate(
         [
@@ -62,7 +62,7 @@ q.json_results_append(
 )
 
 gf @= gf0
-gf_bs = q.gf_block_stout_smear(
+gf_bs = q.gf_stout_smear_block(
     gf,
     q.Coordinate(
         [
@@ -96,6 +96,12 @@ q.json_results_append("gf_stout_smear steps=5 plaq", gf_stout.plaq(), 1e-8)
 q.json_results_append(
     "gf_stout_smear steps=5", q.get_data_sig_arr(gf_stout, q.RngState(), 3), 1e-8
 )
+
+gf @= gf0
+sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
+gf_hyp = q.gf_hyp_smear(gf, 0.75, 0.6, 0.3, num_step=2)
+check_input_preserved(gf, sig_before)
+q.json_results_append("gf_hyp_smear num_step=2 plaq", gf_hyp.plaq(), 1e-8)
 
 gf @= gf0
 gf = q.field_shift(
@@ -139,7 +145,7 @@ assert np.all(gf_sig_before == gf_sig_after)
 
 gf @= gf0
 sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
-gf_ls = q.gf_local_stout_smear(
+gf_ls = q.gf_stout_smear_local(
     gf,
     q.Coordinate(
         [
@@ -160,7 +166,7 @@ q.json_results_append(
 )
 
 gf @= gf0
-gf_ls = q.gf_local_stout_smear(
+gf_ls = q.gf_stout_smear_local(
     gf,
     q.Coordinate(
         [
@@ -223,7 +229,7 @@ gf_list = q.shuffle_field(
 )
 q.json_results_append(f"shuffle_field {len(gf_list)}")
 gf_list = [
-    q.gf_local_stout_smear(
+    q.gf_stout_smear_local(
         gf_local,
         q.Coordinate(
             [
@@ -344,7 +350,7 @@ gt_inv_list = []
 q.json_results_append(f"shuffle_field {len(gf_list)}")
 for index, (gf_local, f_dir) in enumerate(zip(gf_list, f_dir_list)):
     for step in range(1):
-        gf_local = q.gf_local_stout_smear(
+        gf_local = q.gf_stout_smear_local(
             gf_local,
             q.Coordinate(
                 [
