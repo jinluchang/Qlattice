@@ -23,67 +23,69 @@ class q:
 
 import numpy as np
 
-def gf_ape_smear(GaugeField gf, double alpha, int steps=1):
+def gf_ape_smear(GaugeField gf, double alpha, cc.Long num_step=1):
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, steps)
+    cc.gf_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
     return gf1
 
-def gf_simple_no_proj_smear(GaugeField gf, cc.RealD alpha, cc.Int steps=1):
+def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.Long num_step=1):
     """
     Similar to `gf_ape_smear` but the SU(3) projection step is omitted.
     Returns a new gauge field; `gf` is not modified.
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_simple_no_proj_smear(gf1.xxx().val(), gf.xxx().val(), alpha, steps)
+    cc.gf_ape_smear_no_proj(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
     return gf1
 
-def gf_spatial_ape_smear(GaugeField gf, double alpha, int steps=1):
+def gf_ape_smear_spatial(GaugeField gf, double alpha, cc.Long num_step=1):
     """
-    used value: alpha = 0.5, steps = 30
+    used value: alpha = 0.5, num_step = 30
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_spatial_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, steps)
+    cc.gf_ape_smear_spatial(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
     return gf1
 
-def gf_hyp_smear(GaugeField gf, double alpha1, double alpha2, double alpha3):
+def gf_hyp_smear(GaugeField gf, double alpha1, double alpha2, double alpha3, cc.Long num_step=1):
     """
     values in paper is 0.75 0.6 0.3
     10.1103/PhysRevD.64.034504 Eq(4)
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_hyp_smear(gf1.xxx().val(), gf.xxx().val(), alpha1, alpha2, alpha3)
+    cc.gf_hyp_smear(gf1.xxx().val(), gf.xxx().val(), alpha1, alpha2, alpha3, num_step)
     return gf1
 
 @q.timer
-def prop_smear(Prop prop, GaugeField gf1,
-               double coef, int step, CoordinateD mom=None,
+def prop_smear(Prop prop, GaugeField gf,
+               double coef, cc.Int num_step=1, CoordinateD mom=None,
                cc.Bool smear_in_time_dir=False,
-               int mode_smear=1):
+               str mode="qlat"):
     """
-    gf_ape = gf_spatial_ape_smear(gf, 0.5, 30)
-    gf1 = mk_left_expanded_field(gf_ape)
+    gf_ape = gf_ape_smear_spatial(gf, 0.5, 30)
+    gf = mk_left_expanded_field(gf_ape)
     mom: momentum smearing in lattice unit 1/a (not unit of lattice momentum 2 pi / L / a)
+    mode: "qlat" (default, qlat convention) or "standard" (legacy `prop_smear`)
     smear params:
-    24D: coef = 0.9375, step = 10
-    48I: coef = 0.9375, step = 29
+    24D: coef = 0.9375, num_step = 10
+    48I: coef = 0.9375, num_step = 29
     mom = 0.5 * mom of the corresponding hadron
     """
     cdef Prop prop1 = prop.copy()
     if mom is None:
         mom = CoordinateD()
-    if mode_smear == 0:
-        cc.prop_smear(prop1.xxx().val(), gf1.xxx().val(),
-                      coef, step, mom.xx, smear_in_time_dir)
-    elif mode_smear >= 1:
-        cc.prop_smear_qlat_convension(prop1.xxx().val(), gf1.xxx().val(),
-                                      coef, step, mom.xx, smear_in_time_dir, mode_smear)
+    if mode == "standard":
+        cc.prop_smear(prop1.xxx().val(), gf.xxx().val(),
+                      coef, num_step, mom.xx, smear_in_time_dir)
+    elif mode == "qlat":
+        cc.prop_smear_qlat_convention(prop1.xxx().val(), gf.xxx().val(),
+                                      coef, num_step, mom.xx, smear_in_time_dir, 1)
     else:
-        raise Exception(f"prop_smear(prop1, gf1, coef={coef}, step={step}, mom={mom}, smear_in_time_dir={smear_in_time_dir}, mode_smear={mode_smear})")
+        raise Exception(f"prop_smear(prop, gf, coef={coef}, num_step={num_step}, mom={mom}, smear_in_time_dir={smear_in_time_dir}, mode={mode})")
     return prop1
 
 @q.timer
 def prop_spatial_smear_no_comm(list ff_list, GaugeField gf, cc.RealD coef, cc.Long step, CoordinateD mom=None):
     """
+    Internal low-level kernel.
     `gf` and each of `ff_list` should contain entire time slices.
     No communication will be performed.
     """

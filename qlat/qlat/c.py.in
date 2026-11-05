@@ -184,8 +184,8 @@ __all__ += [
 
 __all__ += [
         'gf_ape_smear',
-        'gf_simple_no_proj_smear',
-        'gf_spatial_ape_smear',
+        'gf_ape_smear_no_proj',
+        'gf_ape_smear_spatial',
         'gf_hyp_smear',
         'prop_smear',
         'prop_spatial_smear_no_comm',
@@ -214,8 +214,8 @@ __all__ += [
         'gf_wilson_flow',
         'gf_plaq_flow_force',
         'gf_stout_smear',
-        'gf_block_stout_smear',
-        'gf_local_stout_smear',
+        'gf_stout_smear_block',
+        'gf_stout_smear_local',
         'mk_local_tree_gauge_f_dir',
         'gt_local_tree_gauge',
         'gt_block_tree_gauge',

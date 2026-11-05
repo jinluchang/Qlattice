@@ -502,14 +502,14 @@ cdef extern from *:
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
-    void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long steps) except +
-    void gf_simple_no_proj_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long steps) except +
-    void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long steps) except +
-    void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha1, const RealD alpha2, const RealD alpha3) except +
-    void prop_smear(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir) except +
+    void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
+    void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
+    void gf_ape_smear_spatial(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
+    void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha1, const RealD alpha2, const RealD alpha3, const Long num_step) except +
+    void prop_smear(Prop& prop, const GaugeField& gf, const RealD coef, const Int num_step, const CoordinateD& mom, const bool smear_in_time_dir) except +
     void prop_spatial_smear_no_comm(std_vector[FermionField4d]& ff_vec, const GaugeField& gf, const RealD coef, const Long step, const CoordinateD& mom) except +
     void gf_reduce_half(GaugeField& hgf, const GaugeField& gf) except +
-    void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir, const Int mode_smear) except +
+    void prop_smear_qlat_convention(Prop& prop, const GaugeField& gf, const RealD coef, const Int num_step, const CoordinateD& mom, const bool smear_in_time_dir, const Int mode) except +
 
 cdef extern from "qlat/qcd.h" namespace "qlat":
 
@@ -646,9 +646,9 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
     void gf_energy_density_field(Field[RealD]& fd, const GaugeField& gf) except +
     RealD gf_energy_density(const GaugeField& gf) except +
     void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf, const Field[RealD]& plaq_factor) except +
-    void gf_stout_smear(GaugeField& gf, const GaugeField& gf0, const RealD step_size, const Long steps) except +
-    void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size) except +
-    void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size) except +
+    void gf_stout_smear(GaugeField& gf, const GaugeField& gf0, const RealD step_size, const Long num_step) except +
+    void gf_stout_smear_block(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size, const Long num_step) except +
+    void gf_stout_smear_local(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size, const Long num_step) except +
     void set_local_tree_gauge_f_dir(Field[Int]& f_dir, const Geometry& geo, const Coordinate& block_site, const bool is_uniform, const RngState& rs) except +
     void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf, const Field[Int]& f_dir, const Int num_step) except +
 

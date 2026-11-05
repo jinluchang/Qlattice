@@ -41,12 +41,12 @@ def mk_shift_xg_idx_arr(total_site, xg_shift):
     return xg_idx_arr[tuple(xg_arr.T)]
 
 @q.timer
-def smear_field_step_local(field, coef, n_steps=1):
+def field_smear_step_local(field, coef, num_step=1):
     """
     Only work without comm
     Not very efficient
     """
-    if n_steps == 0:
+    if num_step == 0:
         return field.copy()
     geo = field.geo
     assert geo.num_node == 1
@@ -68,19 +68,19 @@ def smear_field_step_local(field, coef, n_steps=1):
     ]
     new_field = field.copy()
     coef_dir = coef / n_dirs / (1.0 - coef)
-    for k in range(n_steps):
+    for k in range(num_step):
         for xg_idx_arr in xg_idx_arr_list:
             new_field[:] += coef_dir * field[xg_idx_arr]
         new_field *= 1.0 - coef
     return new_field
 
 @q.timer
-def smear_field_step(field, coef, n_steps=1):
+def field_smear_step(field, coef, num_step=1):
     """
     Smear a density field
     Different from smearing the gauge field and measure the density.
     """
-    if n_steps == 0:
+    if num_step == 0:
         return field.copy()
     xg_shift_list = [
         [0, 0, 0, 1],
@@ -96,7 +96,7 @@ def smear_field_step(field, coef, n_steps=1):
     n_dirs = len(xg_shift_list)
     coef_dir = coef / n_dirs / (1.0 - coef)
     new_field = field.copy()
-    for k in range(n_steps):
+    for k in range(num_step):
         new_field *= 1 / coef_dir
         for xg_shift in xg_shift_list:
             field.shift(xg_shift)
@@ -106,7 +106,7 @@ def smear_field_step(field, coef, n_steps=1):
 
 @q.cache_call(maxsize=128)
 @q.timer_verbose
-def mk_smear_mom_kernel(total_site, radius):
+def mk_field_smear_mom_kernel(total_site, radius):
     r"""
     return f
     ``radius`` is the smear radius in lattice unit.
@@ -141,7 +141,7 @@ def mk_smear_mom_kernel(total_site, radius):
 
 @q.cache_call(maxsize=128)
 @q.timer_verbose
-def mk_spatial_smear_mom_kernel(total_site, radius):
+def mk_field_smear_mom_kernel_spatial(total_site, radius):
     r"""
     return f
     ``radius`` is the smear radius in lattice unit.
@@ -255,10 +255,13 @@ def sphere_sum_field(field, radius, *, is_only_spatial=False):
     return summed_field
 
 @q.timer
-def smear_field(field, radius, *, is_only_spatial=False):
+def field_smear(field, radius, num_step=1, *, spatial_only=False):
     r"""
     return smeared_field
     field must at least be complex type.
+    #
+    Apply the Gaussian smearing kernel ``num_step`` times (in sequence, not
+    with a rescaled radius).
     #
     $$
     \begin{aligned}
@@ -273,17 +276,18 @@ def smear_field(field, radius, *, is_only_spatial=False):
     $$
     """
     total_site = field.geo.total_site
-    if is_only_spatial:
-        fk = mk_spatial_smear_mom_kernel(total_site.to_tuple(), radius)
+    if spatial_only:
+        fk = mk_field_smear_mom_kernel_spatial(total_site.to_tuple(), radius)
     else:
-        fk = mk_smear_mom_kernel(total_site.to_tuple(), radius)
-    fft1 = q.mk_fft(True, is_only_spatial=is_only_spatial, is_normalizing=True)
-    fft2 = q.mk_fft(False, is_only_spatial=is_only_spatial, is_normalizing=True)
+        fk = mk_field_smear_mom_kernel(total_site.to_tuple(), radius)
+    fft1 = q.mk_fft(True, is_only_spatial=spatial_only, is_normalizing=True)
+    fft2 = q.mk_fft(False, is_only_spatial=spatial_only, is_normalizing=True)
     smeared_field = field.copy()
-    ftmp = fft1 * field
-    ftmp *= fk
-    ftmp = fft2 * ftmp
-    smeared_field @= ftmp
+    for step in range(num_step):
+        ftmp = fft1 * smeared_field
+        ftmp *= fk
+        ftmp = fft2 * ftmp
+        smeared_field @= ftmp
     return smeared_field
 
 @q.timer

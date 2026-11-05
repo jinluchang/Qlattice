@@ -77,7 +77,7 @@ class q:
         gf_plaq_action_density_field,
     )
     from .field_analysis import (
-        smear_field,
+        field_smear,
         sphere_sum_field,
     )
     from .mpi_utils import (

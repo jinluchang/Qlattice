@@ -115,7 +115,7 @@ def gf_energy_derivative_density_field(GaugeField gf, *, cc.RealD epsilon=0.0125
     return fd1
 
 @q.timer
-def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1):
+def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Long num_step=1):
     """
     Return a new gauge field obtained by applying `num_step` steps of global
     stout smearing (no blocking) with step size `step_size`.
@@ -127,7 +127,7 @@ def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1):
     return gf1
 
 @q.timer
-def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
+def gf_stout_smear_block(GaugeField gf, Coordinate block_site, cc.RealD step_size, cc.Long num_step=1):
     """
     Return a new gauge field obtained by stout smearing `gf`.
     The input `gf` is not modified.
@@ -135,11 +135,11 @@ def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_siz
     Otherwise, perform stout smearing for each block separately.
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_block_stout_smear(gf1.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
+    cc.gf_stout_smear_block(gf1.xxx().val(), gf.xxx().val(), block_site.xx, step_size, num_step)
     return gf1
 
 @q.timer
-def gf_local_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
+def gf_stout_smear_local(GaugeField gf, Coordinate block_site, cc.RealD step_size, cc.Long num_step=1):
     """
     Return a new gauge field obtained by stout smearing the local field of `gf`.
     The input `gf` is not modified.
@@ -148,7 +148,7 @@ def gf_local_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_siz
     Otherwise, perform stout smearing for each block separately.
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_local_stout_smear(gf1.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
+    cc.gf_stout_smear_local(gf1.xxx().val(), gf.xxx().val(), block_site.xx, step_size, num_step)
     return gf1
 
 @q.timer
@@ -247,7 +247,7 @@ def gt_block_tree_gauge(
     avg_plaq_count = 0
     for gf_local, f_dir_local in zip(gf_list, f_dir_list):
         for step in range(num_smear_step):
-            gf_local = gf_local_stout_smear(gf_local, block_site, stout_smear_step_size)
+            gf_local = gf_stout_smear_local(gf_local, block_site, stout_smear_step_size)
         avg_plaq_count += 1
         avg_plaq_sum = gf_local_avg_plaq(gf_local, block_site)
         gt_inv = gt_local_tree_gauge(gf_local, f_dir_local, num_step)
