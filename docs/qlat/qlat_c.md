@@ -58,7 +58,7 @@ The module's `__all__` list groups symbols by functional area:
 | **Field Operations** | `field_expanded`, `refresh_expanded`, `CommPlan`, `mk_phase_field`, `FastFourierTransform`, `field_shift`, `shuffle_field` |
 | **Gauge Field** | `GaugeField`, `GaugeTransform`, `gf_avg_plaq`, `gf_avg_link_trace`, `gf_plaq_field` |
 | **Propagators** | `Prop`, `SelProp`, `PselProp`, `SpinProp`, `FermionField4d`, `set_point_src`, `free_invert`, `free_mom_invert`, `free_scalar_mom_invert`, `free_scalar_deriv_mom`, `free_scalar_invert`, `free_scalar_invert_deriv` |
-| **Smearing** | `gf_ape_smear`, `gf_simple_no_proj_smear`, `gf_stout_smear`, `gf_hyp_smear`, `prop_smear` |
+| **Smearing** | `gf_ape_smear`, `gf_simple_no_proj_smear`, `gf_spatial_ape_smear`, `gf_hyp_smear`, `gf_stout_smear`, `gf_block_stout_smear`, `gf_local_stout_smear`, `prop_smear`, `prop_spatial_smear_no_comm` |
 | **Topology** | `gf_topology_field`, `gf_topology`, `gf_topology_terms` |
 | **Wilson Flow** | `gf_wilson_flow_force`, `gf_wilson_flow_step`, `gf_wilson_flow`, `gf_energy_density` |
 | **Gauge Action** | `GaugeAction` |
