@@ -13,6 +13,7 @@ class q:
     from qlat_utils import (
         timer,
         timer_verbose,
+        get_fname,
         Coordinate,
         cache_call,
         set_zero,
@@ -24,32 +25,103 @@ class q:
         mk_fft,
     )
 
+@q.timer
+def mk_shift_xg_idx_arr(total_site, xg_shift, geo=None):
+    """
+    Return the local index array that maps every site to its periodic
+    neighbor shifted by ``xg_shift``.
+    #
+    ``total_site`` and ``xg_shift`` should be tuples of ints.
+    #
+    When ``geo`` is None, the run's global geometry is used (historical
+    behavior). When ``geo`` is given, the result is expressed in ``geo``'s
+    local index order, so it also works for a rank-local geometry under MPI;
+    every shifted coordinate must be local to ``geo``.
+    """
+    total_site = tuple(int(x) for x in total_site)
+    xg_shift = tuple(int(x) for x in xg_shift)
+    if geo is None:
+        geo_key = None
+    else:
+        geo_key = (
+            geo.coor_node.to_tuple(),
+            geo.size_node.to_tuple(),
+            geo.node_site.to_tuple(),
+            geo.eo,
+        )
+    return _mk_shift_xg_idx_arr(total_site, xg_shift, geo_key)
+
 @q.cache_call(maxsize=16)
 @q.timer
-def mk_shift_xg_idx_arr(total_site, xg_shift):
+def _mk_shift_xg_idx_arr(total_site, xg_shift, geo_key):
     """
-    only work without comm
-    ``total_site`` and ``xg_shift`` should be tuple of ints.
+    Implementation of `mk_shift_xg_idx_arr`.
+    ``geo_key`` is a JSON-serializable description of the geometry (or None
+    for the run's global geometry), so the cached result can never be reused
+    for a different geometry.
     """
+    fname = q.get_fname()
     total_site = np.array(total_site, dtype=np.int32)
     xg_shift = np.array(xg_shift, dtype=np.int32)
-    total_volume = np.prod(total_site)
-    xg_idx_arr = np.arange(total_volume).reshape(tuple(reversed(total_site))).T
-    geo = q.Geometry(q.Coordinate(total_site))
+    if geo_key is None:
+        geo = q.Geometry(q.Coordinate(total_site))
+        total_volume = np.prod(total_site)
+        xg_idx_arr = np.arange(total_volume).reshape(tuple(reversed(total_site))).T
+        xg_arr = geo.xg_arr()
+        xg_arr = (xg_arr + xg_shift) % total_site
+        return xg_idx_arr[tuple(xg_arr.T)]
+    coor_node = np.array(geo_key[0], dtype=np.int32)
+    size_node = np.array(geo_key[1], dtype=np.int32)
+    node_site = np.array(geo_key[2], dtype=np.int32)
+    if geo_key[3] != 0:
+        raise Exception(
+            f"{fname}: eo geometry (eo = {geo_key[3]}) is not supported; "
+            f"use `field_smear_step`"
+        )
+    geo = q.Geometry(
+        q.Coordinate(geo_key[0]),
+        q.Coordinate(geo_key[1]),
+        q.Coordinate(geo_key[2]),
+    )
+    total_site = node_site * size_node
     xg_arr = geo.xg_arr()
-    xg_arr = (xg_arr + xg_shift) % total_site
-    return xg_idx_arr[tuple(xg_arr.T)]
+    xg_shifted_arr = (xg_arr + xg_shift) % total_site
+    xl_arr = xg_shifted_arr - coor_node * node_site
+    if not np.all((xl_arr >= 0) & (xl_arr < node_site)):
+        raise Exception(
+            f"{fname}: `field_smear_step_local` requires every shifted site "
+            f"to be local to the field geometry; shift {tuple(int(x) for x in xg_shift)} "
+            f"leaves the local volume of geo = {geo.show()}. Use `field_smear_step` "
+            f"(MPI-capable) instead"
+        )
+    local_index_arr = (
+        np.arange(np.prod(node_site)).reshape(tuple(reversed(node_site.tolist()))).T
+    )
+    return local_index_arr[tuple(xl_arr.T)]
 
 @q.timer
 def field_smear_step_local(field, coef, num_step=1):
     """
-    Only work without comm
+    Only work without comm.
+    Requires a rank-local geometry (``geo.num_node == 1``), e.g. a replicated
+    lattice; for a distributed field use `field_smear_step` (the MPI-capable
+    sibling) instead.
     Not very efficient
     """
+    fname = q.get_fname()
     if num_step == 0:
         return field.copy()
     geo = field.geo
-    assert geo.num_node == 1
+    if geo.num_node != 1:
+        raise Exception(
+            f"{fname}: requires a rank-local geometry (geo.num_node == 1), "
+            f"got geo = {geo.show()}; use `field_smear_step` (MPI-capable) instead"
+        )
+    if geo.eo != 0:
+        raise Exception(
+            f"{fname}: eo geometry (geo.eo = {geo.eo}) is not supported; "
+            f"use `field_smear_step`"
+        )
     total_site = geo.total_site
     xg_shift_list = [
         [0, 0, 0, 1],
@@ -63,7 +135,7 @@ def field_smear_step_local(field, coef, num_step=1):
     ]
     n_dirs = len(xg_shift_list)
     xg_idx_arr_list = [
-        mk_shift_xg_idx_arr(tuple(total_site), tuple(xg_shift))
+        mk_shift_xg_idx_arr(tuple(total_site), tuple(xg_shift), geo)
         for xg_shift in xg_shift_list
     ]
     new_field = field.copy()
