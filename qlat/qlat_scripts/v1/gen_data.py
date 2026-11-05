@@ -2061,10 +2061,10 @@ def compute_prop_smear(
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     coef = get_param(job_tag, "prop_smear_coef")
-    step = get_param(job_tag, "prop_smear_step")
+    num_step = get_param(job_tag, "prop_smear_step")
     #
     def smear(src):
-        return q.prop_smear(src, gf_ape, coef, step)
+        return q.prop_smear(src, gf_ape, coef, num_step=num_step, mode="qlat")
     #
     src = smear(q.mk_point_src(geo, xg_src))
     compute_prop_3(

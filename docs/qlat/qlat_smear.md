@@ -9,8 +9,8 @@ Source: `qlat/qlat/smear.pyx`
 1. [Overview](#overview)
 2. [Gauge-Field Smearing](#gauge-field-smearing)
    - [`gf_ape_smear`](#gf_ape_smear)
-   - [`gf_simple_no_proj_smear`](#gf_simple_no_proj_smear)
-   - [`gf_spatial_ape_smear`](#gf_spatial_ape_smear)
+   - [`gf_ape_smear_spatial`](#gf_ape_smear_spatial)
+   - [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)
    - [`gf_hyp_smear`](#gf_hyp_smear)
 3. [Propagator and Fermion-Field Smearing](#propagator-and-fermion-field-smearing)
    - [`prop_smear`](#prop_smear)
@@ -39,6 +39,17 @@ All gauge-field smearing functions return new objects and leave the inputs
 unchanged. `prop_smear` also returns a new object, while
 `prop_spatial_smear_no_comm` smears the given fermion fields in place.
 
+### Naming conventions
+
+- Names are object-first: `<object>_<method>_smear[_<variant>]`, e.g.
+  `gf_ape_smear_spatial`, `prop_smear`, `field_smear_step`.
+- The iteration count is always `num_step`. It is the last positional
+  parameter and defaults to `1`; `num_step == 0` returns an unchanged copy
+  (negative values behave as `0`).
+- Every public smearing function returns a new object and does not modify its
+  input. The single exception is the internal low-level kernel
+  `prop_spatial_smear_no_comm`, which works in place and returns `None`.
+
 ---
 
 ## Gauge-Field Smearing
@@ -46,7 +57,7 @@ unchanged. `prop_smear` also returns a new object, while
 ### `gf_ape_smear`
 
 ```python
-gf_ape_smear(gf: GaugeField, alpha: float, steps: int = 1) -> GaugeField
+gf_ape_smear(gf: GaugeField, alpha: float, num_step: int = 1) -> GaugeField
 ```
 
 Perform APE (Average Plaquette Evaluation) smearing on a gauge field.
@@ -58,22 +69,24 @@ original link and the staples surrounding it:
 U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
 ```
 
-The result is re-projected to SU(3). After `steps` iterations the smeared
+The result is re-projected to SU(3). After `num_step` iterations the smeared
 field is returned.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field |
 | `alpha` | `float` | — | Smearing weight (0 = no smearing, 1 = full staple) |
-| `steps` | `int` | `1` | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 ---
 
-### `gf_simple_no_proj_smear`
+### `gf_ape_smear_no_proj`
 
 ```python
-gf_simple_no_proj_smear(gf: GaugeField, alpha: float, steps: int = 1) -> GaugeField
+gf_ape_smear_no_proj(
+    gf: GaugeField, alpha: float, num_step: int = 1
+) -> GaugeField
 ```
 
 Perform an APE-like smearing that omits the SU(3) projection step. It uses
@@ -83,22 +96,24 @@ the same weighted link/staple combination as `gf_ape_smear`:
 U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
 ```
 
-but does not re-project the result to SU(3). After `steps` iterations the
+but does not re-project the result to SU(3). After `num_step` iterations the
 smeared field is returned. The input `gf` is not modified.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field |
 | `alpha` | `float` | — | Smearing weight (0 = no smearing, 1 = full staple) |
-| `steps` | `int` | `1` | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 ---
 
-### `gf_spatial_ape_smear`
+### `gf_ape_smear_spatial`
 
 ```python
-gf_spatial_ape_smear(gf: GaugeField, alpha: float, steps: int = 1) -> GaugeField
+gf_ape_smear_spatial(
+    gf: GaugeField, alpha: float, num_step: int = 1
+) -> GaugeField
 ```
 
 Perform spatial-only APE smearing. Same as `gf_ape_smear` but only spatial
@@ -108,31 +123,39 @@ staples (mu, nu in {0, 1, 2}) are used; temporal links are unchanged.
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field |
 | `alpha` | `float` | — | Smearing weight |
-| `steps` | `int` | `1` | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
-Typical values: `alpha = 0.5`, `steps = 30`.
+Typical values: `alpha = 0.5`, `num_step = 30`.
 
 ---
 
 ### `gf_hyp_smear`
 
 ```python
-gf_hyp_smear(gf: GaugeField, alpha1: float, alpha2: float, alpha3: float) -> GaugeField
+gf_hyp_smear(
+    gf: GaugeField,
+    alpha1: float,
+    alpha2: float,
+    alpha3: float,
+    num_step: int = 1,
+) -> GaugeField
 ```
 
 Perform HYP (Hypersmearing) smearing. HYP smearing uses three nested levels
 of staple construction with independent coefficients, providing stronger UV
-suppression with less link distortion than APE smearing.
+suppression with less link distortion than APE smearing. After `num_step`
+iterations the smeared field is returned.
 
 Reference: [Hasenfratz & Knechtli, Phys. Rev. D 64, 034504 (2001)](https://doi.org/10.1103/PhysRevD.64.034504), Eq. (4).
 
-| Parameter | Type | Description |
-|---|---|---|
-| `gf` | `GaugeField` | Input gauge field |
-| `alpha1` | `float` | Outer-level smearing coefficient |
-| `alpha2` | `float` | Middle-level smearing coefficient |
-| `alpha3` | `float` | Inner-level smearing coefficient |
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field |
+| `alpha1` | `float` | — | Outer-level smearing coefficient |
+| `alpha2` | `float` | — | Middle-level smearing coefficient |
+| `alpha3` | `float` | — | Inner-level smearing coefficient |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 Values from the paper: `alpha1 = 0.75`, `alpha2 = 0.6`, `alpha3 = 0.3`.
@@ -146,12 +169,12 @@ Values from the paper: `alpha1 = 0.75`, `alpha2 = 0.6`, `alpha3 = 0.3`.
 ```python
 prop_smear(
     prop: Prop,
-    gf1: GaugeField,
+    gf: GaugeField,
     coef: float,
-    step: int,
+    num_step: int = 1,
     mom: CoordinateD = None,
     smear_in_time_dir: bool = False,
-    mode_smear: int = 1,
+    mode: str = "qlat",
 ) -> Prop
 ```
 
@@ -168,25 +191,25 @@ momentum-projected smearing.
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `prop` | `Prop` | — | Input propagator |
-| `gf1` | `GaugeField` | — | Gauge field (should be left-expanded, see below) |
+| `gf` | `GaugeField` | — | Gauge field (should be left-expanded, see below) |
 | `coef` | `float` | — | Smearing coefficient (0 = full smearing, 1 = no smearing) |
-| `step` | `int` | — | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | `mom` | `CoordinateD` or `None` | `None` | Momentum in lattice units 1/a (not 2*pi/L/a). `None` = zero momentum |
 | `smear_in_time_dir` | `bool` | `False` | If `True`, include temporal direction in smearing |
-| `mode_smear` | `int` | `1` | `0` = legacy `prop_smear`; `>= 1` = `prop_smear_qlat_convension` |
+| `mode` | `str` | `"qlat"` | Smearing convention: `"qlat"` (default, qlat convention) or `"standard"` (legacy convention) |
 | **Returns** | `Prop` | | Smeared propagator (new object) |
 
 **Typical workflow:**
 
 ```python
-gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
-gf1 = q.mk_left_expanded_field(gf_ape)
-prop_smeared = q.prop_smear(prop, gf1, 0.9375, 10)
+gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
+gf_ext = q.mk_left_expanded_field(gf_ape)
+prop_smeared = q.prop_smear(prop, gf_ext, 0.9375, num_step=10)
 ```
 
 **Typical parameters by ensemble:**
 
-| Ensemble | `coef` | `step` | Notes |
+| Ensemble | `coef` | `num_step` | Notes |
 |---|---|---|---|
 | 24D | `0.9375` | `10` | |
 | 48I | `0.9375` | `29` | |
@@ -210,6 +233,13 @@ prop_spatial_smear_no_comm(
 Apply spatial Jacobi smearing to a list of `FermionField4d` objects **in
 place** without any MPI communication. Both `gf` and each field in
 `ff_list` must contain entire time slices (no halo exchange is performed).
+
+This is an internal, low-level kernel used by
+`qlat.smear_prop.prop_spatial_smear`. It is deliberately excluded from the
+unified smear API conventions: it keeps its original `step` argument, its
+in-place semantics and its `None` return value. It is exported from `qlat.c`
+for advanced use, but new code should normally call `prop_spatial_smear`
+or `prop_smear` instead.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
@@ -243,11 +273,11 @@ gf = q.GaugeField(geo)
 gf.set_unit()  # placeholder
 
 # APE smearing: alpha=0.5, 30 iterations
-gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
+gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
 
 # APE-like smearing without the SU(3) projection
-gf_no_proj = q.gf_simple_no_proj_smear(gf, 0.5, 3)
+gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, num_step=3)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 
 # HYP smearing with paper parameters
@@ -273,19 +303,19 @@ gf = q.GaugeField(geo)
 gf.set_unit()
 
 # Smear gauge field spatially
-gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
-gf1 = q.mk_left_expanded_field(gf_ape)
+gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
+gf_ext = q.mk_left_expanded_field(gf_ape)
 
 # Smear a propagator
 prop = q.Prop(geo)
 prop.set_zero()
 
 # 24D-like parameters, zero momentum
-prop_smeared = q.prop_smear(prop, gf1, 0.9375, 10)
+prop_smeared = q.prop_smear(prop, gf_ext, 0.9375, num_step=10)
 
 # With momentum projection (half the hadron momentum)
 mom = q.CoordinateD([0.5, 0.0, 0.0, 0.0])
-prop_mom_smeared = q.prop_smear(prop, gf1, 0.9375, 10, mom=mom)
+prop_mom_smeared = q.prop_smear(prop, gf_ext, 0.9375, num_step=10, mom=mom)
 
 q.end_with_mpi()
 ```

@@ -797,13 +797,13 @@ def run_gf_ape(job_tag, get_gf):
     if get_gf is None:
         return None
     coef = rup.dict_params[job_tag]["gf_ape_smear_coef"]
-    step = rup.dict_params[job_tag]["gf_ape_smear_step"]
+    num_step = rup.dict_params[job_tag]["gf_ape_smear_step"]
     #
     @q.lazy_call
     @q.timer_verbose
     def run():
         gf = get_gf()
-        gf_ape = q.gf_spatial_ape_smear(gf, coef, step)
+        gf_ape = q.gf_ape_smear_spatial(gf, coef, num_step=num_step)
         gf_ape = q.mk_left_expanded_field(gf_ape)
         return gf_ape
     #
@@ -813,14 +813,13 @@ def run_gf_ape(job_tag, get_gf):
 def run_gf_hyp(job_tag, get_gf):
     if get_gf is None:
         return None
-    step = get_param(job_tag, "gf_hyp_smear_step")
+    num_step = get_param(job_tag, "gf_hyp_smear_step")
     #
     @q.lazy_call
     @q.timer_verbose
     def run():
         gf_hyp = get_gf()
-        for i in range(step):
-            gf_hyp = q.gf_hyp_smear(gf_hyp, 0.75, 0.6, 0.3)
+        gf_hyp = q.gf_hyp_smear(gf_hyp, 0.75, 0.6, 0.3, num_step=num_step)
         return gf_hyp
     #
     return run

@@ -19,8 +19,8 @@ Source: `qlat/qlat/wilson_flow.pyx`
    - [`gf_plaq_flow_force`](#gf_plaq_flow_force)
 4. [Stout Smearing](#stout-smearing)
    - [`gf_stout_smear`](#gf_stout_smear)
-   - [`gf_block_stout_smear`](#gf_block_stout_smear)
-   - [`gf_local_stout_smear`](#gf_local_stout_smear)
+   - [`gf_stout_smear_block`](#gf_stout_smear_block)
+   - [`gf_stout_smear_local`](#gf_stout_smear_local)
    - [`gf_local_avg_plaq`](#gf_local_avg_plaq)
 5. [Local Tree Gauge Fixing](#local-tree-gauge-fixing)
    - [`mk_local_tree_gauge_f_dir`](#mk_local_tree_gauge_f_dir)
@@ -199,7 +199,9 @@ spatially varying couplings. `plaq_factor` must have `multiplicity == 6`
 
 All stout-smearing functions return a new `GaugeField` and leave the input
 field unchanged, following the same return scheme as `gf_ape_smear` and the
-other gauge-field smearing functions.
+other gauge-field smearing functions. The names are object-first
+(`gf_stout_smear[_block|_local]`), and `num_step` is the last positional
+parameter (default `1`; `num_step == 0` returns an unchanged copy).
 
 ### `gf_stout_smear`
 
@@ -213,7 +215,7 @@ gf_stout_smear(
 
 Apply `num_step` steps of global stout smearing (no blocking) to `gf` and
 return the smeared gauge field. Each step calls the C++ `gf_stout_smear`,
-which is implemented like `gf_block_stout_smear` without blocking. The input
+which is implemented like `gf_stout_smear_block` without blocking. The input
 `gf` is not modified.
 
 | Parameter | Type | Default | Description |
@@ -223,13 +225,14 @@ which is implemented like `gf_block_stout_smear` without blocking. The input
 | `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
-### `gf_block_stout_smear`
+### `gf_stout_smear_block`
 
 ```python
-gf_block_stout_smear(
+gf_stout_smear_block(
     gf: GaugeField,
     block_site: Coordinate,
     step_size: float,
+    num_step: int = 1,
 ) -> GaugeField
 ```
 
@@ -237,22 +240,25 @@ Apply stout smearing to `gf` within blocks and return the smeared gauge
 field; the input `gf` is not modified. If `block_site` is an empty
 `Coordinate()`, no blocking is applied (equivalent to global stout
 smearing). Otherwise, each block of size `block_site` is smeared
-independently (useful for local gauge fixing workflows).
+independently (useful for local gauge fixing workflows). The block smearing
+is iterated `num_step` times.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `gf` | `GaugeField` | Input gauge field (not modified) |
-| `block_site` | `Coordinate` | Block size; empty `Coordinate()` means no blocking |
-| `step_size` | `float` | Smearing strength ρ |
-| **Returns** | `GaugeField` | Smeared gauge field (new object) |
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field (not modified) |
+| `block_site` | `Coordinate` | — | Block size; empty `Coordinate()` means no blocking |
+| `step_size` | `float` | — | Smearing strength ρ |
+| `num_step` | `int` | `1` | Number of smearing iterations |
+| **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
-### `gf_local_stout_smear`
+### `gf_stout_smear_local`
 
 ```python
-gf_local_stout_smear(
+gf_stout_smear_local(
     gf: GaugeField,
     block_site: Coordinate,
     step_size: float,
+    num_step: int = 1,
 ) -> GaugeField
 ```
 
@@ -260,15 +266,17 @@ Apply stout smearing to the local gauge field (no MPI communication) and
 return the smeared gauge field; the input `gf` is not modified. If
 `block_site` is an empty `Coordinate()`, the whole local node is treated as a
 single block (i.e., `block_site = geo.node_site`). Otherwise, each block of
-size `block_site` is smeared independently. Intended for fields obtained from
+size `block_site` is smeared independently. The local smearing is iterated
+`num_step` times. Intended for fields obtained from
 `shuffle_field`, where whole blocks are local.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `gf` | `GaugeField` | Input gauge field (not modified) |
-| `block_site` | `Coordinate` | Block size; empty `Coordinate()` means the local node is one block |
-| `step_size` | `float` | Smearing strength ρ |
-| **Returns** | `GaugeField` | Smeared gauge field (new object) |
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field (not modified) |
+| `block_site` | `Coordinate` | — | Block size; empty `Coordinate()` means the local node is one block |
+| `step_size` | `float` | — | Smearing strength ρ |
+| `num_step` | `int` | `1` | Number of smearing iterations |
+| **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 ### `gf_local_avg_plaq`
 
@@ -482,11 +490,11 @@ step_size = 0.1
 print(f"Plaq before smear: {q.gf_avg_plaq(gf)}")
 
 # Global stout smearing (no blocking); gf itself is not modified.
-gf_stout = q.gf_stout_smear(gf, step_size, 10)
+gf_stout = q.gf_stout_smear(gf, step_size, num_step=10)
 print(f"Plaq after global smear: {q.gf_avg_plaq(gf_stout)}")
 
 # Block stout smearing; again gf itself is not modified.
-gf_bs = q.gf_block_stout_smear(gf, block_site, step_size)
+gf_bs = q.gf_stout_smear_block(gf, block_site, step_size, num_step=2)
 print(f"Plaq after block smear:  {q.gf_avg_plaq(gf_bs)}")
 
 q.end_with_mpi()

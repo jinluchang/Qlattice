@@ -44,6 +44,10 @@ The module depends on `qlat.c` for `GaugeField`, `Prop`, `FermionField4d`,
 `PointsSelection`, `SelectedShufflePlan`, `prop_spatial_smear_no_comm`,
 `mk_ff_list_from_prop`, and `mk_prop_from_ff_list`.
 
+The iteration parameter is `num_step` (the last positional parameter,
+default `1`; `num_step == 0` returns an unmodified copy). Every public
+function here returns a new object and does not modify its input.
+
 ---
 
 ## Public API
@@ -55,7 +59,7 @@ prop_spatial_smear(
     ff_list: list[FermionField4d] | Prop | FermionField4d,
     gf: GaugeField,
     coef: float,
-    step: int,
+    num_step: int = 1,
     mom: CoordinateD = None,
     *,
     chunk_size: int = None,
@@ -79,12 +83,12 @@ The original `ff_list` is not modified; a new list (or object) is returned.
 | `ff_list` | `list`, `Prop`, or `FermionField4d` | — | Fields to smear |
 | `gf` | `GaugeField` | — | Gauge field (typically APE-smeared) |
 | `coef` | `float` | — | Smearing coefficient (higher = less smearing) |
-| `step` | `int` | — | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 | `mom` | `CoordinateD` or `None` | `None` | Momentum for phase projection; `None` = zero |
 | `chunk_size` | `int` or `None` | `None` | Chunk size for batching; default 12 for `FermionField4d`, 1 for `Prop` |
 | **Returns** | `list/Prop/FermionField4d` | | Smeared fields (type matches input) |
 
-When `step == 0`, a copy of the input is returned without smearing.
+When `num_step == 0`, a copy of the input is returned without smearing.
 
 ---
 
@@ -132,7 +136,7 @@ prop_spatial_smear_chunk(
     ff_list: list[FermionField4d],
     plan: dict,
     coef: float,
-    step: int,
+    num_step: int,
     mom: CoordinateD,
 ) -> tuple[int, list[FermionField4d]]
 ```
@@ -146,7 +150,7 @@ in place with `prop_spatial_smear_no_comm`, and shuffled back.
 | `ff_list` | `list[FermionField4d]` | Chunk of fermion fields |
 | `plan` | `dict` | Plan from `get_prop_spatial_smear_chunk_plan` |
 | `coef` | `float` | Smearing coefficient |
-| `step` | `int` | Number of smearing iterations |
+| `num_step` | `int` | Number of smearing iterations |
 | `mom` | `CoordinateD` | Momentum for phase projection |
 | **Returns** | `tuple[int, list[FermionField4d]]` | `(flops, smeared_fields)` |
 
@@ -174,7 +178,7 @@ prop = q.Prop(geo)
 prop.set_zero()
 
 prop_smeared = q.smear_prop.prop_spatial_smear(
-    prop, gf, coef=0.9375, step=54
+    prop, gf, coef=0.9375, num_step=54
 )
 print(f"Smeared propagator")
 
@@ -203,7 +207,7 @@ for ff in ff_list:
 # Smear with custom chunk size and momentum
 mom = q.CoordinateD([0.1, 0.0, 0.0, 0.0])
 smeared_list = q.smear_prop.prop_spatial_smear(
-    ff_list, gf, coef=0.9375, step=30, mom=mom, chunk_size=6
+    ff_list, gf, coef=0.9375, num_step=30, mom=mom, chunk_size=6
 )
 print(f"Smeared {len(smeared_list)} fields")
 
@@ -227,8 +231,8 @@ gf.set_unit()
 ff = q.FermionField4d(geo)
 ff.set_zero()
 
-# step=0 returns a copy without smearing
-ff_copy = q.smear_prop.prop_spatial_smear(ff, gf, coef=0.5, step=0)
+# num_step=0 returns a copy without smearing
+ff_copy = q.smear_prop.prop_spatial_smear(ff, gf, coef=0.5, num_step=0)
 
 q.end_with_mpi()
 ```

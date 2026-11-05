@@ -10,15 +10,15 @@ Source: `qlat/qlat/field_analysis.py`
 2. [Shift Index Utilities](#shift-index-utilities)
    - [`mk_shift_xg_idx_arr`](#mk_shift_xg_idx_arr)
 3. [Step-Based Smearing](#step-based-smearing)
-   - [`smear_field_step_local`](#smear_field_step_local)
-   - [`smear_field_step`](#smear_field_step)
+   - [`field_smear_step_local`](#field_smear_step_local)
+   - [`field_smear_step`](#field_smear_step)
 4. [Momentum-Space Kernels](#momentum-space-kernels)
-   - [`mk_smear_mom_kernel`](#mk_smear_mom_kernel)
-   - [`mk_spatial_smear_mom_kernel`](#mk_spatial_smear_mom_kernel)
+   - [`mk_field_smear_mom_kernel`](#mk_field_smear_mom_kernel)
+   - [`mk_field_smear_mom_kernel_spatial`](#mk_field_smear_mom_kernel_spatial)
    - [`mk_sphere_sum_mom_kernel`](#mk_sphere_sum_mom_kernel)
 5. [Fourier-Based Operations](#fourier-based-operations)
    - [`sphere_sum_field`](#sphere_sum_field)
-   - [`smear_field`](#smear_field)
+   - [`field_smear`](#field_smear)
    - [`field_convolution`](#field_convolution)
 6. [Examples](#examples)
 
@@ -43,6 +43,11 @@ fields using Fourier-transform techniques. The main capabilities are:
 All Fourier operations use `qlat.mk_fft` and exploit the convolution
 theorem: convolution in coordinate space equals pointwise multiplication
 in momentum space.
+
+Smear functions are named object-first (`field_smear`, `field_smear_step`,
+`mk_field_smear_mom_kernel*`), the iteration count is `num_step` (the last
+positional parameter, default `1`), and every smearing function returns a
+new field without modifying its input.
 
 ---
 
@@ -72,10 +77,10 @@ Results are cached (up to 16 entries).
 
 ## Step-Based Smearing
 
-### `smear_field_step_local`
+### `field_smear_step_local`
 
 ```python
-smear_field_step_local(field: Field, coef: float, n_steps: int = 1) -> Field
+field_smear_step_local(field: Field, coef: float, num_step: int = 1) -> Field
 ```
 
 Iterative nearest-neighbour smearing using local index arrays (no MPI
@@ -87,21 +92,21 @@ all 4 directions).
 |---|---|---|---|
 | `field` | `Field` | — | Input field (at least complex type) |
 | `coef` | `float` | — | Smearing coefficient (0 = no smearing, 1 = full average) |
-| `n_steps` | `int` | `1` | Number of smearing iterations |
+| `num_step` | `int` | `1` | Number of smearing iterations |
 
 Returns a new field; the input is not modified.
 
 **Note:** Requires `geo.num_node() == 1`.
 
-### `smear_field_step`
+### `field_smear_step`
 
 ```python
-smear_field_step(field: Field, coef: float, n_steps: int = 1) -> Field
+field_smear_step(field: Field, coef: float, num_step: int = 1) -> Field
 ```
 
 Distributed variant of nearest-neighbour smearing. Uses
 `field.shift()` which supports MPI communication. The smearing
-kernel is identical to `smear_field_step_local`.
+kernel is identical to `field_smear_step_local`.
 
 Returns a new field; the input is not modified.
 
@@ -109,10 +114,10 @@ Returns a new field; the input is not modified.
 
 ## Momentum-Space Kernels
 
-### `mk_smear_mom_kernel`
+### `mk_field_smear_mom_kernel`
 
 ```python
-mk_smear_mom_kernel(total_site: tuple, radius: float) -> FieldRealD
+mk_field_smear_mom_kernel(total_site: tuple, radius: float) -> FieldRealD
 ```
 
 Build the 4D Gaussian smearing kernel in momentum space:
@@ -125,10 +130,10 @@ If `radius == np.inf`, the kernel is a delta function at $k = 0$.
 
 Results are cached (up to 128 entries).
 
-### `mk_spatial_smear_mom_kernel`
+### `mk_field_smear_mom_kernel_spatial`
 
 ```python
-mk_spatial_smear_mom_kernel(total_site: tuple, radius: float) -> FieldRealD
+mk_field_smear_mom_kernel_spatial(total_site: tuple, radius: float) -> FieldRealD
 ```
 
 Build the spatial-only Gaussian smearing kernel:
@@ -181,14 +186,15 @@ $$f_{\text{sphere-summed}}(x) \approx \sum_y \theta(|x-y| < r)\, f(y)$$
 The field must be at least complex type. The result is normalised so
 that the sum approximates a spherical average.
 
-### `smear_field`
+### `field_smear`
 
 ```python
-smear_field(
+field_smear(
     field: Field,
     radius: float,
+    num_step: int = 1,
     *,
-    is_only_spatial: bool = False,
+    spatial_only: bool = False,
 ) -> Field
 ```
 
@@ -198,8 +204,20 @@ $$f_{\text{smear}}(x) \approx
 \frac{\sum_y f(y)\,\exp\!\bigl(-(x-y)^2/(2r^2)\bigr)}
      {\sum_y \exp\!\bigl(-y^2/(2r^2)\bigr)}$$
 
-The field must be at least complex type. If `is_only_spatial` is
+The field must be at least complex type. If `spatial_only` is
 `True`, only the three spatial directions are smeared.
+
+The Gaussian kernel is applied `num_step` times (`num_step = 1` is the
+single-pass smearing described above); it is not rescaled by `num_step`.
+The input field is not modified.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `field` | `Field` | — | Input field (at least complex type) |
+| `radius` | `float` | — | Gaussian smearing radius (per application) |
+| `num_step` | `int` | `1` | Number of times the Gaussian kernel is applied |
+| `spatial_only` | `bool` | `False` | If `True`, smear only the spatial directions |
+| **Returns** | `Field` | | Smeared field (new object) |
 
 ### `field_convolution`
 
@@ -252,7 +270,7 @@ f = q.FieldComplexD(geo, 1)
 f.set_zero()
 f[0] = np.array([1.0 + 0.0j])
 
-smeared = q.smear_field(f, radius=2.0)
+smeared = q.field_smear(f, radius=2.0)
 print(f"Smeared field sum = {np.asarray(smeared).sum().real:.6f}")
 
 q.end_with_mpi()
@@ -302,7 +320,7 @@ f = q.FieldComplexD(geo, 1)
 f.set_zero()
 f[0] = np.array([1.0 + 0.0j])
 
-smeared = q.smear_field_step_local(f, coef=0.5, n_steps=10)
+smeared = q.field_smear_step_local(f, coef=0.5, num_step=10)
 print(f"Step-smeared field sum = {np.asarray(smeared).sum().real:.6f}")
 
 q.end_with_mpi()
