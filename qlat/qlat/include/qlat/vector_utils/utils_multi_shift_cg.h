@@ -27,7 +27,6 @@
 #include <type_traits>
 #include <chrono>
 #include <map>
-#include <optional>
 
 namespace qlat {
 // Host-only observers. Iterations are one-based; -1 means no stopping poll.
@@ -110,11 +109,36 @@ enum class MSCGShiftStopPolicy { inherit, requested, cpu_epsilon, precision_epsi
 enum class MSCGBetaPolicy { inherit, norm_ratio, quda };
 enum class MSCGAccumulationPolicy { inherit, single, double_precision };
 
+// A residual-check override has three states: inherit, disabled and enabled.
+// Keep Boolean assignment distinct from testing whether an override is set.
+class MSCGOptionalBool {
+  bool set_ = false;
+  bool value_ = false;
+
+public:
+  MSCGOptionalBool() = default;
+  MSCGOptionalBool(bool value) : set_(true), value_(value) {}
+  MSCGOptionalBool& operator=(bool value) {
+    set_ = true;
+    value_ = value;
+    return *this;
+  }
+  bool has_value() const { return set_; }
+  bool value_or(bool fallback) const { return set_ ? value_ : fallback; }
+  void reset() { set_ = false; value_ = false; }
+  friend bool operator==(const MSCGOptionalBool& a, const MSCGOptionalBool& b) {
+    return a.set_ == b.set_ && (!a.set_ || a.value_ == b.value_);
+  }
+  friend bool operator!=(const MSCGOptionalBool& a, const MSCGOptionalBool& b) {
+    return !(a == b);
+  }
+};
+
 struct MSCGOptions {
   bool fixed_iterations = false, profile = false;
   // Unset inherits the staggered process policy, or false for generic matrices.
   // Explicit true/false overrides the process policy.
-  std::optional<bool> compute_true_res;
+  MSCGOptionalBool compute_true_res;
   double refine_tolerance = 0;
   Int refine_maxiter = -1;
   MSCGStats* stats = nullptr;
@@ -393,21 +417,65 @@ template <int Order> qacc Long mscg_native_index(Long site, Int color, Long site
   return Long(group) * sites * width + site * pack + lane;
 }
 
+// Expression overloads select optional matrix/layout capabilities at compile time.
+// The long overload is the fallback when the expression is unavailable.
+template <class M>
+inline auto mscg_vector_layout(M* matrix, bool generic, int)
+    -> decltype(matrix->vector_layout(generic)) {
+  return matrix->vector_layout(generic);
+}
+template <class M>
+inline MSCGFlatLayout mscg_vector_layout(M*, bool, long) { return {}; }
+
+template <class M>
+inline auto mscg_reduction_config(int) -> decltype(M::staggered_reductions, MSCGReductionConfig{}) {
+  return M::staggered_reductions ? get_mscg_reduction_config() : MSCGReductionConfig{};
+}
+template <class M>
+inline MSCGReductionConfig mscg_reduction_config(long) { return {}; }
+
+template <class M, class T>
+inline auto mscg_apply_seed(M* matrix, T* out, T* in, double shift, int)
+    -> decltype(matrix->multi_seed(out, in, shift), std::true_type{}) {
+  matrix->multi_seed(out, in, shift);
+  return {};
+}
+template <class M, class T>
+inline std::false_type mscg_apply_seed(M* matrix, T* out, T* in, double, long) {
+  matrix->multi(out, in);
+  return {};
+}
+
+template <class M, class F>
+inline auto mscg_apply_precise(M* matrix, ComplexD* out, ComplexD* in, F&&, int)
+    -> decltype(matrix->multi_precise(out, in), void()) {
+  matrix->multi_precise(out, in);
+}
+template <class M, class F>
+inline void mscg_apply_precise(M*, ComplexD* out, ComplexD* in, F&& fallback, long) {
+  fallback(out, in);
+}
+
 // Staggered search vectors retain Krylov arithmetic independently of the
 // solution accumulator. Generic layouts retain their established arithmetic.
 template <class T, class U, class Layout, class Scalar>
+qacc auto mscg_search_update_impl(T residual, T old, Scalar z, Scalar beta, int)
+    -> decltype(Layout::krylov_arithmetic, T{}) {
+  using Real = decltype(T{}.real());
+  return Real(z) * residual + Real(beta) * old;
+}
+template <class T, class U, class Layout, class Scalar>
+qacc T mscg_search_update_impl(T residual, T old, Scalar z, Scalar beta, long) {
+  return T(z * U(residual) + beta * U(old));
+}
+template <class T, class U, class Layout, class Scalar>
 qacc T mscg_search_update(T residual, T old, Scalar z, Scalar beta) {
-  if constexpr (requires { Layout::krylov_arithmetic; }) {
-    using Real = decltype(T{}.real());
-    return Real(z) * residual + Real(beta) * old;
-  } else {
-    return T(z * U(residual) + beta * U(old));
-  }
+  return mscg_search_update_impl<T, U, Layout>(residual, old, z, beta, 0);
 }
 
 template <bool Borrowed, class U>
 qacc U* mscg_solution_row(U* const* rows, Int shift, Int rhs, Int mrh, Long length) {
-  if constexpr (Borrowed)
+  if (Borrowed)
     return rows[Long(shift) * mrh + rhs];
   else
     return rows[shift] + Long(rhs) * length;
@@ -442,7 +510,7 @@ __global__ void mscg_seed_vectors(U* x, T* p, const T* r, const double* c, Int m
   using Scalar = decltype(U{}.real());
   const Scalar alpha = Scalar(c[h]);
   const Scalar beta = Scalar(c[mrh + h]);
-  if constexpr (Borrowed)
+  if (Borrowed)
     x = rows[h];
 #pragma unroll
   for (Int color = 0; color < 3; ++color) {
@@ -607,7 +675,7 @@ __global__ void mscg_shift_vectors_pending(
         a[lane] = 0;
         if (entry.mask & (1 << lane)) {
           const Long v = 2 * mrh + Long(first + lane) * mrh + h;
-          if constexpr (Temporal) {
+          if (Temporal) {
             const auto* c = history + Long(t) * stride;
             a[lane] = c[v];
             b[lane] = c[v + S];
@@ -869,6 +937,20 @@ inline std::shared_ptr<mscg_workspace<T, U>> get_mscg_workspace(const Geometry& 
   return w;
 }
 
+template <class U>
+inline void copy_coefficient_history(double* out, const double* in, Long n) {
+  cpy_GPU(out, in, n, 1, 1, QFALSE);
+}
+template <class U>
+inline void copy_coefficient_history(float* out, const double* in, Long n) {
+#ifdef QLAT_USE_ACC
+  mscg_convert_coeff_history<U><<<1, 128>>>(in, out, n);
+  Qassert(qacc_GetLastError() == qacc_Success);
+#else
+  for (Long i = 0; i < n; ++i) out[i] = float(in[i]);
+#endif
+}
+
 // multi/multi_precise are massless; shifts are absolute 4*m*m. An optional
 // multi_seed folds the lowest shift into the operator. Independent scalar
 // recurrences per RHS. Cache entries are not safe for concurrent solves.
@@ -936,7 +1018,7 @@ template <class M, class Tv> struct multi_shift_cg {
   void call_raw_mixed(const std::vector<ComplexD*>& res, const std::vector<ComplexD*>& src,
                       const std::vector<double>& shifts, double tolerance, Int maxiter,
                       const MSCGOptions& options) {
-    static_assert(std::is_same_v<T, ComplexF>);
+    static_assert(std::is_same<T, ComplexF>::value, "Unsupported solver precision");
     Qassert(!src.empty() && res.size() == src.size() * shifts.size());
     MSCGOptions opt = options;
     opt.temporal_batch = resolve_mscg_temporal_batch(opt.temporal_batch, shifts.size());
@@ -1182,6 +1264,32 @@ template <class M, class Tv> struct multi_shift_cg {
     }
   }
 
+  // A named reduction callable keeps CUDA extended lambdas out of template
+  // arguments of functions that launch device work.
+  template <class U, class Layout> struct DotVectors {
+    multi_shift_cg& solver;
+    mscg_workspace<T, U>& workspace;
+    MSCGReductionConfig config;
+    Layout layout;
+    Long length;
+    Int rhs;
+    template <class A, class B>
+    std::vector<double> operator()(A* a, B* b, bool public_vectors = false) {
+      const double* out = nullptr;
+      workspace.profile.run("reductions", [&] {
+        if (config.precision == 1)
+          out = workspace.dd_reduction.dot(a, b, length, rhs, config.color_sum, layout, public_vectors);
+        else if (config.color_sum)
+          out = workspace.color_reduction.dot(a, b, length, rhs, true, layout, public_vectors);
+        else
+          out = workspace.reduction.dot(a, b, length, rhs);
+      });
+      solver.modeled_vector_flops += 4.0 * length * rhs;
+      ++solver.reduction_count;
+      return std::vector<double>(out, out + rhs);
+    }
+  };
+
   template <bool Borrowed = false, bool PackedFloat = false, class U>
   void solve(mscg_workspace<T, U>& w, const std::vector<double>& shifts, double tolerance, Int maxiter,
              Int mrh, const MSCGOptions& opt, const std::vector<double>& targets = {}) {
@@ -1215,21 +1323,9 @@ template <class M, class Tv> struct multi_shift_cg {
         opt.shift_stop == MSCGShiftStopPolicy::precision_epsilon ? std::numeric_limits<Real>::epsilon()
                                                                : std::numeric_limits<double>::epsilon();
     const bool quda_beta = opt.beta == MSCGBetaPolicy::quda;
-    const auto layout = [&]() {
-      if constexpr (requires { mat->vector_layout(opt.generic_vector_layout); })
-        return mat->vector_layout(opt.generic_vector_layout);
-      else
-        return MSCGFlatLayout{};
-    }();
-    // Only the staggered adapter opts into the process-wide controls. Generic
-    // matrix callers and independent benchmark/reference reductions retain the
-    // historic arithmetic unless they explicitly call MSCGTypedReduction.
-    const MSCGReductionConfig reduction_config = [&] {
-      if constexpr (requires { M::staggered_reductions; })
-        return M::staggered_reductions ? get_mscg_reduction_config() : MSCGReductionConfig{};
-      else
-        return MSCGReductionConfig{};
-    }();
+    const auto layout = mscg_vector_layout(mat, opt.generic_vector_layout, 0);
+    // Only staggered adapters opt into process-wide reduction controls.
+    const MSCGReductionConfig reduction_config = mscg_reduction_config<M>(0);
     if (reduction_config.precision || reduction_config.color_sum)
       w.profile.run("reduction_prepare", [&] {
         if (reduction_config.precision == 1) {
@@ -1263,20 +1359,7 @@ template <class M, class Tv> struct multi_shift_cg {
     T* r = w.r.data();
     T* p = mp[0];
     T* ap = mp[1];
-    auto dot = [&](auto* a, auto* c, bool public_vectors = false) {
-      const double* out = nullptr;
-      w.profile.run("reductions", [&] {
-        if (reduction_config.precision == 1)
-          out = w.dd_reduction.dot(a, c, L, mrh, reduction_config.color_sum, layout, public_vectors);
-        else if (reduction_config.color_sum)
-          out = w.color_reduction.dot(a, c, L, mrh, true, layout, public_vectors);
-        else
-          out = w.reduction.dot(a, c, L, mrh);
-      });
-      modeled_vector_flops += 4.0 * N;
-      ++reduction_count;
-      return std::vector<double>(out, out + mrh);
-    };
+    DotVectors<U, decltype(layout)> dot{*this, w, reduction_config, layout, L, mrh};
     std::vector<double> b2 = dot(b, b, true), rr = b2, aold(mrh, 1), bold(mrh, 0);
     std::vector<double> z(S, 1), zo(S, 1), stop(J, tolerance), coeff(2 * mrh + 3 * S);
     if (!targets.empty())
@@ -1315,7 +1398,7 @@ template <class M, class Tv> struct multi_shift_cg {
       for(size_t j=1;j<J;++j) { T* pj=w.ps[j].data();qGPU_for(i,N,0,{ pj[i]=r[i]; }); }
 #endif
       for (size_t j = 0; j < J; ++j) {
-        if constexpr (Borrowed) {
+        if (Borrowed) {
           for (Int h = 0; h < mrh; ++h) {
             U* xx = w.solution_rows[j * mrh + h];
             qGPU_for(i, L, 1, { xx[i] = U(0); });
@@ -1389,51 +1472,54 @@ template <class M, class Tv> struct multi_shift_cg {
         });
       const dim3 grid((sites + opt.vector_block - 1) / opt.vector_block,
                       dense_window ? mrh : w.replay_work.size(), dense_window ? shift_groups : 1);
-      auto launch = [&]<int Batch>() {
+      auto launch = [&](auto batch_tag) {
+        constexpr int Batch = decltype(batch_tag)::value;
         if (!dense_window) {
-          auto sparse = [&]<bool Temporal>() {
+          auto sparse = [&](auto temporal_tag) {
+            constexpr bool Temporal = decltype(temporal_tag)::value;
             mscg_shift_vectors_pending<Temporal, Batch, T, U, Borrowed><<<grid, opt.vector_block>>>(
                 w.solution_ptrs.data(), w.search_ptrs.data(),
                 Temporal ? w.residual_history.data() : r, w.coefficient_history.data(), c,
                 w.pending_work.data(), J, mrh, sites, 2 * mrh + 3 * S, layout);
           };
           if (opt.temporal_batch == 1)
-            sparse.template operator()<false>();
+            sparse(std::integral_constant<bool, false>{});
           else
-            sparse.template operator()<true>();
+            sparse(std::integral_constant<bool, true>{});
         } else if (opt.temporal_batch == 1)
           mscg_shift_vectors<Batch, T, U, Borrowed><<<grid, opt.vector_block>>>(
               w.solution_ptrs.data(), w.search_ptrs.data(), r, c, J, mrh, sites, layout);
         else {
           const Long stride = 2 * mrh + 3 * S;
-          auto replay = [&]<int Window>() {
+          auto replay = [&](auto window_tag) {
+            constexpr int Window = decltype(window_tag)::value;
             mscg_shift_vectors_temporal<Window, Batch, T, U, Borrowed><<<grid, opt.vector_block>>>(
                 w.solution_ptrs.data(), w.search_ptrs.data(), w.residual_history.data(),
                 w.coefficient_history.data(), steps, J, mrh, sites, stride, layout);
           };
           if (opt.temporal_batch == 4)
-            replay.template operator()<4>();
+            replay(std::integral_constant<int, 4>{});
           else if (opt.temporal_batch == 8)
-            replay.template operator()<8>();
+            replay(std::integral_constant<int, 8>{});
           else if (opt.temporal_batch == 16)
-            replay.template operator()<16>();
+            replay(std::integral_constant<int, 16>{});
           else
-            replay.template operator()<0>(); // Runtime window; same per-step arithmetic.
+            replay(std::integral_constant<int, 0>{}); // Runtime window; same per-step arithmetic.
         }
       };
       w.profile.run("shift_kernel", [&] {
         switch (opt.shift_batch) {
         case 1:
-          launch.template operator()<1>();
+          launch(std::integral_constant<int, 1>{});
           break;
         case 2:
-          launch.template operator()<2>();
+          launch(std::integral_constant<int, 2>{});
           break;
         case 4:
-          launch.template operator()<4>();
+          launch(std::integral_constant<int, 4>{});
           break;
         case 6:
-          launch.template operator()<6>();
+          launch(std::integral_constant<int, 6>{});
           break;
         }
         Qassert(qacc_GetLastError() == qacc_Success);
@@ -1485,14 +1571,12 @@ template <class M, class Tv> struct multi_shift_cg {
       // Use the original solver RHS count, even after some streams finish.
       // Residual norms are computed every iteration; replay size is independent.
       const bool check_stopping = (k + 1) % mrh == 0;
+      using FusedSeed = decltype(mscg_apply_seed(mat, ap, p, shifts[0], 0));
       w.profile.run("dslash", [&] {
-        if constexpr (requires { mat->multi_seed(ap, p, shifts[0]); })
-          mat->multi_seed(ap, p, shifts[0]);
-        else
-          mat->multi(ap, p);
+        mscg_apply_seed(mat, ap, p, shifts[0], 0);
       });
       ++multi_count;
-      if constexpr (!requires { mat->multi_seed(ap, p, shifts[0]); }) {
+      if (!FusedSeed::value) {
         const Real sigma = Real(shifts[0]);
         w.profile.run("seed_shift", [&] {
           ScopedQaccNumThreads threads(internal_qacc_threads(opt));
@@ -1679,20 +1763,7 @@ template <class M, class Tv> struct multi_shift_cg {
                     r + Long(first) * L, Long(h - first) * L, 1, 1, QFALSE);
           }
           const Long offset = Long(pending_temporal) * coeff_size;
-          if constexpr (std::is_same_v<mscg_history_scalar_t<U>, double>) {
-            cpy_GPU(w.coefficient_history.data() + offset, c, coeff_size, 1, 1, QFALSE);
-          } else {
-            // The recurrence keeps its host-facing coefficients in double.
-            // Convert only the temporal history for the all-FP32 path so that
-            // the shifted update performs its arithmetic in single precision.
-#ifdef QLAT_USE_ACC
-            mscg_convert_coeff_history<U><<<1, 128>>>(c, w.coefficient_history.data() + offset, coeff_size);
-            Qassert(qacc_GetLastError() == qacc_Success);
-#else
-            for (Long i = 0; i < coeff_size; ++i)
-              w.coefficient_history[offset + i] = mscg_history_scalar_t<U>(c[i]);
-#endif
-          }
+          copy_coefficient_history<U>(w.coefficient_history.data() + offset, c, coeff_size);
         });
         ++pending_temporal;
         if (pending_temporal == opt.temporal_batch || k + 1 == maxiter || !future_nonseed) {
@@ -1751,127 +1822,148 @@ template <class M, class Tv> struct multi_shift_cg {
         }
     // Only packed float-in-double outputs require export before observation.
     // Direct same-type output rows can be checked/refined here.
-    if constexpr (PackedFloat)
+    if (PackedFloat)
       return;
-    if constexpr (!std::is_same<U, ComplexD>::value) {
-      Qassert(opt.refine_tolerance <= 0);
-      if (opt.compute_true_res.value_or(false)) {
-        for (size_t j = 0; j < J; ++j) {
-          for (Int h = 0; h < mrh; ++h) {
-            const U* xx = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
-            T* ph = p + Long(h) * L;
-            qGPU_for(i, L, 1, { ph[i] = xx[i]; });
-          }
-          mat->multi(ap, p);
-          ++multi_count;
-          const float sigma = float(shifts[j]);
-          qGPU_for(i, N, 1, { r[i] = b[i] - ap[i] - sigma * p[i]; });
-          modeled_vector_flops += 6.0 * N;
-          auto rn = dot(r, r);
-          for (Int h = 0; h < mrh; ++h) {
-            true_residual[j * mrh + h] = b2[h] == 0 ? std::sqrt(rn[h]) : std::sqrt(rn[h] / b2[h]);
-            ++residual_check_count;
-          }
+    observe_solution<Borrowed>(w, shifts, stop, mrh, maxiter, opt, b2, rr, done, b, r, p, ap, dot,
+                               std::is_same<U, ComplexD>{});
+  }
+
+  template <bool Borrowed, class U, class Dot>
+  void observe_solution(mscg_workspace<T, U>& w, const std::vector<double>& shifts,
+      const std::vector<double>& stop, Int mrh, Int maxiter, const MSCGOptions& opt,
+      const std::vector<double>& b2, std::vector<double>& rr, std::vector<char>& done,
+      U* b, T* r, T* p, T* ap, Dot& dot, std::false_type) {
+    const Long N = mat->get_vsize(), L = N / mrh;
+    const size_t J = shifts.size();
+    Qassert(opt.refine_tolerance <= 0);
+    if (opt.compute_true_res.value_or(false)) {
+      for (size_t j = 0; j < J; ++j) {
+        for (Int h = 0; h < mrh; ++h) {
+          const U* xx = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
+          T* ph = p + Long(h) * L;
+          qGPU_for(i, L, 1, { ph[i] = xx[i]; });
         }
-        if (opt.print_mem)
-          print_mem_info(refine_iterations > 0 ? "MCG refinement done" : "MCG residual checks done");
-      }
-      return;
-    } else {
-      if (!opt.compute_true_res.value_or(false) && opt.refine_tolerance <= 0)
-        return;
-      w.prepare_refinement(N);
-      ComplexD *dr = w.refine_r.data(), *dp = w.refine_p.data(), *da = w.refine_ap.data();
-      auto precise = [&](ComplexD* out, ComplexD* in) {
-        w.profile.run("precise_dslash", [&] {
-          if constexpr (requires { mat->multi_precise(out, in); })
-            mat->multi_precise(out, in);
-          else if constexpr (sizeof(T) == sizeof(ComplexD)) {
-            qGPU_for(i, N, 1, { p[i] = in[i]; });
-            mat->multi(ap, p);
-            qGPU_for(i, N, 1, { out[i] = ap[i]; });
-          } else
-            Qassert(false); // Float matrices must supply a precise operator.
-        });
+        mat->multi(ap, p);
         ++multi_count;
-      };
-      const Int limit = opt.refine_maxiter >= 0 ? opt.refine_maxiter : maxiter;
-      ScopedQaccNumThreads refinement_threads(opt.qacc_threads_double);
-      w.profile.run("residual_checks_refinement", [&] {
-        for (size_t j = 0; j < J; ++j) {
-          const double sigma = shifts[j];
-          Int used = 0;
-          while (true) {
-            for (Int h = 0; h < mrh; ++h) {
-              const ComplexD* xx = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
-              ComplexD* ph = dp + Long(h) * L;
-              qGPU_for(i, L, 1, { ph[i] = xx[i]; });
-            }
-            precise(da, dp);
-            qGPU_for(i, N, 1, {
-              dr[i] = b[i] - da[i] - sigma * dp[i];
-              dp[i] = dr[i];
-            });
-            modeled_vector_flops += 6.0 * N;
-            rr = dot(dr, dr, true);
-            bool all = true;
-            for (Int h = 0; h < mrh; ++h) {
-              const double target =
-                  opt.refine_tolerance > 0 ? std::min(opt.refine_tolerance, stop[j]) : stop[j];
-              true_residual[j * mrh + h] = b2[h] == 0 ? std::sqrt(rr[h]) : std::sqrt(rr[h] / b2[h]);
-              ++residual_check_count;
-              done[h] = b2[h] == 0 || true_residual[j * mrh + h] <= target;
-              if (!done[h])
-                all = false;
-              else {
-                ComplexD* ph = dp + h * L;
-                qGPU_for(i, L, 1, { ph[i] = 0.0; });
-              }
-            }
-            if (opt.refine_tolerance <= 0 || all || used >= limit)
-              break;
-            for (Int pass = 0; pass < 32 && used < limit; ++pass) {
-              precise(da, dp);
-              qGPU_for(i, N, 1, { da[i] += sigma * dp[i]; });
-              modeled_vector_flops += 4.0 * N;
-              auto pap = dot(dp, da, true);
-              for (Int h = 0; h < mrh; ++h)
-                if (!done[h]) {
-                  Qassert(pap[h] > 0 && std::isfinite(pap[h]));
-                  const double a = rr[h] / pap[h];
-                  ComplexD* xh = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
-                  ComplexD *rh = dr + h * L, *ph = dp + h * L, *ah = da + h * L;
-                  qGPU_for(i, L, 1, {
-                    xh[i] += a * ph[i];
-                    rh[i] -= a * ah[i];
-                  });
-                  modeled_vector_flops += 8.0 * L;
-                }
-              auto rn = dot(dr, dr, true);
-              bool finished = true;
-              for (Int h = 0; h < mrh; ++h)
-                if (!done[h]) {
-                  const double beta = rn[h] / rr[h], target = std::min(opt.refine_tolerance, stop[j]);
-                  done[h] = rn[h] <= target * target * b2[h];
-                  if (!done[h])
-                    finished = false;
-                  const double keep = done[h] ? 0 : 1;
-                  ComplexD *rh = dr + h * L, *ph = dp + h * L;
-                  qGPU_for(i, L, 1, { ph[i] = keep * (rh[i] + beta * ph[i]); });
-                  modeled_vector_flops += 6.0 * L;
-                }
-              rr = rn;
-              ++used;
-              ++refine_iterations;
-              if (finished)
-                break;
-            }
-          }
+        const float sigma = float(shifts[j]);
+        qGPU_for(i, N, 1, { r[i] = b[i] - ap[i] - sigma * p[i]; });
+        modeled_vector_flops += 6.0 * N;
+        auto rn = dot(r, r);
+        for (Int h = 0; h < mrh; ++h) {
+          true_residual[j * mrh + h] = b2[h] == 0 ? std::sqrt(rn[h]) : std::sqrt(rn[h] / b2[h]);
+          ++residual_check_count;
         }
-      });
+      }
       if (opt.print_mem)
         print_mem_info(refine_iterations > 0 ? "MCG refinement done" : "MCG residual checks done");
     }
+  }
+
+  template <bool Borrowed, class U, class Dot>
+  void observe_solution(mscg_workspace<T, U>& w, const std::vector<double>& shifts,
+      const std::vector<double>& stop, Int mrh, Int maxiter, const MSCGOptions& opt,
+      const std::vector<double>& b2, std::vector<double>& rr, std::vector<char>& done,
+      U* b, T* r, T* p, T* ap, Dot& dot, std::true_type) {
+    const Long N = mat->get_vsize(), L = N / mrh;
+    const size_t J = shifts.size();
+    if (!opt.compute_true_res.value_or(false) && opt.refine_tolerance <= 0)
+      return;
+    w.prepare_refinement(N);
+    ComplexD *dr = w.refine_r.data(), *dp = w.refine_p.data(), *da = w.refine_ap.data();
+    auto precise = [&](ComplexD* out, ComplexD* in) {
+      w.profile.run("precise_dslash", [&] {
+        mscg_apply_precise(mat, out, in, [&](ComplexD* dst, ComplexD* src) {
+          precise_fallback(dst, src, p, ap, N,
+                           std::integral_constant<bool, sizeof(T) == sizeof(ComplexD)>{});
+        }, 0);
+      });
+      ++multi_count;
+    };
+    const Int limit = opt.refine_maxiter >= 0 ? opt.refine_maxiter : maxiter;
+    ScopedQaccNumThreads refinement_threads(opt.qacc_threads_double);
+    w.profile.run("residual_checks_refinement", [&] {
+      for (size_t j = 0; j < J; ++j) {
+        const double sigma = shifts[j];
+        Int used = 0;
+        while (true) {
+          for (Int h = 0; h < mrh; ++h) {
+            const ComplexD* xx = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
+            ComplexD* ph = dp + Long(h) * L;
+            qGPU_for(i, L, 1, { ph[i] = xx[i]; });
+          }
+          precise(da, dp);
+          qGPU_for(i, N, 1, {
+            dr[i] = b[i] - da[i] - sigma * dp[i];
+            dp[i] = dr[i];
+          });
+          modeled_vector_flops += 6.0 * N;
+          rr = dot(dr, dr, true);
+          bool all = true;
+          for (Int h = 0; h < mrh; ++h) {
+            const double target =
+                opt.refine_tolerance > 0 ? std::min(opt.refine_tolerance, stop[j]) : stop[j];
+            true_residual[j * mrh + h] = b2[h] == 0 ? std::sqrt(rr[h]) : std::sqrt(rr[h] / b2[h]);
+            ++residual_check_count;
+            done[h] = b2[h] == 0 || true_residual[j * mrh + h] <= target;
+            if (!done[h])
+              all = false;
+            else {
+              ComplexD* ph = dp + h * L;
+              qGPU_for(i, L, 1, { ph[i] = 0.0; });
+            }
+          }
+          if (opt.refine_tolerance <= 0 || all || used >= limit)
+            break;
+          for (Int pass = 0; pass < 32 && used < limit; ++pass) {
+            precise(da, dp);
+            qGPU_for(i, N, 1, { da[i] += sigma * dp[i]; });
+            modeled_vector_flops += 4.0 * N;
+            auto pap = dot(dp, da, true);
+            for (Int h = 0; h < mrh; ++h)
+              if (!done[h]) {
+                Qassert(pap[h] > 0 && std::isfinite(pap[h]));
+                const double a = rr[h] / pap[h];
+                ComplexD* xh = Borrowed ? w.solution_rows[j * mrh + h] : w.xs[j].data() + Long(h) * L;
+                ComplexD *rh = dr + h * L, *ph = dp + h * L, *ah = da + h * L;
+                qGPU_for(i, L, 1, {
+                  xh[i] += a * ph[i];
+                  rh[i] -= a * ah[i];
+                });
+                modeled_vector_flops += 8.0 * L;
+              }
+            auto rn = dot(dr, dr, true);
+            bool finished = true;
+            for (Int h = 0; h < mrh; ++h)
+              if (!done[h]) {
+                const double beta = rn[h] / rr[h], target = std::min(opt.refine_tolerance, stop[j]);
+                done[h] = rn[h] <= target * target * b2[h];
+                if (!done[h])
+                  finished = false;
+                const double keep = done[h] ? 0 : 1;
+                ComplexD *rh = dr + h * L, *ph = dp + h * L;
+                qGPU_for(i, L, 1, { ph[i] = keep * (rh[i] + beta * ph[i]); });
+                modeled_vector_flops += 6.0 * L;
+              }
+            rr = rn;
+            ++used;
+            ++refine_iterations;
+            if (finished)
+              break;
+          }
+        }
+      }
+    });
+    if (opt.print_mem)
+      print_mem_info(refine_iterations > 0 ? "MCG refinement done" : "MCG residual checks done");
+  }
+
+  void precise_fallback(ComplexD* out, ComplexD* in, T* p, T* ap, Long n, std::true_type) {
+    qGPU_for(i, n, 1, { p[i] = in[i]; });
+    mat->multi(ap, p);
+    qGPU_for(i, n, 1, { out[i] = ap[i]; });
+  }
+  void precise_fallback(ComplexD*, ComplexD*, T*, T*, Long, std::false_type) {
+    Qassert(false); // Float matrices must supply a precise operator.
   }
 };
 } // namespace qlat

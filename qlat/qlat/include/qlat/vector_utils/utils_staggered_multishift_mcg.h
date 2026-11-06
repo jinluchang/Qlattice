@@ -313,7 +313,7 @@ template <class Ty>
 inline Int staggered_mcg_effective_temporal_cap(QudaPrecision krylov, const MSCGOptions& options) {
   const Int cap = get_staggered_mcg_algorithm_config().max_temporal_batch;
   const bool single_histories = krylov == QUDA_SINGLE_PRECISION &&
-      (std::is_same_v<Ty, ComplexF> || staggered_mcg_single_accumulation(options));
+      (std::is_same<Ty, ComplexF>::value || staggered_mcg_single_accumulation(options));
   if (single_histories && cap > 0)
     return cap > std::numeric_limits<Int>::max() / 2 ? std::numeric_limits<Int>::max() : 2 * cap;
   return cap;
@@ -350,6 +350,19 @@ inline MSCGOptions resolve_staggered_mcg_options(MSCGOptions options) {
 // Keep native double and Krylov indices independent. The generic path uses
 // QUDA's accessor, including native packing introduced by later QUDA versions.
 // Native layout contracts and optional startup probes
+template <Int Order, class Accessor>
+qacc Long staggered_mcg_index(const Accessor& accessor, bool generic,
+    Long site, Int color, Long sites, std::true_type) {
+  if (!generic)
+    return mscg_native_index<Order>(site, color, sites);
+  return accessor.index(0, site, 0, color, 0, sites);
+}
+template <Int Order, class Accessor>
+qacc Long staggered_mcg_index(const Accessor& accessor, bool,
+    Long site, Int color, Long sites, std::false_type) {
+  return accessor.index(0, site, 0, color, 0, sites);
+}
+
 template <class T> struct staggered_mcg_layout {
   static constexpr bool krylov_arithmetic = true;
   using Real = std::conditional_t<sizeof(T) == sizeof(ComplexD), double, float>;
@@ -360,21 +373,17 @@ template <class T> struct staggered_mcg_layout {
   bool generic = false;
 
   qacc Long double_index(Long site, Int color, Long sites) const {
-    if constexpr (double_order == 2 || double_order == 4)
-      if (!generic)
-        return mscg_native_index<double_order>(site, color, sites);
-    return d.index(0, site, 0, color, 0, sites);
+    return staggered_mcg_index<double_order>(d, generic, site, color, sites,
+        std::integral_constant<bool, double_order == 2 || double_order == 4>{});
   }
 
   qacc Long storage_index(Long site, Int color, Long sites) const {
-    if constexpr (storage_order == 2 || storage_order == 4)
-      if (!generic)
-        return mscg_native_index<storage_order>(site, color, sites);
-    return t.index(0, site, 0, color, 0, sites);
+    return staggered_mcg_index<storage_order>(t, generic, site, color, sites,
+        std::integral_constant<bool, storage_order == 2 || storage_order == 4>{});
   }
 
   template <class U> qacc Long public_index(Long site, Int color, Long sites) const {
-    if constexpr (sizeof(U) == sizeof(T))
+    if (sizeof(U) == sizeof(T))
       return storage_index(site, color, sites);
     else
       return double_index(site, color, sites);
@@ -593,7 +602,7 @@ inline void probe_staggered_mcg_ordering_single(quda_inverter& qinv, Int mrh) {
 template <class U> inline bool staggered_mcg_ordering_self_test_once(quda_inverter& qinv, Int mrh) {
   bool probed = false;
   static const bool ordering_validated = [&] {
-    if constexpr (std::is_same_v<U, ComplexD>)
+    if (std::is_same<U, ComplexD>::value)
       probe_staggered_mcg_ordering(qinv, mrh);
     else
       probe_staggered_mcg_ordering_single(qinv, mrh);
@@ -641,7 +650,7 @@ inline bool validate_staggered_mcg_ordering_single(quda_inverter& qinv, Int mrh 
 }
 
 template <class U> inline bool check_staggered_mcg_ordering_for_solve(quda_inverter& qinv, Int mrh) {
-  if constexpr (std::is_same_v<U, ComplexD>)
+  if (std::is_same<U, ComplexD>::value)
     check_staggered_mcg_ordering(qinv, mrh);
   else
     check_staggered_mcg_ordering_single(qinv, mrh);
@@ -674,7 +683,7 @@ public:
 
   staggered_mcg_matrix(quda_inverter* q, Int rhs, bool precise_ = false, bool native_double_ = false)
       : precise(precise_), native_double(native_double_), qinvP(q) {
-    if constexpr (sizeof(T) == sizeof(ComplexD)) {
+    if (sizeof(T) == sizeof(ComplexD)) {
       check_staggered_mcg_ordering_for_solve<ComplexD>(*qinvP, rhs);
     } else if (native_double) {
       check_staggered_mcg_ordering_for_solve<ComplexD>(*qinvP, rhs);
@@ -871,6 +880,22 @@ inline void install_staggered_multishift_mcg_cache_cleanup(quda_inverter& qinv) 
     qinv.staggered_mcg_cache_cleanup = [&qinv] { clear_staggered_multishift_mcg_cache(&qinv); };
 }
 
+template <class Solver, class U>
+inline void staggered_mcg_call_raw(Solver& solver, const std::vector<U*>& res,
+    const std::vector<U*>& src, const std::vector<double>& shifts, double err, Int niter,
+    const MSCGOptions& options, std::false_type) {
+  solver.call_raw(res, src, shifts, err, niter, options);
+}
+template <class Solver, class U>
+inline void staggered_mcg_call_raw(Solver& solver, const std::vector<U*>& res,
+    const std::vector<U*>& src, const std::vector<double>& shifts, double err, Int niter,
+    const MSCGOptions& options, std::true_type) {
+  if (staggered_mcg_single_accumulation(options))
+    solver.call_raw_mixed(res, src, shifts, err, niter, options);
+  else
+    solver.call_raw(res, src, shifts, err, niter, options);
+}
+
 template <class T, class U>
 inline void staggered_multishift_mcg_dispatch(quda_inverter& qinv, const std::vector<U*>& res,
                                               const std::vector<U*>& src, const std::vector<double>& masses2,
@@ -895,7 +920,7 @@ inline void staggered_multishift_mcg_dispatch(quda_inverter& qinv, const std::ve
       // U selects the public vector precision.  D/F therefore has T=ComplexF
       // but still uses double native I/O; pass that fact to the matrix adapter
       // so its layout validation checks the correct QUDA fields.
-      constexpr bool native_double = std::is_same_v<U, ComplexD>;
+      constexpr bool native_double = std::is_same<U, ComplexD>::value;
       it =
           cache.emplace(key, std::make_shared<staggered_mcg_matrix<T>>(&qinv, src.size(), false, native_double))
               .first;
@@ -909,13 +934,9 @@ inline void staggered_multishift_mcg_dispatch(quda_inverter& qinv, const std::ve
   if (options.print_mem)
     print_mem_info("MCG matrix ready");
   multi_shift_cg<staggered_mcg_matrix<T>, vector_cs<U>> solver(*it->second);
-  if constexpr (std::is_same_v<U, ComplexD> && std::is_same_v<T, ComplexF>) {
-    if (staggered_mcg_single_accumulation(options))
-      solver.call_raw_mixed(res, src, masses2, err, niter, options);
-    else
-      solver.call_raw(res, src, masses2, err, niter, options);
-  } else
-    solver.call_raw(res, src, masses2, err, niter, options);
+  staggered_mcg_call_raw(solver, res, src, masses2, err, niter, options,
+      std::integral_constant<bool, std::is_same<U, ComplexD>::value &&
+                                   std::is_same<T, ComplexF>::value>{});
   if (options.stats) {
     if (options.profile) {
       options.stats->host_seconds[probed ? "ordering_validation" : "ordering_param_check"] = check_time;
@@ -948,10 +969,10 @@ inline void merge_staggered_mcg_rhs_stats(MSCGStats& total, const MSCGStats& one
   total.borrowed_solutions = one.borrowed_solutions;
   total.accumulation_bytes = one.accumulation_bytes;
   total.retirement_epsilon = one.retirement_epsilon;
-  for (const auto& [name, seconds] : one.host_seconds)
-    total.host_seconds[name] += seconds;
-  for (const auto& [name, seconds] : one.device_seconds)
-    total.device_seconds[name] += seconds;
+  for (const auto& entry : one.host_seconds)
+    total.host_seconds[entry.first] += entry.second;
+  for (const auto& entry : one.device_seconds)
+    total.device_seconds[entry.first] += entry.second;
   auto scatter = [rhs, h](auto& out, const auto& in) {
     out.resize(in.size() * rhs);
     for (size_t j = 0; j < in.size(); ++j)
@@ -1002,6 +1023,31 @@ inline void preserve_staggered_mcg_aliased_sources(const std::vector<Ty*>& res, 
 // Implementation shared by both public entries; neither nests a public logger.
 // Optional experiment: split public sources into independent single-RHS solves.
 template <class Ty>
+inline void staggered_mcg_dispatch_public(quda_inverter& qinv,
+  const std::vector<Ty*>& res, const std::vector<Ty*>& src,
+  const std::vector<double>& masses2, double err, Int niter,
+  const MSCGOptions& options, std::false_type) {
+  Qassert(qinv.inv_param.cpu_prec == QUDA_SINGLE_PRECISION &&
+          qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION &&
+          qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
+  staggered_multishift_mcg_dispatch<ComplexF, ComplexF>(qinv, res, src, masses2, err, niter, options);
+}
+template <class Ty>
+inline void staggered_mcg_dispatch_public(quda_inverter& qinv,
+  const std::vector<Ty*>& res, const std::vector<Ty*>& src,
+  const std::vector<double>& masses2, double err, Int niter,
+  const MSCGOptions& options, std::true_type) {
+  Qassert(qinv.inv_param.cpu_prec == QUDA_DOUBLE_PRECISION &&
+          qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
+  Qassert(qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION ||
+          qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
+  if (qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION)
+    staggered_multishift_mcg_dispatch<ComplexD, ComplexD>(qinv, res, src, masses2, err, niter, options);
+  else
+    staggered_multishift_mcg_dispatch<ComplexF, ComplexD>(qinv, res, src, masses2, err, niter, options);
+}
+
+template <class Ty>
 void staggered_multishift_even_mcg_impl(quda_inverter& qinv, std::vector<Ty*> res, std::vector<Ty*> src,
                                         const std::vector<double>& masses2, double err, Int niter,
                                         const MSCGOptions& options = {}) {
@@ -1034,21 +1080,8 @@ void staggered_multishift_even_mcg_impl(quda_inverter& qinv, std::vector<Ty*> re
     }
     return;
   }
-  if constexpr (std::is_same<Ty, ComplexD>::value) {
-    Qassert(qinv.inv_param.cpu_prec == QUDA_DOUBLE_PRECISION &&
-            qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
-    Qassert(qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION ||
-            qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
-    if (qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION)
-      staggered_multishift_mcg_dispatch<ComplexD, ComplexD>(qinv, res, src, masses2, err, niter, options);
-    else
-      staggered_multishift_mcg_dispatch<ComplexF, ComplexD>(qinv, res, src, masses2, err, niter, options);
-  } else {
-    Qassert(qinv.inv_param.cpu_prec == QUDA_SINGLE_PRECISION &&
-            qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION &&
-            qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
-    staggered_multishift_mcg_dispatch<ComplexF, ComplexF>(qinv, res, src, masses2, err, niter, options);
-  }
+  staggered_mcg_dispatch_public(qinv, res, src, masses2, err, niter, options,
+      std::is_same<Ty, ComplexD>{});
 }
 
 // Host diagnostics and public-vector fingerprints
@@ -1111,7 +1144,7 @@ void log_staggered_multishift_mcg(quda_inverter& qinv, const std::vector<double>
   glb_max(total_seconds);
   double cost = (stats.modeled_operator_flops + stats.modeled_vector_flops) / 1e9;
   sum_all_size(&cost, 1, 0);
-  const char* io = std::is_same_v<Ty, ComplexD> ? "double" : "single";
+  const char* io = std::is_same<Ty, ComplexD>::value ? "double" : "single";
   const char* accumulation = stats.accumulation_bytes == 4 ? "single" : "double";
   bool finite = true, met = true, zero = stats.iterations == 0;
   for (size_t i = 0; i < stats.iterative_residual.size(); ++i) {
@@ -1478,7 +1511,7 @@ void staggered_multishift_cg_correction_legacy(quda_inverter& qinv, const std::v
   }
   if (!active.empty() && limit > 0) {
     constexpr QudaPrecision precision =
-        std::is_same_v<Ty, ComplexD> ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+        std::is_same<Ty, ComplexD>::value ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
     StaggeredCorrectionPrecisionGuard guard(qinv, precision);
     auto& p = qinv.inv_param;
     p.inv_type = QUDA_CG_INVERTER;
@@ -1548,7 +1581,7 @@ template <class Ty> class StaggeredMCGCorrection {
   std::vector<double> scale, source_norm;
 
   static quda::ColorSpinorParam native_param(const quda_inverter& q) {
-    if constexpr (std::is_same_v<Ty, ComplexD>)
+    if (std::is_same<Ty, ComplexD>::value)
       return q.cs_gpuD;
     else
       return q.cs_gpuF;
@@ -1605,7 +1638,7 @@ public:
     }
     QudaInvertParam p = q.inv_param;
     constexpr QudaPrecision precision =
-        std::is_same_v<Ty, ComplexD> ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+        std::is_same<Ty, ComplexD>::value ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
     p.cpu_prec = p.cuda_prec = p.cuda_prec_sloppy = precision;
     p.cuda_prec_refinement_sloppy = p.cuda_prec_precondition = p.cuda_prec_eigensolver = precision;
     p.inv_type = QUDA_CG_INVERTER;
@@ -1763,8 +1796,8 @@ inline bool staggered_mcg_correction_reusable(const QudaInvertParam& p) {
 }
 
 template <class Ty> inline bool staggered_mcg_correction_native(const quda_inverter& q) {
-  constexpr auto precision = std::is_same_v<Ty, ComplexD> ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
-  const auto& p = std::is_same_v<Ty, ComplexD> ? q.cs_gpuD : q.cs_gpuF;
+  constexpr auto precision = std::is_same<Ty, ComplexD>::value ? QUDA_DOUBLE_PRECISION : QUDA_SINGLE_PRECISION;
+  const auto& p = std::is_same<Ty, ComplexD>::value ? q.cs_gpuD : q.cs_gpuF;
   const size_t bytes = size_t(q.geo().local_volume() * 3 / 2) * sizeof(Ty);
   return q.inv_param.cuda_prec == precision && p.Precision() == precision &&
          p.location == QUDA_CUDA_FIELD_LOCATION && p.fieldOrder == QUDA_NATIVE_FIELD_ORDER &&
@@ -1891,7 +1924,7 @@ template <class Ty>
 inline void validate_staggered_mcg_type_input(quda_inverter& qinv, const std::vector<Ty*>& res,
                                               const std::vector<Ty*>& src, const std::vector<double>& offsets,
                                               double err, Int niter, Int backend = -1) {
-  static_assert(std::is_same_v<Ty, ComplexD> || std::is_same_v<Ty, ComplexF>);
+  static_assert(std::is_same<Ty, ComplexD>::value || std::is_same<Ty, ComplexF>::value, "Unsupported solver precision");
   if (backend < 0)
     backend = qinv.mcg_type;
   const double target = backend >= 5 ? get_staggered_type5_error(err) : err;
@@ -1913,7 +1946,7 @@ inline void validate_staggered_mcg_type_input(quda_inverter& qinv, const std::ve
       throw std::invalid_argument("MCG replacement: null output");
   Qassert(qinv.inv_param.dagger == QUDA_DAG_NO);
   if (backend >= 5) {
-    if constexpr (!std::is_same_v<Ty, ComplexD>)
+    if (!std::is_same<Ty, ComplexD>::value)
       throw std::invalid_argument("Standalone type 5/6 requires double public input/output");
     if (qinv.inv_param.cpu_prec != QUDA_DOUBLE_PRECISION ||
         qinv.inv_param.cuda_prec != QUDA_DOUBLE_PRECISION ||
@@ -1933,7 +1966,7 @@ inline void measure_staggered_mcg_type_residuals(quda_inverter& qinv, const std:
                                                  const std::vector<Ty*>& src,
                                                  const std::vector<double>& offsets,
                                                  StaggeredMCGTypeStats& stats) {
-  staggered_mcg_matrix<Ty> matrix(&qinv, 1, true, std::is_same_v<Ty, ComplexD>);
+  staggered_mcg_matrix<Ty> matrix(&qinv, 1, true, std::is_same<Ty, ComplexD>::value);
   const Long L = matrix.get_vsize();
   Ty* x = matrix.buf[0].data();
   Ty* ap = matrix.buf[1].data();
@@ -2114,8 +2147,8 @@ run_staggered_mcg_type6_impl(quda_inverter& qinv, const std::vector<ComplexD*>& 
                      : std::numeric_limits<double>::epsilon())
               : effective;
   stats.io_precision = QUDA_DOUBLE_PRECISION;
-  stats.krylov_precision = std::is_same_v<Real, float> ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
-  stats.internal_precision = std::is_same_v<Real, RealDD> ? "DD" : std::is_same_v<Real, double> ? "D" : "F";
+  stats.krylov_precision = std::is_same<Real, float>::value ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
+  stats.internal_precision = std::is_same<Real, RealDD>::value ? "DD" : std::is_same<Real, double>::value ? "D" : "F";
   const size_t S = size_t(J) * rhs;
   stats.iterations.resize(S);
   stats.stop.resize(S);
@@ -2156,21 +2189,23 @@ run_staggered_mcg_type6_impl(quda_inverter& qinv, const std::vector<ComplexD*>& 
 
 template <class Ty>
 inline StaggeredMCGTypeStats
-run_staggered_mcg_type6(quda_inverter& qinv, const std::vector<Ty*>& res, const std::vector<Ty*>& src,
-                        const std::vector<double>& offsets, double err, Int niter) {
-  if constexpr (!std::is_same_v<Ty, ComplexD>)
-    throw std::invalid_argument("Standalone type 6 requires double public input/output");
-  else {
-    switch (get_staggered_type5_precision()) {
-    case StaggeredType5Precision::DD:
-      return run_staggered_mcg_type6_impl<RealDD>(qinv, res, src, offsets, err, niter);
-    case StaggeredType5Precision::D:
-      return run_staggered_mcg_type6_impl<double>(qinv, res, src, offsets, err, niter);
-    case StaggeredType5Precision::F:
-      return run_staggered_mcg_type6_impl<float>(qinv, res, src, offsets, err, niter);
-    }
-    throw std::logic_error("invalid standalone precision");
+run_staggered_mcg_type6(quda_inverter&, const std::vector<Ty*>&,
+    const std::vector<Ty*>&, const std::vector<double>&, double, Int) {
+  throw std::invalid_argument("Standalone type 6 requires double public input/output");
+}
+template <>
+inline StaggeredMCGTypeStats
+run_staggered_mcg_type6<ComplexD>(quda_inverter& qinv, const std::vector<ComplexD*>& res,
+    const std::vector<ComplexD*>& src, const std::vector<double>& offsets, double err, Int niter) {
+  switch (get_staggered_type5_precision()) {
+  case StaggeredType5Precision::DD:
+    return run_staggered_mcg_type6_impl<RealDD>(qinv, res, src, offsets, err, niter);
+  case StaggeredType5Precision::D:
+    return run_staggered_mcg_type6_impl<double>(qinv, res, src, offsets, err, niter);
+  case StaggeredType5Precision::F:
+    return run_staggered_mcg_type6_impl<float>(qinv, res, src, offsets, err, niter);
   }
+  throw std::logic_error("invalid standalone precision");
 }
 
 template <class Real>
@@ -2198,8 +2233,8 @@ run_staggered_mcg_type5_impl(quda_inverter& qinv, const std::vector<ComplexD*>& 
   stats.steps = get_staggered_mcg_experiment_iterations(niter);
   stats.rho = std::numeric_limits<double>::quiet_NaN();
   stats.io_precision = QUDA_DOUBLE_PRECISION;
-  stats.krylov_precision = std::is_same_v<Real, float> ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
-  stats.internal_precision = std::is_same_v<Real, RealDD> ? "DD" : std::is_same_v<Real, double> ? "D" : "F";
+  stats.krylov_precision = std::is_same<Real, float>::value ? QUDA_SINGLE_PRECISION : QUDA_DOUBLE_PRECISION;
+  stats.internal_precision = std::is_same<Real, RealDD>::value ? "DD" : std::is_same<Real, double>::value ? "D" : "F";
   const size_t total = offsets.size() * src.size();
   stats.iterations.assign(total, 0);
   stats.stop.assign(total, 'L');
@@ -2243,25 +2278,31 @@ run_staggered_mcg_type5_impl(quda_inverter& qinv, const std::vector<ComplexD*>& 
 
 template <class Ty>
 inline StaggeredMCGTypeStats
-run_staggered_mcg_type5(quda_inverter& qinv, const std::vector<Ty*>& res, const std::vector<Ty*>& src,
-                        const std::vector<double>& offsets, double err, Int niter) {
-  if constexpr (!std::is_same_v<Ty, ComplexD>) {
-    throw std::invalid_argument("Standalone type 5 requires double public input/output");
-  } else {
-    switch (get_staggered_type5_precision()) {
-    case StaggeredType5Precision::DD:
-      return run_staggered_mcg_type5_impl<RealDD>(qinv, res, src, offsets, err, niter);
-    case StaggeredType5Precision::D:
-      return run_staggered_mcg_type5_impl<double>(qinv, res, src, offsets, err, niter);
-    case StaggeredType5Precision::F:
-      return run_staggered_mcg_type5_impl<float>(qinv, res, src, offsets, err, niter);
-    }
-    throw std::logic_error("invalid standalone precision");
+run_staggered_mcg_type5(quda_inverter&, const std::vector<Ty*>&,
+    const std::vector<Ty*>&, const std::vector<double>&, double, Int) {
+  throw std::invalid_argument("Standalone type 5 requires double public input/output");
+}
+template <>
+inline StaggeredMCGTypeStats
+run_staggered_mcg_type5<ComplexD>(quda_inverter& qinv, const std::vector<ComplexD*>& res,
+    const std::vector<ComplexD*>& src, const std::vector<double>& offsets, double err, Int niter) {
+  switch (get_staggered_type5_precision()) {
+  case StaggeredType5Precision::DD:
+    return run_staggered_mcg_type5_impl<RealDD>(qinv, res, src, offsets, err, niter);
+  case StaggeredType5Precision::D:
+    return run_staggered_mcg_type5_impl<double>(qinv, res, src, offsets, err, niter);
+  case StaggeredType5Precision::F:
+    return run_staggered_mcg_type5_impl<float>(qinv, res, src, offsets, err, niter);
   }
+  throw std::logic_error("invalid standalone precision");
 }
 
 // Observe the EXPORTED double solution using the full saved double links with
 // DD arithmetic. This independently measures both recurrence and export error.
+template <class Ty>
+inline void measure_staggered_mcg_type5_residuals(quda_inverter&, const std::vector<Ty*>&,
+    const std::vector<Ty*>&, const std::vector<double>&, StaggeredMCGTypeStats&) {}
+
 inline void measure_staggered_mcg_type5_residuals(quda_inverter& qinv, const std::vector<ComplexD*>& res,
                                                   const std::vector<ComplexD*>& src,
                                                   const std::vector<double>& offsets,
@@ -2380,6 +2421,28 @@ run_staggered_mcg_type_fixed_impl(quda_inverter& qinv, const std::vector<Ty*>& r
 }
 
 template <class Ty>
+inline StaggeredMCGTypeStats staggered_mcg_fixed_public(quda_inverter& qinv,
+  const std::vector<Ty*>& res, const std::vector<Ty*>& src,
+  const std::vector<double>& offsets, Int niter, Int type, std::false_type) {
+  Qassert(qinv.inv_param.cpu_prec == QUDA_SINGLE_PRECISION &&
+          qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION &&
+          qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
+  return run_staggered_mcg_type_fixed_impl<ComplexF, Ty>(qinv, res, src, offsets, niter, type, false);
+}
+template <class Ty>
+inline StaggeredMCGTypeStats staggered_mcg_fixed_public(quda_inverter& qinv,
+  const std::vector<Ty*>& res, const std::vector<Ty*>& src,
+  const std::vector<double>& offsets, Int niter, Int type, std::true_type) {
+  Qassert(qinv.inv_param.cpu_prec == QUDA_DOUBLE_PRECISION &&
+          qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
+  Qassert(qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION ||
+          qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
+  if (qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION)
+    return run_staggered_mcg_type_fixed_impl<ComplexD, Ty>(qinv, res, src, offsets, niter, type, true);
+  return run_staggered_mcg_type_fixed_impl<ComplexF, Ty>(qinv, res, src, offsets, niter, type, true);
+}
+
+template <class Ty>
 inline StaggeredMCGTypeStats
 run_staggered_mcg_type_fixed(quda_inverter& qinv, const std::vector<Ty*>& res, const std::vector<Ty*>& src,
                              const std::vector<double>& offsets, Int niter, Int type) {
@@ -2410,20 +2473,8 @@ run_staggered_mcg_type_fixed(quda_inverter& qinv, const std::vector<Ty*>& res, c
     }
     return total;
   }
-  if constexpr (std::is_same_v<Ty, ComplexD>) {
-    Qassert(qinv.inv_param.cpu_prec == QUDA_DOUBLE_PRECISION &&
-            qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
-    Qassert(qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION ||
-            qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
-    if (qinv.inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION)
-      return run_staggered_mcg_type_fixed_impl<ComplexD, Ty>(qinv, res, src, offsets, niter, type, true);
-    return run_staggered_mcg_type_fixed_impl<ComplexF, Ty>(qinv, res, src, offsets, niter, type, true);
-  } else {
-    Qassert(qinv.inv_param.cpu_prec == QUDA_SINGLE_PRECISION &&
-            qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION &&
-            qinv.inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION);
-    return run_staggered_mcg_type_fixed_impl<ComplexF, Ty>(qinv, res, src, offsets, niter, type, false);
-  }
+  return staggered_mcg_fixed_public(qinv, res, src, offsets, niter, type,
+      std::is_same<Ty, ComplexD>{});
 }
 
 template <class Ty>
@@ -2562,8 +2613,7 @@ void get_staggered_multishift_even(quda_inverter& qinv, std::vector<Ty*> res, st
     qinv.inv_param.iter = Int(std::min<Long>(stats.total_iterations, std::numeric_limits<Int>::max()));
     if (qinv.quda_verbos >= 2) {
       if (qinv.mcg_type >= 5) {
-        if constexpr (std::is_same_v<Ty, ComplexD>)
-          measure_staggered_mcg_type5_residuals(qinv, res, src, offsets, stats);
+        measure_staggered_mcg_type5_residuals(qinv, res, src, offsets, stats);
       } else
         measure_staggered_mcg_type_residuals(qinv, res, src, offsets, stats);
     }

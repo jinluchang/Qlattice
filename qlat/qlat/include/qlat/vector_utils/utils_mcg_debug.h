@@ -17,6 +17,17 @@
 #include <algorithm>
 
 namespace qlat {
+inline int mcg_debug_uncaught_exceptions() noexcept {
+#if defined(__cpp_lib_uncaught_exceptions) && __cpp_lib_uncaught_exceptions >= 201411L
+  return std::uncaught_exceptions();
+#else
+  // C++14 exposes only an unwinding flag. This detects a new exception when
+  // a phase/solve starts outside unwinding, as normal solver calls do. It
+  // cannot distinguish nested exceptions in a caller's unwinding destructor.
+  return std::uncaught_exception() ? 1 : 0;
+#endif
+}
+
 inline int mcg_debug_level() {
   static const int value = [] {
     const char* s = std::getenv("qlat_mcg_debug");
@@ -154,12 +165,12 @@ struct MCGDebugPhase {
   const char* name;
   bool enabled;
   int exceptions;
-  explicit MCGDebugPhase(const char* n):name(n),enabled(mcg_debug_active()),exceptions(enabled?std::uncaught_exceptions():0) {
+  explicit MCGDebugPhase(const char* n):name(n),enabled(mcg_debug_active()),exceptions(enabled?mcg_debug_uncaught_exceptions():0) {
     if (enabled) mcg_debug_state().mark(name,"enter");
   }
   ~MCGDebugPhase() {
     if (!enabled) return;
-    if (std::uncaught_exceptions()>exceptions) mcg_debug_fail(std::string("exception in ")+name);
+    if (mcg_debug_uncaught_exceptions()>exceptions) mcg_debug_fail(std::string("exception in ")+name);
     mcg_debug_check_guards();
     mcg_debug_state().mark(name,"complete");
   }
@@ -173,11 +184,11 @@ struct MCGDebugSolve {
     if (!owner) return;
     s.active=true;s.solve=++s.next_solve;s.subcall=-1;s.rhs=rhs;s.masses=masses;s.io=io;
     s.krylov=krylov;s.window=window;s.iteration=0;s.operators=0;
-    exceptions=std::uncaught_exceptions();s.mark("public_solve","enter",true);
+    exceptions=mcg_debug_uncaught_exceptions();s.mark("public_solve","enter",true);
   }
   ~MCGDebugSolve() {
     if (!enabled || !owner) return;
-    if (std::uncaught_exceptions()>exceptions) mcg_debug_fail("exception escaping custom MCG solve");
+    if (mcg_debug_uncaught_exceptions()>exceptions) mcg_debug_fail("exception escaping custom MCG solve");
     mcg_debug_check_guards();
     auto& s=mcg_debug_state();s.mark("public_solve","complete",true);s.active=false;
   }

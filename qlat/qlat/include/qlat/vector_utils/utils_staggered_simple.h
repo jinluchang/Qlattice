@@ -47,7 +47,7 @@ struct StaggeredSimpleGeometry {
 // adds no phase. Internal vectors use [color][checkerboard site]; public native
 // QUDA vectors must enter/leave through import_public/export_public.
 template<class Real> struct StaggeredSimpleOperator {
-  static_assert(std::is_same_v<Real,float> || std::is_same_v<Real,double> || std::is_same_v<Real,RealDD>);
+  static_assert(std::is_same<Real,float>::value || std::is_same<Real,double>::value || std::is_same<Real,RealDD>::value, "Unsupported solver precision");
   using Complex=ComplexT<Real>;
   using real_type=Real;
   StaggeredSimpleGeometry geometry;

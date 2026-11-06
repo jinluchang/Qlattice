@@ -192,13 +192,20 @@ __global__ void mscg_cg_residual_partial(T* residual, const T* ap, const double*
 }
 #endif
 
+inline void mscg_sum_accumulator(RealDD* values, Int count) {
+  sum_all_mpi(values, count);
+}
+inline void mscg_sum_accumulator(double* values, Int count) {
+  sum_all_size(values, count, 0);
+}
+
 // A reusable reduction with explicitly selected accumulation precision. It is
 // separate from MSCGReduction so the old default kernels and other callers keep
 // their arithmetic and launch order. Only the final globally summed value is
 // narrowed to double for the existing host recurrence.
 // Lazy reusable reduction storage and host-facing double results
 template <class Acc> struct MSCGTypedReduction {
-  static_assert(std::is_same_v<Acc, double> || std::is_same_v<Acc, RealDD>);
+  static_assert(std::is_same<Acc, double>::value || std::is_same<Acc, RealDD>::value, "Unsupported solver precision");
   MCGDebugBuffer<Acc> partial, result, host, site_values;
   MCGDebugBuffer<double> output;
   Int blocks = 0, mrh = 0;
@@ -236,10 +243,7 @@ template <class Acc> struct MSCGTypedReduction {
 #endif
     {
       MCGDebugPhase mpi_phase("host_mpi_reduction");
-      if constexpr (std::is_same_v<Acc, RealDD>)
-        sum_all_mpi(host.data(), mrh);
-      else
-        sum_all_size(host.data(), mrh, 0);
+      mscg_sum_accumulator(host.data(), mrh);
     }
     for (Int h = 0; h < mrh; ++h)
       output[h] = double(host[h]);

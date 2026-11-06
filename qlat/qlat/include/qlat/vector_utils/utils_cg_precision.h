@@ -146,8 +146,8 @@ template<class Real> __global__ void cg_typed_sum_partial(
 // accumulation). The simple staggered backend performs its rank guard before
 // using this helper. No MPI reduction or conversion to double occurs here.
 template<class Real> struct CGTypedReduction {
-  static_assert(std::is_same_v<Real, float> || std::is_same_v<Real, double> ||
-                std::is_same_v<Real, RealDD>);
+  static_assert(std::is_same<Real, float>::value || std::is_same<Real, double>::value ||
+                std::is_same<Real, RealDD>::value, "Unsupported solver precision");
   vector_gpu<Real> partial, result;
   Int blocks = 0;
 
@@ -222,8 +222,8 @@ template<class Real> __global__ void cg_typed_batch_sum_partial(
 // One typed result per contiguous RHS. Both GPU stages use grid.y for RHSs;
 // the arithmetic and the host transfer retain RealDD trailing components.
 template<class Real> struct CGTypedBatchReduction {
-  static_assert(std::is_same_v<Real,float> || std::is_same_v<Real,double> ||
-                std::is_same_v<Real,RealDD>);
+  static_assert(std::is_same<Real,float>::value || std::is_same<Real,double>::value ||
+                std::is_same<Real,RealDD>::value, "Unsupported solver precision");
   vector_gpu<Real> partial,result;
   Int blocks=0,batch_rhs=0;
 
