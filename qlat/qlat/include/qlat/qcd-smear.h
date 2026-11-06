@@ -10,17 +10,22 @@ namespace qlat
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
                   const Long num_step = 1);
 
-// Same as `gf_ape_smear` but without the SU(3) projection step.
+// Same as `gf_ape_smear` but without the SU(3) projection step, using the
+// step kernel `U' = U + (a / 6) * S` (no `(1 - a)` factor).
 // `accumulated_alpha` is the target total effective smearing (input only).
-// Each step uses `a = alpha * factor` with `factor = 3 / max_sq`, where
-// `max_sq` is the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links,
-// so that `alpha` is the effective smearing step of the largest link.
-// No rescaling of the field is performed and `a > 1` is allowed. The last
-// step is truncated so that `sum(a)` does not exceed `accumulated_alpha`.
-// The loop stops when `max_sq` is degenerate, when `a` is not positive, or
-// when `sum(a)` makes no progress in floating point. Progress is printed at
-// verbose level (1) every 4 steps and on the last step. `alpha = 0` or
-// `accumulated_alpha = 0` is the identity.
+// Each step uses `a = alpha * factor` with `factor = 3 / M`, where `M` is the
+// global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `alpha`
+// is the effective smearing step of the largest link. The field grows under
+// this kernel (`U' ~ (1 + a) U` for near-unitary links), hence `M > 3` and
+// `factor < 1`, so `a <= alpha`. The weight decays geometrically as the
+// amplitude grows, so the accumulated smearing converges; a target above that
+// limit is never reached and the loop stops on the no-progress guard,
+// leaving a very large, non-unitary field. The field is never rescaled. The
+// last step is truncated so that `sum(a)` does not exceed
+// `accumulated_alpha`. The loop stops when `M` is degenerate, when `a` is
+// not positive, or when `sum(a)` makes no progress in floating point.
+// Progress is printed at verbose level (1) every 4 steps and on the last
+// step. `alpha = 0` or `accumulated_alpha = 0` is the identity.
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
                           const RealD alpha, const RealD& accumulated_alpha);
 

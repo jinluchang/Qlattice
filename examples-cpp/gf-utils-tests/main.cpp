@@ -88,13 +88,13 @@ void simple_tests()
     // The last argument is the TARGET total effective smearing, not a step
     // count.  A target below `alpha * factor_0 = alpha * 3 / max Tr(U^dag U)`
     // is applied verbatim, so the call is one plain unprojected step
-    // `U + a (S / 6 - U)` with `a` equal to the requested target: two such
+    // `U + (a / 6) S` with `a` equal to the requested target: two such
     // targets `T` and `2 T` must satisfy `F(2 T) - gf = 2 (F(T) - gf)`.
     // The linearity holds only when the requested weight is used as is: a
-    // fixed `alpha`, a rescaling of the field, or an overshoot all break it at
-    // O(1).  (No composition/additivity check: each call truncates its own
-    // last step, so two successive calls need not reproduce one call with the
-    // summed target.)
+    // fixed `alpha`, a rescaling of the field, or a target large enough to be
+    // truncated all break it at O(1).  (No composition/additivity check: each
+    // call truncates its own last step, so two successive calls need not
+    // reproduce one call with the summed target.)
     const RealD t_small = 0.02;
     const RealD t_double = 2.0 * t_small;
     gf_ape_smear_no_proj(gfs_no_proj, gf, 0.1, 0.1);

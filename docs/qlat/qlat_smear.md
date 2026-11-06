@@ -95,14 +95,22 @@ gf_ape_smear_no_proj(
 Perform an APE-like smearing that omits the SU(3) projection step. Unlike the
 other gauge-field smearings this one is not driven by an iteration count:
 `accumulated_alpha` is a **target** total effective smearing, and the function
-performs as many steps as needed to accumulate that total.
+performs as many steps as needed to accumulate that total (or until it can
+make no further progress, see below).
 
-Each step uses the same weighted link/staple combination as `gf_ape_smear`,
-with a step-dependent coefficient `a_k`:
+Each step adds the staple term to the current link, without damping the link
+term and without projecting the result back to SU(3), using a step-dependent
+coefficient `a_k`:
 
 ```
-U_{k+1, mu}(x) = (1 - a_k) * U_{k, mu}(x) + (a_k / 6) * staple_{k, mu}(x)
+U_{k+1, mu}(x) = U_{k, mu}(x) + (a_k / 6) * staple_{k, mu}(x)
 ```
+
+This is not the convex interpolation used by `gf_ape_smear`: the linear term is
+not scaled down, and for a near-unitary field the staple satisfies
+`staple_{k, mu}(x) ~ 6 U_{k, mu}(x)`, so one step is approximately
+`U_{k+1} ~ (1 + a_k) U_k` and the amplitude of the field **grows** with every
+step.
 
 The staple `staple_{k, mu}(x)` is built from the current field `U_k`, and
 
@@ -118,9 +126,11 @@ per-step or final multiplication by a common scalar, and the amplitude enters
 the iteration only through `factor_k`, which sets the step size relative to
 the current field magnitude. A unitary field has `M_0 = 3` and `factor_0 = 1`,
 so the first step uses `a_0 = min(alpha, accumulated_alpha)`, an ordinary
-unprojected step of weight `alpha` whenever the target is at least `alpha`; as
-the unprojected update typically shrinks the amplitude, `factor_k` grows and a
-later step contributes more than `alpha`.
+unprojected step of weight `alpha` whenever the target is at least `alpha`.
+For a near-unitary input that update grows the amplitude, so `M_k` rises above
+`3`, `factor_k = 3 / M_k` falls below `1`, and every later step has
+`a_k <= alpha`: the step size is only ever reduced, never enlarged, and it
+cannot reach or exceed `1`.
 
 `sum_{j < k} a_j` is the coefficient accumulated by the steps already applied,
 and the last step is truncated to the remaining
@@ -129,7 +139,15 @@ target, and it stops as soon as the sum has reached it (up to floating-point
 rounding, handled by the progress guard below). `accumulated_alpha` thus
 measures the total weight applied, not the number of updates:
 `accumulated_alpha = alpha * n` asks for the same total as `n` nominal steps,
-and is reached in fewer updates once `factor_k > 1`.
+but it is not reached in `n` updates. Because the field grows, `a_k` falls as
+the amplitude rises and the accumulated total increases by much less than
+`alpha` per step, so a given target can need far more steps than
+`accumulated_alpha / alpha`: with `alpha = 0.5`, a target of `2.5` is
+approached with on the order of a hundred small steps rather than five. Since
+nothing renormalises the field, its growth can also make the sum of the `a_k`
+converge, capping the accumulated weight below the target; the loop then stops
+through the progress guard below, with the amplitude already grown by many
+orders of magnitude.
 
 The input `gf` is not modified; the result is returned as a new object. If
 `alpha <= 0` or `accumulated_alpha <= 0` the loop exits before the first
@@ -138,27 +156,39 @@ update, so the returned copy is bit-exactly the input (in particular
 
 The loop also stops early when the field degenerates (`M_k <= 0` or not
 finite, so `factor_k` cannot be formed) or when floating-point arithmetic can
-no longer make progress towards the target (the accumulated sum stops
-increasing). At verbose level 1 and above, the progress of the iteration --
-the step index, `a_k`, the accumulated total and `M_k` -- is printed every
-fourth step and on the final step.
+no longer make progress towards the target -- the accumulated sum stops
+increasing, which is what happens when the field growth caps the accumulated
+weight below the target. At verbose level 1 and above, the progress of the
+iteration -- the step index, `a_k`, the accumulated total and `M_k` -- is
+printed every fourth step and on the final step. When the loop ends below the
+target, the shortfall is reported on screen at verbose level 1 and above
+(`gf_ape_smear_no_proj: reached only <acc> of accumulated_alpha = <target>`);
+at the default verbosity the function stops silently, so a caller that needs
+the achieved total must either run verbose or track it itself.
 
-> **Warning:** only the remaining target bounds `a_k` from above; it is **not**
-> capped at `1`. Once `M_k < 3 * alpha`, `alpha * factor_k > 1`, so
-> `1 - a_k` is negative, the update over-weights (even reflects) the link and
-> the map is no longer a contraction. Nothing pins the normalisation of the
-> field either: `max Tr(U^dag U)` is not held at 3, and because the linear and
-> staple terms scale differently with the amplitude the iteration is genuinely
-> nonlinear, so the field may shrink and then grow again over a long ladder.
-> `accumulated_alpha` measures the total weight applied along this unprojected
-> trajectory, not a number of steps and not a property of a projected field;
-> a shrunken field reaches a given target in fewer, larger steps.
+> **Warning:** the update is additive, so the field amplitude is not
+> conserved: for near-unitary links `staple_k ~ 6 U_k`, and one step is
+> roughly `U_{k+1} ~ (1 + a_k) U_k`. Nothing in this function rescales or
+> renormalises the field, so the links grow away from SU(3) and the returned
+> field is far from unitary. Because the field grows, `M_k > 3` for a
+> near-unitary input, `factor_k = 3 / M_k < 1` and `a_k <= alpha`: unlike the
+> interpolation in `gf_ape_smear`, the step size is then bounded by `alpha`,
+> and the link term always keeps its full weight of `1`. The price is paid in
+> the step count and in the reachable range: `a_k` decreases as the amplitude
+> grows, the applied weight converges, and a target above the resulting cap
+> is never reached -- a target such as `2.5` at `alpha = 0.5` can cost on the
+> order of a hundred tiny steps and still fall short, leaving a finite but
+> enormously large amplitude.
+> `accumulated_alpha` measures the total weight applied along this
+> unprojected, non-unitary trajectory, not a number of steps and not a
+> property of a projected field; project the result back to SU(3) afterwards if
+> that is required.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field (not modified) |
-| `alpha` | `float` | — | Nominal smearing weight per step, scaled by `factor_k = 3 / M_k` |
-| `accumulated_alpha` | `float` | — | **Target** total effective smearing (not a step count); the applied `a_k` are summed until it is reached, truncating the last step |
+| `alpha` | `float` | — | Nominal smearing weight per step, scaled by `factor_k = 3 / M_k`; since the field grows, `M_k > 3` and `a_k <= alpha` |
+| `accumulated_alpha` | `float` | — | **Target** total effective smearing (not a step count); the applied `a_k` are summed until it is reached (last step truncated), or until the progress guard stops the loop |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 In C++ the same operation writes its result into `gf` (starting from
@@ -336,8 +366,11 @@ gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
 
 # APE-like smearing without the SU(3) projection, driven by a target total
-# smearing instead of a step count. alpha = 0.5 with accumulated_alpha = 1.5
-# applies the same total weight as three nominal steps of 0.5.
+# smearing instead of a step count. The step is additive, U' = U + (a/6) *
+# staple, so the field amplitude grows and the weight per step decreases;
+# alpha = 0.5 with accumulated_alpha = 1.5 targets the same total weight as
+# three nominal steps of 0.5, approached through many small steps (the growth
+# can cap the accumulated weight below the target).
 gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, 1.5)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 

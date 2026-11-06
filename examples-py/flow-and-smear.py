@@ -33,8 +33,9 @@ def replicate_no_proj_target_loop(gf, alpha, target):
     # `gf_ape_smear_no_proj(gf, alpha, accumulated_alpha=target)`: per step
     # `M_k = global max Tr(U^dag U)`, `factor_k = 3 / M_k`,
     # `a_k = min(alpha * factor_k, target - acc)` and the raw unprojected
-    # update `U' = (1 - a_k) U + (a_k / 6) staple`, with no rescaling.
-    # Each step is one call with `accumulated_alpha = a_k`.
+    # update `U' = U + (a_k / 6) staple`, with no rescaling.
+    # Each step is one call with `accumulated_alpha = a_k`, and the loop stops
+    # when the accumulated alpha makes no further floating-point progress.
     # Returns (field, accumulated alpha, list of a_k, list of M_k).
     gf_rep = gf.copy()
     acc = 0.0
@@ -52,9 +53,12 @@ def replicate_no_proj_target_loop(gf, alpha, target):
         if not (a_k > 0.0):
             break
         gf_rep = q.gf_ape_smear_no_proj(gf_rep, alpha, a_k)
+        acc_prev = acc
         acc += a_k
         a_list.append(a_k)
         m_list.append(m_sq)
+        if not (acc > acc_prev):
+            break
     return gf_rep, acc, a_list, m_list
 
 size_node_list = [
@@ -177,14 +181,16 @@ for a1, a2, a3 in alpha_sets:
     gf_test = q.gf_hyp_smear(gf, a1, a2, a3)
     q.json_results_append(f"gf_hyp_smear {a1},{a2},{a3} plaq", gf_test.plaq(), 1e-10)
 
-# ---- gf_ape_smear_no_proj (v4: target accumulated alpha) ----
+# ---- gf_ape_smear_no_proj (v5: target accumulated alpha, additive kernel) ----
 # Per step: `M_k = global max Tr(U^dag U)`, `factor_k = 3 / M_k`,
 # `a_k = min(alpha * factor_k, target - acc)` and
-# `U' = (1 - a_k) U + (a_k / 6) staple`, with NO rescaling of the field.
-# `acc` sums `a_k` until it equals `target` exactly (the last step is
-# truncated); `a_k > 1` is allowed, so the map can grow the field.
+# `U' = U + (a_k / 6) staple`, with NO rescaling of the field.
+# The link term is not damped, so the field grows: `M_k > 3`, hence
+# `factor_k < 1` and `a_k <= alpha`.  The per-step weight decays roughly
+# geometrically, so `sum(a_k)` converges and a large `target` is never
+# reached (the loop exits through its no-progress guard instead).
 
-# `target = alpha * n` where the old call asked for n plain steps.
+# `target = 0.5 * n` picks a target; `n` is not the number of steps.
 for steps in [1, 3]:
     gf_test = q.gf_ape_smear_no_proj(gf, 0.5, 0.5 * steps)
     q.json_results_append(
@@ -192,9 +198,10 @@ for steps in [1, 3]:
     )
 
 no_proj_alpha = 0.5
-# 2.5 needs three steps: [0.5, 1.06..., 0.94...], so a_k > 1 and the
-# truncated last step are both exercised.
-no_proj_target = 2.5
+# 1.5 is reachable for this field (the accumulated weight converges to about
+# 1.56, so a larger target such as 2.5 is not reached), and it takes several
+# decaying steps rather than the three that `target / alpha` would suggest.
+no_proj_target = 1.5
 gf_no_proj = gf.copy()
 arr_no_proj_before = np.asarray(gf_no_proj).copy()
 gf_target = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_target)
@@ -224,13 +231,13 @@ q.json_results_append(
 )
 assert is_target_loop_equal, target_loop_dev
 
-# (b) unitary input, in the only form that holds: a unitary input has
-# `M_0 = 3`, so `factor_0 = 1` and the first step is the plain unprojected step
-# of weight `a_0 = min(alpha, target)`; in particular `target = alpha` is one
-# plain unprojected update of weight `alpha`.  For `n > 1` the bookkeeping
-# relation `target = alpha * n` is NOT a trajectory equivalence: the loop
-# recomputes `M_k` every step, so once the field shrinks `factor_k > 1` and the
-# target is reached in fewer, larger steps (see the step count below).
+# (b) unitary input: a unitary input has `M_0 = 3`, so `factor_0 = 1` and the
+# first step is the plain unprojected step of weight `a_0 = min(alpha, target)`;
+# in particular `target = alpha` is one plain unprojected update of weight
+# `alpha`.  For `n > 1` the bookkeeping relation `target = alpha * n` is NOT a
+# trajectory equivalence: the loop recomputes `M_k` every step, and with the
+# additive kernel the field grows, so `factor_k < 1` and the target is reached
+# in more, smaller steps (see the step count below).
 gf_uni = gf.copy()
 gf_uni.unitarize()
 m_uni = get_glb_max_link_norm_sqr(gf_uni)
@@ -293,39 +300,86 @@ q.json_results_append(
 assert is_alpha_zero_identity
 assert np.array_equal(np.asarray(gf_no_proj), arr_no_proj_before)
 
-# (e) informational: step count, accumulating `a_k` and the range of `M_k` the
-# loop went through; `max Tr(U^dag U)` is no longer pinned to 3, and the target
-# is reached in fewer steps than `target / alpha`.
+# (e) informational: step count, accumulating `a_k`, the range of `M_k`, and
+# the invariant that the additive kernel implies.  Because the field grows,
+# `M_k > 3`, so `factor_k < 1` and no step can request more than `alpha`; the
+# target is reached in more, smaller steps than `target / alpha`.
 q.json_results_append(
     f"gf_ape_smear_no_proj step count = {len(a_list_rep)}"
-    f" (< target/alpha = {no_proj_target / no_proj_alpha})"
+    f" (vs target/alpha = {no_proj_target / no_proj_alpha})"
 )
 q.json_results_append("gf_ape_smear_no_proj max a_k", max(a_list_rep), 1e-10)
+is_a_capped = bool(max(a_list_rep) <= no_proj_alpha * (1.0 + 1e-12))
 q.json_results_append(
-    f"gf_ape_smear_no_proj a_k > 1 branch exercised = {bool(max(a_list_rep) > 1.0)}"
+    f"gf_ape_smear_no_proj max a_k <= alpha (1 + 1e-12) = {is_a_capped}"
 )
+assert is_a_capped, (max(a_list_rep), no_proj_alpha)
 q.json_results_append("gf_ape_smear_no_proj M_k min", min(m_list_rep), 1e-10)
 q.json_results_append("gf_ape_smear_no_proj M_k max", max(m_list_rep), 1e-10)
+is_m_grows = bool(m_list_rep[-1] > m_list_rep[0])
+q.json_results_append(f"gf_ape_smear_no_proj M_k grows (last > first) = {is_m_grows}")
+assert is_m_grows, (m_list_rep[0], m_list_rep[-1])
 q.json_results_append(
     "gf_ape_smear_no_proj global avg <N^2> after target",
     get_glb_avg_link_norm_sqr(gf_target),
     1e-10,
 )
 
-# (f) `a_k > 1` is allowed: on a strongly suppressed input
-# `factor_k = 3 / M_k` is huge, so the single truncated step uses
-# `a_1 = target > 1` and the map grows the field (`1 - a_1 = -2`).
-gf_suppressed = gf_no_proj.copy()
-gf_suppressed *= 0.1
-m_suppressed_before = get_glb_max_link_norm_sqr(gf_suppressed)
-gf_suppressed_smeared = q.gf_ape_smear_no_proj(gf_suppressed, no_proj_alpha, 3.0)
-m_suppressed_after = get_glb_max_link_norm_sqr(gf_suppressed_smeared)
-q.json_results_append(
-    "gf_ape_smear_no_proj large a_k grows max Tr(U^dag U)",
-    float(m_suppressed_after / m_suppressed_before),
-    1e-10,
+# (f) unreachable target: the additive kernel makes `a_k` decay roughly
+# geometrically, so `sum(a_k)` converges and a large target is never reached;
+# the loop must terminate through its no-progress guard instead of reaching the
+# target or overflowing.  `acc_stop` is only recorded, never asserted to be a
+# specific value (it depends on the field).
+no_proj_stop_target = 2.5
+gf_stop_rep, acc_stop, a_list_stop, m_list_stop = replicate_no_proj_target_loop(
+    gf_no_proj, no_proj_alpha, no_proj_stop_target
 )
-assert m_suppressed_after > m_suppressed_before
+assert len(m_list_stop) > 0, a_list_stop
+gf_stop = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_stop_target)
+is_stop_short = bool(acc_stop < no_proj_stop_target)
+q.json_results_append(
+    f"gf_ape_smear_no_proj unreachable target stops short = {is_stop_short}"
+)
+assert is_stop_short, (acc_stop, no_proj_stop_target)
+is_stop_finite = bool(np.all(np.isfinite(np.asarray(gf_stop))))
+q.json_results_append(
+    f"gf_ape_smear_no_proj unreachable target field finite = {is_stop_finite}"
+)
+assert is_stop_finite
+q.json_results_append(
+    "gf_ape_smear_no_proj unreachable target achieved acc", acc_stop, 1e-6
+)
+q.json_results_append(
+    f"gf_ape_smear_no_proj unreachable target step count = {len(a_list_stop)}"
+)
+q.json_results_append(
+    "gf_ape_smear_no_proj unreachable target log10(M_k last)",
+    float(np.log10(m_list_stop[-1])),
+    1e-1,
+)
+
+# (g) the additive kernel itself: on a constant unit field the staple is
+# exactly `6 U`, so one plain step is `U' = U + (a / 6) * 6 U = (1 + a) U`.
+# With `alpha = target = 0.75` (so `a / 6 = 1 / 8` exactly) the result is
+# exactly `1.75 U`; the old `(1 - a) U + (a / 6) staple` kernel would leave the
+# unit field unchanged.
+gf_unit = q.GaugeField(geo)
+gf_unit.set_unit()
+m_unit = get_glb_max_link_norm_sqr(gf_unit)
+q.json_results_append("gf_ape_smear_no_proj unit field max Tr(U^dag U)", m_unit, 1e-13)
+assert abs(m_unit - 3.0) <= 1e-13, m_unit
+gf_unit_step = q.gf_ape_smear_no_proj(gf_unit, 0.75, 0.75)
+arr_unit_step = np.asarray(gf_unit_step)
+expected_unit_step = np.zeros_like(arr_unit_step)
+for mu in range(4):
+    expected_unit_step[..., mu, :, :] = 1.75 * np.eye(3)
+kernel_dev = float(np.max(np.abs(arr_unit_step - expected_unit_step)))
+is_additive_kernel = bool(kernel_dev < 1e-13)
+q.json_results_append(
+    "gf_ape_smear_no_proj unit field one step is 1.75 U"
+    f" (additive kernel) = {is_additive_kernel}"
+)
+assert is_additive_kernel, kernel_dev
 
 # ---- gf_stout_smear ----
 

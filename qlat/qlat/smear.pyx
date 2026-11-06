@@ -30,15 +30,19 @@ def gf_ape_smear(GaugeField gf, double alpha, cc.Long num_step=1):
 
 def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.RealD accumulated_alpha):
     """
-    Similar to `gf_ape_smear` but the SU(3) projection step is omitted.
+    Similar to `gf_ape_smear` but with the SU(3) projection step omitted.
     `accumulated_alpha` is the target total effective smearing; every step
-    updates the links as `U' = (1 - a) U + (a / 6) S` with
-    `a = alpha * 3 / max_sq`, where `max_sq` is the global maximum of
-    `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `alpha` is the effective
-    smearing step of the largest link. The field is never rescaled and
-    `a > 1` is allowed; the last step is truncated so that `sum(a)` reaches
-    `accumulated_alpha`. `alpha = 0` or `accumulated_alpha = 0` returns the
-    input unchanged.
+    updates the links as `U' = U + (a / 6) * S` (no `(1 - a)` factor) with
+    `a = alpha * 3 / M`, where `M` is the global maximum of
+    `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `alpha` is the
+    effective smearing step of the largest link. The field grows under this
+    kernel (`U' ~ (1 + a) U` for near-unitary links), so `M > 3` and hence
+    `a <= alpha`. The weight decays geometrically as the amplitude grows, so
+    the accumulated smearing converges; a target above that limit is never
+    reached and the loop stops on the no-progress guard, leaving a very large,
+    non-unitary field. The field is never rescaled; the last step is truncated
+    so that `sum(a)` does not exceed `accumulated_alpha`.
+    `alpha = 0` or `accumulated_alpha = 0` returns the input unchanged.
     Returns a new gauge field; `gf` is not modified.
     """
     cdef GaugeField gf1 = gf.copy()

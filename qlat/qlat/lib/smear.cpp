@@ -127,9 +127,12 @@ static qacc ColorMatrix gf_link_ape_smear_no_proj_no_comm(const GaugeField& gf,
                                                           const Coordinate& xl,
                                                           const Int mu,
                                                           const RealD alpha)
-// Same as `gf_link_ape_smear_no_comm` but without the SU(3) projection.
+// Same as `gf_link_ape_smear_no_comm` but without the SU(3) projection and
+// without the `(1 - alpha)` factor: `U' = U + (alpha / 6) * S`.
+// The link therefore grows with each step: for near-unitary links the staple
+// is `S ~ 6 U`, so `U' ~ (1 + alpha) U` and `Tr(U'^dag U') ~ 3 (1 + alpha)^2`.
 {
-  return (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
+  return gf.get_elem(xl, mu) +
          (ComplexD)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu);
 }
 
@@ -177,16 +180,22 @@ static RealD gf_ape_smear_no_proj_max_norm_sq(const GaugeField& gf)
 
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
                           const RealD alpha, const RealD& accumulated_alpha)
-// Same as `gf_ape_smear` but without the SU(3) projection step.
+// Same as `gf_ape_smear` but without the SU(3) projection step and with the
+// step kernel `U' = U + (a / 6) * S` (no `(1 - a)` factor).
 // `accumulated_alpha` is the target total effective smearing (input only).
-// Each step uses the scaled step size `a = alpha * (3 / max_sq)`, with
-// `max_sq` the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links,
-// so that `alpha` is the effective smearing step of the largest link. The
-// field itself is never rescaled and `a > 1` is allowed. The last step is
-// truncated so that the accumulated smearing `sum(a)` does not exceed
-// `accumulated_alpha`.
-// The loop also stops when `max_sq` is degenerate (zero or not finite) or
-// when `a` or the accumulated smearing makes no progress in floating point.
+// Each step uses the scaled step size `a = alpha * (3 / M)`, with `M` (the
+// code's `max_sq`) the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all
+// links, so that `alpha` is the effective smearing step of the largest link.
+// Because the field grows under this kernel (`U' ~ (1 + a) U` for
+// near-unitary links), `M > 3` for the initial near-unitary field, hence
+// `factor = 3 / M` is smaller than one and `a <= alpha`. The weight decays
+// geometrically as the amplitude grows, so the accumulated smearing
+// converges; a target above that limit is never reached and the loop stops
+// on the no-progress guard, leaving a very large, non-unitary field. The
+// field itself is never rescaled. The last step is truncated so that the
+// accumulated smearing `sum(a)` does not exceed `accumulated_alpha`.
+// The loop also stops when `M` is degenerate (zero or not finite) or when
+// `a` or the accumulated smearing makes no progress in floating point.
 // Progress is printed at verbose level every 4 steps and on the last step.
 // `alpha = 0` or `accumulated_alpha = 0` leaves the field unchanged.
 // gf can be the same object as gf0.
@@ -226,6 +235,13 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     if (!(acc > acc_prev)) {
       break;
     }
+  }
+  if (acc < target) {
+    displayln_info(1,
+                   ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
+                            "accumulated_alpha = %0.9f (the accumulated weight "
+                            "converges as the field grows)",
+                            acc, target));
   }
 }
 

@@ -206,12 +206,12 @@
  ],
  [
   "gf_ape_smear_no_proj target=0.5 plaq",
-  0.040703152069247295,
+  0.325472751154501,
   1e-10
  ],
  [
   "gf_ape_smear_no_proj target=1.5 plaq",
-  5.012940164185146e-05,
+  35.25142907446847,
   1e-10
  ],
  [
@@ -239,8 +239,12 @@
   {
    "value": [
     0.49999999999999806,
-    1.0767078518653281,
-    0.9232921481346739
+    0.36136997652330555,
+    0.25536789318191383,
+    0.17377891454262542,
+    0.11163770037054031,
+    0.06702808933337721,
+    0.03081742604823967
    ],
    "__extended_json_type__": "ndarray"
   },
@@ -253,35 +257,60 @@
   "gf_ape_smear_no_proj alpha=0 bitwise identity = True"
  ],
  [
-  "gf_ape_smear_no_proj step count = 3 (< target/alpha = 5.0)"
+  "gf_ape_smear_no_proj step count = 7 (vs target/alpha = 3.0)"
  ],
  [
   "gf_ape_smear_no_proj max a_k",
-  1.0767078518653281,
+  0.49999999999999806,
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj a_k > 1 branch exercised = True"
+  "gf_ape_smear_no_proj max a_k <= alpha (1 + 1e-12) = True"
  ],
  [
   "gf_ape_smear_no_proj M_k min",
-  0.03296985346467445,
-  1e-10
- ],
- [
-  "gf_ape_smear_no_proj M_k max",
   3.0000000000000115,
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj global avg <N^2> after target",
-  7.196984054346259e-05,
+  "gf_ape_smear_no_proj M_k max",
+  38.46712248099603,
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj large a_k grows max Tr(U^dag U)",
-  4.03355534628571,
+  "gf_ape_smear_no_proj M_k grows (last > first) = True"
+ ],
+ [
+  "gf_ape_smear_no_proj global avg <N^2> after target",
+  17.942510325053835,
   1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj unreachable target stops short = True"
+ ],
+ [
+  "gf_ape_smear_no_proj unreachable target field finite = True"
+ ],
+ [
+  "gf_ape_smear_no_proj unreachable target achieved acc",
+  1.56113128294322,
+  1e-06
+ ],
+ [
+  "gf_ape_smear_no_proj unreachable target step count = 83"
+ ],
+ [
+  "gf_ape_smear_no_proj unreachable target log10(M_k last)",
+  16.205250041314837,
+  0.1
+ ],
+ [
+  "gf_ape_smear_no_proj unit field max Tr(U^dag U)",
+  3.0,
+  1e-13
+ ],
+ [
+  "gf_ape_smear_no_proj unit field one step is 1.75 U (additive kernel) = True"
  ],
  [
   "gf_stout_smear steps=1 plaq",
