@@ -237,11 +237,11 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     }
   }
   if (acc < target) {
-    displayln_info(1,
-                   ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
-                            "accumulated_alpha = %0.9f (the accumulated weight "
-                            "converges as the field grows)",
-                            acc, target));
+    displayln_info(1, ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
+                               "accumulated_alpha = %0.9f (stopped early: "
+                               "alpha <= 0, degenerate field, or no further "
+                               "representable progress)",
+                               acc, target));
   }
 }
 
