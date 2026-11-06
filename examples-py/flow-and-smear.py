@@ -2,6 +2,7 @@
 
 import qlat as q
 import numpy as np
+from mpi4py import MPI
 
 def get_link_norm_sqr_arr(gf):
     # Tr(U^dag U) = sum_{i,j} |U_ij|^2 for every link, shape (local_volume, DIMN)
@@ -15,9 +16,46 @@ def get_glb_avg_link_norm_sqr(gf):
     n_link = int(gf.geo.total_volume) * int(gf.multiplicity)
     return float(q.glb_sum(n2_sum)) / n_link
 
+def get_glb_max_link_norm_sqr(gf):
+    # Global max_{x,mu} Tr(U_mu(x)^dag U_mu(x)), MPI-reduced with MPI.MAX.
+    # A max is exact, so the step sequence of `gf_ape_smear_no_proj` does not
+    # depend on the node decomposition.
+    local_max = float(np.max(get_link_norm_sqr_arr(gf)))
+    comm = q.get_comm()
+    return float(comm.allreduce(local_max, op=MPI.MAX))
+
 def get_max_rel_dev(arr, arr_ref):
     # max |arr - arr_ref| normalized by max |arr_ref|
     return float(np.max(np.abs(arr - arr_ref)) / np.max(np.abs(arr_ref)))
+
+def replicate_no_proj_target_loop(gf, alpha, target):
+    # Hand-rolled replication of the target-driven loop of
+    # `gf_ape_smear_no_proj(gf, alpha, accumulated_alpha=target)`: per step
+    # `M_k = global max Tr(U^dag U)`, `factor_k = 3 / M_k`,
+    # `a_k = min(alpha * factor_k, target - acc)` and the raw unprojected
+    # update `U' = (1 - a_k) U + (a_k / 6) staple`, with no rescaling.
+    # Each step is one call with `accumulated_alpha = a_k`.
+    # Returns (field, accumulated alpha, list of a_k, list of M_k).
+    gf_rep = gf.copy()
+    acc = 0.0
+    a_list = []
+    m_list = []
+    # the 1000 iteration cap only guards against a pathological stagnation
+    for _ in range(1000):
+        remaining = target - acc
+        if not (remaining > 0.0):
+            break
+        m_sq = get_glb_max_link_norm_sqr(gf_rep)
+        if not (m_sq > 0.0) or not np.isfinite(m_sq):
+            break
+        a_k = min(alpha * (3.0 / m_sq), remaining)
+        if not (a_k > 0.0):
+            break
+        gf_rep = q.gf_ape_smear_no_proj(gf_rep, alpha, a_k)
+        acc += a_k
+        a_list.append(a_k)
+        m_list.append(m_sq)
+    return gf_rep, acc, a_list, m_list
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -139,79 +177,155 @@ for a1, a2, a3 in alpha_sets:
     gf_test = q.gf_hyp_smear(gf, a1, a2, a3)
     q.json_results_append(f"gf_hyp_smear {a1},{a2},{a3} plaq", gf_test.plaq(), 1e-10)
 
-# ---- gf_ape_smear_no_proj ----
+# ---- gf_ape_smear_no_proj (v4: target accumulated alpha) ----
+# Per step: `M_k = global max Tr(U^dag U)`, `factor_k = 3 / M_k`,
+# `a_k = min(alpha * factor_k, target - acc)` and
+# `U' = (1 - a_k) U + (a_k / 6) staple`, with NO rescaling of the field.
+# `acc` sums `a_k` until it equals `target` exactly (the last step is
+# truncated); `a_k > 1` is allowed, so the map can grow the field.
 
+# `target = alpha * n` where the old call asked for n plain steps.
 for steps in [1, 3]:
-    gf_test = q.gf_ape_smear_no_proj(gf, 0.5, steps)
+    gf_test = q.gf_ape_smear_no_proj(gf, 0.5, 0.5 * steps)
     q.json_results_append(
-        f"gf_simple_no_proj_smear steps={steps} plaq", gf_test.plaq(), 1e-10
+        f"gf_ape_smear_no_proj target={0.5 * steps} plaq", gf_test.plaq(), 1e-10
     )
 
-# ---- gf_ape_smear_no_proj: unconditional per-step rescale to <N^2> = 3 ----
+no_proj_alpha = 0.5
+# 2.5 needs three steps: [0.5, 1.06..., 0.94...], so a_k > 1 and the
+# truncated last step are both exercised.
+no_proj_target = 2.5
+gf_no_proj = gf.copy()
+arr_no_proj_before = np.asarray(gf_no_proj).copy()
+gf_target = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_target)
 
-gf_np_before = gf.copy()
-arr_before = np.asarray(gf_np_before).copy()
-
-# (a) after EVERY num_step=1 application the global average must be <N^2> = 3
-gf_iter = gf_np_before.copy()
-max_step_dev = 0.0
-for k in range(1, 5):
-    gf_iter = q.gf_ape_smear_no_proj(gf_iter, 0.5, 1)
-    max_step_dev = max(max_step_dev, abs(get_glb_avg_link_norm_sqr(gf_iter) - 3.0))
-q.json_results_append(
-    "gf_ape_smear_no_proj per-step <N^2> max deviation from 3", max_step_dev
+# (a) target reached (the last step is truncated to the remaining target, so
+# only the final rounding can leave a residue): replicate the loop in Python,
+# taking `M_k` from the intermediate fields with an MPI.MAX reduction, then
+# compare both the accounting and the field it produces against the single
+# call.
+gf_rep, acc_rep, a_list_rep, m_list_rep = replicate_no_proj_target_loop(
+    gf_no_proj, no_proj_alpha, no_proj_target
 )
-assert max_step_dev < 1e-13
-
-# (b) one step is a uniform rescale: N^2_after / N^2_before == s^2 on every link.
-# alpha = 0 keeps the raw update equal to the input, isolating the global
-# rescale from the non-uniform staple update.  The input is multiplied by 0.5
-# first (so s^2 = 4 and a missing rescale cannot hide: the random field itself
-# already has <N^2> ~ 3, i.e. s ~ 1, which would make this check vacuous).
-gf_low = gf_np_before.copy()
-gf_low *= 0.5
-avg_n2_low = get_glb_avg_link_norm_sqr(gf_low)
-arr_low = np.asarray(gf_low).copy()
-s_sq = 3.0 / avg_n2_low
-s = float(np.sqrt(s_sq))
-gf_scaled = q.gf_ape_smear_no_proj(gf_low, 0.0, 1)
-n2_low = get_link_norm_sqr_arr(gf_low)
-n2_scaled = get_link_norm_sqr_arr(gf_scaled)
-max_ratio_dev = float(np.max(np.abs(n2_scaled / n2_low / s_sq - 1.0)))
-q.json_results_append(
-    "gf_ape_smear_no_proj single-step link-wise rescale uniformity", max_ratio_dev
+is_target_reached = bool(
+    abs(acc_rep - no_proj_target) <= 1e-13 * max(1.0, no_proj_target)
 )
-assert max_ratio_dev < 1e-12
-
-# (c) the rescale is real and non-negative: the output is s times the input
-arr_scaled = np.asarray(gf_scaled).copy()
-max_real_dev = get_max_rel_dev(arr_scaled, s * arr_low)
 q.json_results_append(
-    "gf_ape_smear_no_proj single-step rescale is a real scalar", max_real_dev
+    f"gf_ape_smear_no_proj target reached to 1e-13 = {is_target_reached}"
 )
-assert max_real_dev < 1e-12
-
-# (d) num_step=0 returns the input field unchanged
-gf_zero = q.gf_ape_smear_no_proj(gf_np_before, 0.5, 0)
-is_zero_unchanged = bool(np.array_equal(np.asarray(gf_zero), arr_before))
+assert is_target_reached, acc_rep
+target_loop_dev = get_max_rel_dev(
+    np.asarray(gf_rep).copy(), np.asarray(gf_target).copy()
+)
+is_target_loop_equal = bool(target_loop_dev < 1e-13)
 q.json_results_append(
-    f"gf_ape_smear_no_proj num_step=0 unchanged = {is_zero_unchanged}"
+    "gf_ape_smear_no_proj target call vs replicated loop"
+    f" rel dev < 1e-13 = {is_target_loop_equal}"
 )
-assert is_zero_unchanged
+assert is_target_loop_equal, target_loop_dev
 
-# (e) the rescale is applied after EVERY iteration, not only at the end:
-# num_step=3 must equal three num_step=1 calls (the staple is quadratic, so
-# scaling between iterations is observable)
-gf_ns3 = q.gf_ape_smear_no_proj(gf_np_before, 0.5, 3)
-gf_rep = gf_np_before.copy()
-for _ in range(3):
-    gf_rep = q.gf_ape_smear_no_proj(gf_rep, 0.5, 1)
-max_per_step_dev = get_max_rel_dev(np.asarray(gf_ns3).copy(), np.asarray(gf_rep).copy())
+# (b) unitary input, in the only form that holds: a unitary input has
+# `M_0 = 3`, so `factor_0 = 1` and the first step is the plain unprojected step
+# of weight `a_0 = min(alpha, target)`; in particular `target = alpha` is one
+# plain unprojected update of weight `alpha`.  For `n > 1` the bookkeeping
+# relation `target = alpha * n` is NOT a trajectory equivalence: the loop
+# recomputes `M_k` every step, so once the field shrinks `factor_k > 1` and the
+# target is reached in fewer, larger steps (see the step count below).
+gf_uni = gf.copy()
+gf_uni.unitarize()
+m_uni = get_glb_max_link_norm_sqr(gf_uni)
 q.json_results_append(
-    "gf_ape_smear_no_proj num_step=3 vs three num_step=1", max_per_step_dev
+    "gf_ape_smear_no_proj unitary input max Tr(U^dag U)", m_uni, 1e-10
 )
-assert max_per_step_dev < 1e-13
-assert np.array_equal(np.asarray(gf_np_before), arr_before)
+is_unitary_max = bool(abs(m_uni - 3.0) <= 1e-13)
+q.json_results_append(
+    f"gf_ape_smear_no_proj unitary input M_0 = 3 to 1e-13 = {is_unitary_max}"
+)
+assert is_unitary_max, m_uni
+gf_uni_rep, _, a_list_uni, _ = replicate_no_proj_target_loop(
+    gf_uni, no_proj_alpha, no_proj_alpha
+)
+assert len(a_list_uni) >= 1, a_list_uni
+is_one_plain_step = bool(
+    abs(a_list_uni[0] - no_proj_alpha) < 1e-13 and sum(a_list_uni[1:]) < 1e-13
+)
+q.json_results_append(
+    "gf_ape_smear_no_proj unitary target=alpha is one plain update"
+    f" of weight alpha = {is_one_plain_step}"
+)
+assert is_one_plain_step, a_list_uni
+gf_uni_one = q.gf_ape_smear_no_proj(gf_uni, no_proj_alpha, no_proj_alpha)
+uni_dev = get_max_rel_dev(np.asarray(gf_uni_rep).copy(), np.asarray(gf_uni_one).copy())
+is_uni_match = bool(uni_dev < 1e-13)
+q.json_results_append(
+    "gf_ape_smear_no_proj unitary target=alpha call vs replica"
+    f" rel dev < 1e-13 = {is_uni_match}"
+)
+assert is_uni_match, uni_dev
+
+# (c) accounting: the replica derives every step as
+# `a_k = min(alpha * 3 / M_k, remaining)` and truncates the last one to the
+# remaining target; (a) shows that the implementation follows exactly that
+# sequence.  The `a_k` are recorded as a bookkeeping regression.  This is a
+# bookkeeping equivalence only: each call truncates its own last step, so two
+# successive calls are not interchangeable with one call of the summed target.
+q.json_results_append(
+    "gf_ape_smear_no_proj target a_k sequence", np.array(a_list_rep), 1e-10
+)
+
+# (d) `target = 0` and `alpha = 0` are bit-exact identities, and the input
+# field is never modified.
+gf_target_zero = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, 0.0)
+is_target_zero_identity = bool(
+    np.array_equal(np.asarray(gf_target_zero), arr_no_proj_before)
+)
+q.json_results_append(
+    f"gf_ape_smear_no_proj target=0 bitwise identity = {is_target_zero_identity}"
+)
+assert is_target_zero_identity
+gf_alpha_zero = q.gf_ape_smear_no_proj(gf_no_proj, 0.0, no_proj_target)
+is_alpha_zero_identity = bool(
+    np.array_equal(np.asarray(gf_alpha_zero), arr_no_proj_before)
+)
+q.json_results_append(
+    f"gf_ape_smear_no_proj alpha=0 bitwise identity = {is_alpha_zero_identity}"
+)
+assert is_alpha_zero_identity
+assert np.array_equal(np.asarray(gf_no_proj), arr_no_proj_before)
+
+# (e) informational: step count, accumulating `a_k` and the range of `M_k` the
+# loop went through; `max Tr(U^dag U)` is no longer pinned to 3, and the target
+# is reached in fewer steps than `target / alpha`.
+q.json_results_append(
+    f"gf_ape_smear_no_proj step count = {len(a_list_rep)}"
+    f" (< target/alpha = {no_proj_target / no_proj_alpha})"
+)
+q.json_results_append("gf_ape_smear_no_proj max a_k", max(a_list_rep), 1e-10)
+q.json_results_append(
+    f"gf_ape_smear_no_proj a_k > 1 branch exercised = {bool(max(a_list_rep) > 1.0)}"
+)
+q.json_results_append("gf_ape_smear_no_proj M_k min", min(m_list_rep), 1e-10)
+q.json_results_append("gf_ape_smear_no_proj M_k max", max(m_list_rep), 1e-10)
+q.json_results_append(
+    "gf_ape_smear_no_proj global avg <N^2> after target",
+    get_glb_avg_link_norm_sqr(gf_target),
+    1e-10,
+)
+
+# (f) `a_k > 1` is allowed: on a strongly suppressed input
+# `factor_k = 3 / M_k` is huge, so the single truncated step uses
+# `a_1 = target > 1` and the map grows the field (`1 - a_1 = -2`).
+gf_suppressed = gf_no_proj.copy()
+gf_suppressed *= 0.1
+m_suppressed_before = get_glb_max_link_norm_sqr(gf_suppressed)
+gf_suppressed_smeared = q.gf_ape_smear_no_proj(gf_suppressed, no_proj_alpha, 3.0)
+m_suppressed_after = get_glb_max_link_norm_sqr(gf_suppressed_smeared)
+q.json_results_append(
+    "gf_ape_smear_no_proj large a_k grows max Tr(U^dag U)",
+    float(m_suppressed_after / m_suppressed_before),
+    1e-10,
+)
+assert m_suppressed_after > m_suppressed_before
 
 # ---- gf_stout_smear ----
 

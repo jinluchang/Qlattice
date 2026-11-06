@@ -205,33 +205,83 @@
   1e-10
  ],
  [
-  "gf_simple_no_proj_smear steps=1 plaq",
-  0.48594418371457915,
+  "gf_ape_smear_no_proj target=0.5 plaq",
+  0.040703152069247295,
   1e-10
  ],
  [
-  "gf_simple_no_proj_smear steps=3 plaq",
-  0.9164489844104107,
+  "gf_ape_smear_no_proj target=1.5 plaq",
+  5.012940164185146e-05,
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj per-step <N^2> max deviation from 3",
-  8.881784197001252e-16
+  "gf_ape_smear_no_proj target reached to 1e-13 = True"
  ],
  [
-  "gf_ape_smear_no_proj single-step link-wise rescale uniformity",
-  1.7763568394002505e-15
+  "gf_ape_smear_no_proj target call vs replicated loop rel dev < 1e-13 = True"
  ],
  [
-  "gf_ape_smear_no_proj single-step rescale is a real scalar",
-  7.165485749239704e-16
+  "gf_ape_smear_no_proj unitary input max Tr(U^dag U)",
+  3.0000000000000027,
+  1e-10
  ],
  [
-  "gf_ape_smear_no_proj num_step=0 unchanged = True"
+  "gf_ape_smear_no_proj unitary input M_0 = 3 to 1e-13 = True"
  ],
  [
-  "gf_ape_smear_no_proj num_step=3 vs three num_step=1",
-  0.0
+  "gf_ape_smear_no_proj unitary target=alpha is one plain update of weight alpha = True"
+ ],
+ [
+  "gf_ape_smear_no_proj unitary target=alpha call vs replica rel dev < 1e-13 = True"
+ ],
+ [
+  "gf_ape_smear_no_proj target a_k sequence",
+  {
+   "value": [
+    0.49999999999999806,
+    1.0767078518653281,
+    0.9232921481346739
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj target=0 bitwise identity = True"
+ ],
+ [
+  "gf_ape_smear_no_proj alpha=0 bitwise identity = True"
+ ],
+ [
+  "gf_ape_smear_no_proj step count = 3 (< target/alpha = 5.0)"
+ ],
+ [
+  "gf_ape_smear_no_proj max a_k",
+  1.0767078518653281,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj a_k > 1 branch exercised = True"
+ ],
+ [
+  "gf_ape_smear_no_proj M_k min",
+  0.03296985346467445,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj M_k max",
+  3.0000000000000115,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj global avg <N^2> after target",
+  7.196984054346259e-05,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj large a_k grows max Tr(U^dag U)",
+  4.03355534628571,
+  1e-10
  ],
  [
   "gf_stout_smear steps=1 plaq",

@@ -2,6 +2,9 @@
 #include <qlat/qcd-smear.h>
 #include <qlat/vector_utils/utils_smear_vecs.h>
 
+#include <algorithm>
+#include <cmath>
+
 namespace qlat
 {  //
 
@@ -148,12 +151,12 @@ static void gf_ape_smear_no_proj_no_comm(GaugeField& gf, const GaugeField& gf0,
   });
 }
 
-static RealD gf_ape_smear_no_proj_avg_norm_sq(const GaugeField& gf)
-// Return the global average of `Tr(U_mu(x)^dag U_mu(x))` over all links.
-// The per-site values are summed with `field_sum` and then reduced with
-// `glb_sum`, so every rank obtains the same value.
+static RealD gf_ape_smear_no_proj_max_norm_sq(const GaugeField& gf)
+// Return the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links.
+// The per-site maximum over `mu` is reduced with `field_glb_max`, so every
+// rank obtains the same value.
 {
-  TIMER("gf_ape_smear_no_proj_avg_norm_sq");
+  TIMER("gf_ape_smear_no_proj_max_norm_sq");
   const Geometry geo = geo_resize(gf.geo());
   FieldM<RealD, 1> cf;
   cf.init(geo);
@@ -161,39 +164,67 @@ static RealD gf_ape_smear_no_proj_avg_norm_sq(const GaugeField& gf)
     const Geometry& geo = cf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> v = gf.get_elems_const(xl);
-    RealD sum = 0.0;
+    RealD max_sq = 0.0;
     for (Int mu = 0; mu < DIMN; ++mu) {
-      sum += qnorm(v[mu]);
+      max_sq = std::max(max_sq, qnorm(v[mu]));
     }
-    cf.get_elem(index) = sum;
+    cf.get_elem(index) = max_sq;
   });
-  const std::vector<RealD> sum_vec = field_sum(cf);
-  qassert(sum_vec.size() == 1);
-  RealD sum = sum_vec[0];
-  glb_sum(sum);
-  return sum / ((RealD)geo.total_volume() * (RealD)DIMN);
+  const std::vector<RealD> max_vec = field_glb_max(cf);
+  qassert(max_vec.size() == 1);
+  return max_vec[0];
 }
 
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
-                          const RealD alpha, const Long num_step)
+                          const RealD alpha, const RealD& accumulated_alpha)
 // Same as `gf_ape_smear` but without the SU(3) projection step.
-// After every step the whole field is multiplied by the real scalar
-// `s = sqrt(3 / mean_sq)`, where `mean_sq` is the global average of
-// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` after
-// every step. No SU(3) projection is performed.
+// `accumulated_alpha` is the target total effective smearing (input only).
+// Each step uses the scaled step size `a = alpha * (3 / max_sq)`, with
+// `max_sq` the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links,
+// so that `alpha` is the effective smearing step of the largest link. The
+// field itself is never rescaled and `a > 1` is allowed. The last step is
+// truncated so that the accumulated smearing `sum(a)` does not exceed
+// `accumulated_alpha`.
+// The loop also stops when `max_sq` is degenerate (zero or not finite) or
+// when `a` or the accumulated smearing makes no progress in floating point.
+// Progress is printed at verbose level every 4 steps and on the last step.
+// `alpha = 0` or `accumulated_alpha = 0` leaves the field unchanged.
 // gf can be the same object as gf0.
 {
   TIMER_VERBOSE("gf_ape_smear_no_proj");
   gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo(), 1));
-  for (Long i = 0; i < num_step; ++i) {
+  const RealD target = accumulated_alpha;
+  RealD acc = 0.0;
+  for (Long k = 0;; ++k) {
+    const RealD remaining = target - acc;
+    if (!(remaining > 0.0)) {
+      break;
+    }
+    const RealD max_sq = gf_ape_smear_no_proj_max_norm_sq(gf);
+    if (!(max_sq > 0.0) || !std::isfinite(max_sq)) {
+      break;
+    }
+    const RealD factor = 3.0 / max_sq;
+    const RealD a_full = alpha * factor;
+    const RealD a = std::min(a_full, remaining);
+    if (!(a > 0.0)) {
+      break;
+    }
     gf1 = gf;
     refresh_expanded(gf1);
-    gf_ape_smear_no_proj_no_comm(gf, gf1, alpha);
-    const RealD mean_sq = gf_ape_smear_no_proj_avg_norm_sq(gf);
-    if (mean_sq > 0.0) {
-      gf *= std::sqrt(3.0 / mean_sq);
+    gf_ape_smear_no_proj_no_comm(gf, gf1, a);
+    const RealD acc_prev = acc;
+    acc += a;
+    if ((k % 4 == 0) || (acc >= target)) {
+      displayln_info(
+          1, ssprintf("gf_ape_smear_no_proj: k = %ld a = %.9f acc = %.9f / "
+                      "%.9f max_sq = %.9f factor = %.9f",
+                      k, a, acc, target, max_sq, factor));
+    }
+    if (!(acc > acc_prev)) {
+      break;
     }
   }
 }

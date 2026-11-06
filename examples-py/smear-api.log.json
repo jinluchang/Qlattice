@@ -6,9 +6,6 @@
   "signature gf_ape_smear_spatial: `num_step` iteration parameter, default 1"
  ],
  [
-  "signature gf_ape_smear_no_proj: `num_step` iteration parameter, default 1"
- ],
- [
   "signature gf_hyp_smear: `num_step` iteration parameter, default 1"
  ],
  [
@@ -34,6 +31,9 @@
  ],
  [
   "signature field_smear_step_local: `num_step` iteration parameter, default 1"
+ ],
+ [
+  "signature gf_ape_smear_no_proj: `accumulated_alpha` target, no `num_step`"
  ],
  [
   "signature prop_smear: mode default = 'qlat'"

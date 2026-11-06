@@ -84,22 +84,39 @@ void simple_tests()
         ssprintf("CHECK: gf_stout_smear with num_step = 0: "
                  "qnorm(diff) = %.2E",
                  qnorm(gfs_stout_zero)));
-    GaugeField gfs_no_proj, gfs_no_proj_2, gfs_no_proj_zero, gfs_no_proj_alias;
-    gf_ape_smear_no_proj(gfs_no_proj, gf, 0.1, 1);
-    gf_ape_smear_no_proj(gfs_no_proj_2, gfs_no_proj, 0.1, 1);
-    gf_ape_smear_no_proj(gfs_no_proj_alias, gf, 0.1, 2);
-    gfs_no_proj_2 -= gfs_no_proj_alias;
+    GaugeField gfs_no_proj, gfs_no_proj_alias;
+    // The last argument is the TARGET total effective smearing, not a step
+    // count.  A target below `alpha * factor_0 = alpha * 3 / max Tr(U^dag U)`
+    // is applied verbatim, so the call is one plain unprojected step
+    // `U + a (S / 6 - U)` with `a` equal to the requested target: two such
+    // targets `T` and `2 T` must satisfy `F(2 T) - gf = 2 (F(T) - gf)`.
+    // The linearity holds only when the requested weight is used as is: a
+    // fixed `alpha`, a rescaling of the field, or an overshoot all break it at
+    // O(1).  (No composition/additivity check: each call truncates its own
+    // last step, so two successive calls need not reproduce one call with the
+    // summed target.)
+    const RealD t_small = 0.02;
+    const RealD t_double = 2.0 * t_small;
+    gf_ape_smear_no_proj(gfs_no_proj, gf, 0.1, 0.1);
+    GaugeField gfs_t1, gfs_t2, gfs_d1, gfs_d2;
+    gf_ape_smear_no_proj(gfs_t1, gf, 0.1, t_small);
+    gf_ape_smear_no_proj(gfs_t2, gf, 0.1, t_double);
+    gfs_d1 = gfs_t1;
+    gfs_d1 -= gf;
+    gfs_d2 = gfs_t2;
+    gfs_d2 -= gf;
+    const RealD target_scale_norm = qnorm(gfs_d1);
+    gfs_d1 *= 2.0;
+    gfs_d2 -= gfs_d1;
+    const bool target_scale_ok = qnorm(gfs_d2) < 1E-20 * target_scale_norm;
     displayln_info(
-        ssprintf("CHECK: gf_ape_smear_no_proj num_step = 2 vs two "
-                 "num_step = 1: qnorm(diff) = %.2E",
-                 qnorm(gfs_no_proj_2)));
-    // The alpha = 0 update is the identity, but the unconditional rescale to
-    // <N^2> = 3 still multiplies the whole field by one real scalar, so the
-    // output is that scalar times the input.  The input is scaled link by
-    // link, with a spread in the link norms, so that the scalar differs
-    // noticeably from one and neither a missing rescale nor a per-link one
-    // can pass; the scalar is derived from the input data as the one bringing
-    // <N^2> to 3 instead of being assumed.
+        ssprintf("CHECK: gf_ape_smear_no_proj small target applied verbatim "
+                 "(relative qnorm(F(2T) - gf - 2 (F(T) - gf)) < 1E-20) = %s",
+                 target_scale_ok ? "True" : "False"));
+    // `alpha = 0` and `accumulated_alpha = 0` exit before the first update, so
+    // both are exact identities for any input field.  The input is scaled link
+    // by link, with a spread in the link norms, so that a stray rescale could
+    // not pass unnoticed.
     GaugeField gf_scaled;
     gf_scaled = gf;
     qacc_for(index, gf_scaled.geo().local_volume(), {
@@ -111,28 +128,29 @@ void simple_tests()
         v[mu] *= 0.5 * (1.0 + 0.02 * (RealD)(k % 11));
       }
     });
-    const RealD s_expected = std::sqrt(
-        3.0 / (qnorm(gf_scaled) / ((RealD)geo.total_volume() * (RealD)DIMN)));
+    GaugeField gfs_no_proj_zero, gfs_no_proj_alpha_zero;
     gfs_no_proj_zero = gf_scaled;
-    gf_ape_smear_no_proj(gfs_no_proj_zero, gfs_no_proj_zero, 0.0, 1);
-    GaugeField gf_zero_expected, gf_zero_resid;
-    gf_zero_expected = gf_scaled;
-    gf_zero_expected *= s_expected;
-    gf_zero_resid = gfs_no_proj_zero;
-    gf_zero_resid -= gf_zero_expected;
-    const RealD zero_rel_dev = qnorm(gf_zero_resid) / qnorm(gfs_no_proj_zero);
+    gf_ape_smear_no_proj(gfs_no_proj_zero, gfs_no_proj_zero, 0.1, 0.0);
+    gfs_no_proj_zero -= gf_scaled;
     displayln_info(
-        ssprintf("CHECK: gf_ape_smear_no_proj with alpha = 0 is a uniform real "
-                 "rescale = %s",
-                 zero_rel_dev < 1e-12 ? "True" : "False"));
-    GaugeField gfs_no_proj_alias2;
-    gfs_no_proj_alias2 = gf;
-    gf_ape_smear_no_proj(gfs_no_proj_alias2, gfs_no_proj_alias2, 0.1, 1);
-    gfs_no_proj_alias2 -= gfs_no_proj;
+        ssprintf("CHECK: gf_ape_smear_no_proj with accumulated_alpha = 0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_no_proj_zero)));
+    gfs_no_proj_alpha_zero = gf_scaled;
+    gf_ape_smear_no_proj(gfs_no_proj_alpha_zero, gfs_no_proj_alpha_zero, 0.0,
+                         1.0);
+    gfs_no_proj_alpha_zero -= gf_scaled;
+    displayln_info(
+        ssprintf("CHECK: gf_ape_smear_no_proj with alpha = 0: "
+                 "qnorm(diff) = %.2E",
+                 qnorm(gfs_no_proj_alpha_zero)));
+    gfs_no_proj_alias = gf;
+    gf_ape_smear_no_proj(gfs_no_proj_alias, gfs_no_proj_alias, 0.1, 0.1);
+    gfs_no_proj_alias -= gfs_no_proj;
     displayln_info(
         ssprintf("CHECK: gf_ape_smear_no_proj with gf == gf0: "
                  "qnorm(diff) = %.2E",
-                 qnorm(gfs_no_proj_alias2)));
+                 qnorm(gfs_no_proj_alias)));
     GaugeField gfs_hyp_1, gfs_hyp_2, gfs_hyp_12, gfs_hyp_zero;
     gf_hyp_smear(gfs_hyp_1, gf, 0.75, 0.6, 0.3, 1);
     gf_hyp_smear(gfs_hyp_2, gfs_hyp_1, 0.75, 0.6, 0.3, 1);

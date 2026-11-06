@@ -3,8 +3,12 @@
 # Conformance test for the unified smear API.
 #
 # Asserts the public contract:
-#   * every smear takes the iteration parameter `num_step` (last positional,
-#     default 1) and returns a NEW object without touching its input,
+#   * every smear except `gf_ape_smear_no_proj` takes the iteration parameter
+#     `num_step` (last positional, default 1) and returns a NEW object without
+#     touching its input,
+#   * `gf_ape_smear_no_proj` instead takes the TARGET total effective smearing
+#     `accumulated_alpha` (required, last positional) and also returns a NEW
+#     object,
 #   * `prop_smear` / `prop_spatial_smear` keep `mom` (and the mode options)
 #     after `num_step` so the historical positional order stays valid,
 #   * `field_smear` spells the spatial switch `spatial_only` (keyword only),
@@ -33,10 +37,11 @@ OLD_NAMES = [
 ]
 
 # Public smear operations: they all take `num_step` and return a new object.
+# `gf_ape_smear_no_proj` is the exception (it takes the target
+# `accumulated_alpha` instead) and is checked separately below.
 NUM_STEP_NAMES = [
     "gf_ape_smear",
     "gf_ape_smear_spatial",
-    "gf_ape_smear_no_proj",
     "gf_hyp_smear",
     "gf_stout_smear",
     "gf_stout_smear_block",
@@ -142,6 +147,20 @@ geo_local = q.Geometry(0, q.Coordinate([1, 1, 1, 1]), q.Coordinate([4, 4, 4, 4])
 for name in NUM_STEP_NAMES:
     check_num_step_signature(name, getattr(q, name), name in TRAILING_OPTIONAL_NAMES)
 
+# `gf_ape_smear_no_proj` is driven by the TARGET total effective smearing
+# `accumulated_alpha` instead of by a step count.
+no_proj_names = [param.name for param in get_positional_params(q.gf_ape_smear_no_proj)]
+assert "num_step" not in no_proj_names, (
+    f"gf_ape_smear_no_proj: still takes `num_step` (got {no_proj_names})"
+)
+assert no_proj_names[-1] == "accumulated_alpha", (
+    f"gf_ape_smear_no_proj: last positional is `{no_proj_names[-1]}`, "
+    "expected `accumulated_alpha`"
+)
+q.json_results_append(
+    "signature gf_ape_smear_no_proj: `accumulated_alpha` target, no `num_step`"
+)
+
 prop_sig = inspect.signature(q.prop_smear)
 q.json_results_append(
     f"signature prop_smear: mode default = {prop_sig.parameters['mode'].default!r}"
@@ -178,7 +197,7 @@ check_returns_new_object(
 )
 check_returns_new_object(
     "gf_ape_smear_no_proj",
-    lambda: q.gf_ape_smear_no_proj(gf, 0.5, num_step=1),
+    lambda: q.gf_ape_smear_no_proj(gf, 0.5, 0.5),
     gf,
     get_arr_sig,
 )

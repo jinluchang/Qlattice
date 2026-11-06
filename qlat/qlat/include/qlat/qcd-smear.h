@@ -11,12 +11,18 @@ void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
                   const Long num_step = 1);
 
 // Same as `gf_ape_smear` but without the SU(3) projection step.
-// After every step the whole field is multiplied by the real scalar
-// `s = sqrt(3 / mean_sq)`, with `mean_sq` the global average of
-// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` after every
-// step (no projection is performed).
+// `accumulated_alpha` is the target total effective smearing (input only).
+// Each step uses `a = alpha * factor` with `factor = 3 / max_sq`, where
+// `max_sq` is the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all links,
+// so that `alpha` is the effective smearing step of the largest link.
+// No rescaling of the field is performed and `a > 1` is allowed. The last
+// step is truncated so that `sum(a)` does not exceed `accumulated_alpha`.
+// The loop stops when `max_sq` is degenerate, when `a` is not positive, or
+// when `sum(a)` makes no progress in floating point. Progress is printed at
+// verbose level (1) every 4 steps and on the last step. `alpha = 0` or
+// `accumulated_alpha = 0` is the identity.
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
-                          const RealD alpha, const Long num_step = 1);
+                          const RealD alpha, const RealD& accumulated_alpha);
 
 void gf_ape_smear_spatial(GaugeField& gf, const GaugeField& gf0,
                           const double alpha, const Long num_step = 1);

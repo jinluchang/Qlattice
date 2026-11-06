@@ -43,9 +43,12 @@ unchanged. `prop_smear` also returns a new object, while
 
 - Names are object-first: `<object>_<method>_smear[_<variant>]`, e.g.
   `gf_ape_smear_spatial`, `prop_smear`, `field_smear_step`.
-- The iteration count is always `num_step`. It is the last positional
+- The iteration count is `num_step` for the projection-based gauge-field
+  smearings and for the propagator smearings. It is the last positional
   parameter and defaults to `1`; `num_step == 0` returns an unchanged copy
-  (negative values behave as `0`).
+  (negative values behave as `0`). `gf_ape_smear_no_proj` is the exception:
+  it takes a target accumulated alpha instead (see
+  [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)).
 - Every public smearing function returns a new object and does not modify its
   input. The single exception is the internal low-level kernel
   `prop_spatial_smear_no_comm`, which works in place and returns `None`.
@@ -85,72 +88,82 @@ field is returned.
 
 ```python
 gf_ape_smear_no_proj(
-    gf: GaugeField, alpha: float, num_step: int = 1
+    gf: GaugeField, alpha: float, accumulated_alpha: float
 ) -> GaugeField
 ```
 
-Perform an APE-like smearing that omits the SU(3) projection step. Each
-iteration uses the same weighted link/staple combination as `gf_ape_smear`:
+Perform an APE-like smearing that omits the SU(3) projection step. Unlike the
+other gauge-field smearings this one is not driven by an iteration count:
+`accumulated_alpha` is a **target** total effective smearing, and the function
+performs as many steps as needed to accumulate that total.
+
+Each step uses the same weighted link/staple combination as `gf_ape_smear`,
+with a step-dependent coefficient `a_k`:
 
 ```
-U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
+U_{k+1, mu}(x) = (1 - a_k) * U_{k, mu}(x) + (a_k / 6) * staple_{k, mu}(x)
 ```
 
-but the result is **not** re-projected to SU(3), so the update alone does not
-pin the link amplitude. To compensate, after every iteration -- including the
-last one -- the whole field is multiplied by one real scalar
+The staple `staple_{k, mu}(x)` is built from the current field `U_k`, and
 
 ```
-s_k = sqrt( 3 / <N^2>_raw )
-
-<N^2>_raw = (1 / (V * DIMN)) * sum_{x, mu} Tr( U_mu(x)^dag U_mu(x) )
+M_k      = max_{x, mu} Tr( U_{k, mu}(x)^dag U_{k, mu}(x) )
+factor_k = 3 / M_k = 1 / max( Tr / 3 )
+a_k      = min( alpha * factor_k, accumulated_alpha - sum_{j < k} a_j )
 ```
 
-where `V = geo.total_volume()`, `DIMN` is the number of spacetime dimensions
-and `<N^2>_raw` is a **global** (MPI-reduced) average over all links, so every
-node applies the same `s_k`. Step 0 is the raw input (`s_0 = 1`); after every
-rescaled step this global average is `<N^2> = 3`, the value for a unitary link.
-The input `gf` is not modified; with `num_step == 0` the returned field is an
-unchanged copy.
+`M_k` is a **global** (MPI-reduced) maximum over all links, so every node
+obtains the same `factor_k`. Nothing normalises the field itself: there is no
+per-step or final multiplication by a common scalar, and the amplitude enters
+the iteration only through `factor_k`, which sets the step size relative to
+the current field magnitude. A unitary field has `M_0 = 3` and `factor_0 = 1`,
+so the first step uses `a_0 = min(alpha, accumulated_alpha)`, an ordinary
+unprojected step of weight `alpha` whenever the target is at least `alpha`; as
+the unprojected update typically shrinks the amplitude, `factor_k` grows and a
+later step contributes more than `alpha`.
 
-The reported statistic is `N^2 = Tr(U^dag U) = sum_ab |U_ab|^2`, never its
-square root: `N^2` is the natural link magnitude (exactly 3 for a unitary
-link), it is the quantity the unprojected update shrinks, and it avoids taking
-a square root of a quantity that can pass through zero when links vanish. The
-square root appears only in `s_k`, because the correction acts on the amplitude
-while the constraint is on the squared norm.
+`sum_{j < k} a_j` is the coefficient accumulated by the steps already applied,
+and the last step is truncated to the remaining
+`accumulated_alpha - sum_{j < k} a_j`; the loop therefore never overshoots the
+target, and it stops as soon as the sum has reached it (up to floating-point
+rounding, handled by the progress guard below). `accumulated_alpha` thus
+measures the total weight applied, not the number of updates:
+`accumulated_alpha = alpha * n` asks for the same total as `n` nominal steps,
+and is reached in fewer updates once `factor_k > 1`.
 
-The rescale is unconditional: there is no parameter or flag that disables it.
-In particular `alpha = 0` disables only the staple term, so a non-unitary input
-is still rescaled towards `<N^2> = 3` at every step (for a unitary input
-`s = 1` up to rounding). If the measured mean is not strictly positive (e.g. an
-all-zero or NaN field), that step's rescale is skipped instead of producing
-`inf`/`NaN`; this is the only case in which the field is not rescaled.
+The input `gf` is not modified; the result is returned as a new object. If
+`alpha <= 0` or `accumulated_alpha <= 0` the loop exits before the first
+update, so the returned copy is bit-exactly the input (in particular
+`alpha = 0` and `accumulated_alpha = 0` are identities).
 
-> **Warning:** the rescale sits inside the iteration, so it changes the
-> update; it is not a pure post-processing factor. The map is not scale
-> invariant (the linear term is first order in the field, the staple term
-> third order), so removing the overall shrinkage keeps the cubic term at
-> `O(1)` relative to the linear term and the iteration becomes genuinely
-> nonlinear. At `alpha = 0.5` the field degenerates by roughly step 8: the
-> unitarity deviation saturates at ~2.7, the mean `|det U|` falls to ~5e-6 at
-> step 8 and ~1e-24 by step 16, and at step 32 most sites have `|det U| = 0`.
-> There is no fixed scale factor either: measured values start at
-> `s_1 = 1.224` (the first step grows the field slightly), fall to
-> `s_4 = 1.0014`, then go below 1 from step 5 on (`s_k < 1`) and collapse to
-> `s_8 ~ 2e-3`, while the cumulative product `S_k = s_1 * ... * s_k` is not
-> monotone (it grows to ~1.359 at step 4, then decays). Do not use more than
-> about 7 steps on this map at `alpha = 0.5`; the informative range is 1-4
-> steps, and beyond that the configuration is not physical. If only a common
-> overall amplitude is required, apply one factor after the whole ladder
-> instead of running a long unprojected APE chain.
+The loop also stops early when the field degenerates (`M_k <= 0` or not
+finite, so `factor_k` cannot be formed) or when floating-point arithmetic can
+no longer make progress towards the target (the accumulated sum stops
+increasing). At verbose level 1 and above, the progress of the iteration --
+the step index, `a_k`, the accumulated total and `M_k` -- is printed every
+fourth step and on the final step.
+
+> **Warning:** only the remaining target bounds `a_k` from above; it is **not**
+> capped at `1`. Once `M_k < 3 * alpha`, `alpha * factor_k > 1`, so
+> `1 - a_k` is negative, the update over-weights (even reflects) the link and
+> the map is no longer a contraction. Nothing pins the normalisation of the
+> field either: `max Tr(U^dag U)` is not held at 3, and because the linear and
+> staple terms scale differently with the amplitude the iteration is genuinely
+> nonlinear, so the field may shrink and then grow again over a long ladder.
+> `accumulated_alpha` measures the total weight applied along this unprojected
+> trajectory, not a number of steps and not a property of a projected field;
+> a shrunken field reaches a given target in fewer, larger steps.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `gf` | `GaugeField` | — | Input gauge field |
-| `alpha` | `float` | — | Smearing weight (0 = no staple mixing, 1 = full staple); the per-step rescale applies regardless |
-| `num_step` | `int` | `1` | Number of smearing iterations |
+| `gf` | `GaugeField` | — | Input gauge field (not modified) |
+| `alpha` | `float` | — | Nominal smearing weight per step, scaled by `factor_k = 3 / M_k` |
+| `accumulated_alpha` | `float` | — | **Target** total effective smearing (not a step count); the applied `a_k` are summed until it is reached, truncating the last step |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
+
+In C++ the same operation writes its result into `gf` (starting from
+`gf = gf0`, with `gf == gf0` aliasing allowed) and returns nothing; the target
+is the fourth argument `accumulated_alpha`.
 
 ---
 
@@ -322,9 +335,10 @@ gf.set_unit()  # placeholder
 gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
 
-# APE-like smearing without the SU(3) projection. The field is rescaled to
-# <N^2> = 3 after every step; keep the ladder short (a few steps at most).
-gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, num_step=3)
+# APE-like smearing without the SU(3) projection, driven by a target total
+# smearing instead of a step count. alpha = 0.5 with accumulated_alpha = 1.5
+# applies the same total weight as three nominal steps of 0.5.
+gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, 1.5)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 
 # HYP smearing with paper parameters

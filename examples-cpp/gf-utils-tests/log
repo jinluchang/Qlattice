@@ -2,8 +2,9 @@ CHECK: gf_stout_smear vs gf_stout_smear_block (no blocking): qnorm(diff) = 0.00E
 CHECK: gf_stout_smear with gf == gf0: qnorm(diff) = 0.00E+00
 CHECK: gf_stout_smear num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
 CHECK: gf_stout_smear with num_step = 0: qnorm(diff) = 0.00E+00
-CHECK: gf_ape_smear_no_proj num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
-CHECK: gf_ape_smear_no_proj with alpha = 0 is a uniform real rescale = True
+CHECK: gf_ape_smear_no_proj small target applied verbatim (relative qnorm(F(2T) - gf - 2 (F(T) - gf)) < 1E-20) = True
+CHECK: gf_ape_smear_no_proj with accumulated_alpha = 0: qnorm(diff) = 0.00E+00
+CHECK: gf_ape_smear_no_proj with alpha = 0: qnorm(diff) = 0.00E+00
 CHECK: gf_ape_smear_no_proj with gf == gf0: qnorm(diff) = 0.00E+00
 CHECK: gf_hyp_smear num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
 CHECK: gf_hyp_smear with num_step = 0: qnorm(diff) = 0.00E+00

@@ -28,18 +28,21 @@ def gf_ape_smear(GaugeField gf, double alpha, cc.Long num_step=1):
     cc.gf_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
     return gf1
 
-def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.Long num_step=1):
+def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.RealD accumulated_alpha):
     """
     Similar to `gf_ape_smear` but the SU(3) projection step is omitted.
-    Every step updates the links as `U' = (1 - alpha) U + (alpha / 6) S`
-    and then multiplies the whole field by the real scalar
-    `s = sqrt(3 / <N^2>)`, with `<N^2> = <Tr(U_mu(x)^dag U_mu(x))>` the
-    global average over all links, so that `<N^2> = 3` after every step.
-    This rescaling changes the dynamics of the smearing.
+    `accumulated_alpha` is the target total effective smearing; every step
+    updates the links as `U' = (1 - a) U + (a / 6) S` with
+    `a = alpha * 3 / max_sq`, where `max_sq` is the global maximum of
+    `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `alpha` is the effective
+    smearing step of the largest link. The field is never rescaled and
+    `a > 1` is allowed; the last step is truncated so that `sum(a)` reaches
+    `accumulated_alpha`. `alpha = 0` or `accumulated_alpha = 0` returns the
+    input unchanged.
     Returns a new gauge field; `gf` is not modified.
     """
     cdef GaugeField gf1 = gf.copy()
-    cc.gf_ape_smear_no_proj(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
+    cc.gf_ape_smear_no_proj(gf1.xxx().val(), gf.xxx().val(), alpha, accumulated_alpha)
     return gf1
 
 def gf_ape_smear_spatial(GaugeField gf, double alpha, cc.Long num_step=1):
