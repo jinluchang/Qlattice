@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
   //
   inputpara in;
   begin_Lat(&argc, &argv, in);
+  Qassert(in.nx >= 4);
+  Qassert(in.nvec > 0);
   //
   // if(mode_dis == 0)
   //{

@@ -55,11 +55,14 @@ int main(int argc, char* argv[])
     std::vector<double> values, errors;
     std::vector<double> v0, e0;
     //
+    Qassert(in0.debuga == 0 or in0.debuga == 1);
     char sDescription[500];
     if (in0.debuga == 0)
       sprintf(sDescription, "Overlap operator: half spectrum");
     if (in0.debuga == 1) sprintf(sDescription, "H_wilson");
     load_txt_eigenvalues(values, errors, enamev.c_str());
+    Qassert(values.size() >= size_t(2 * nvec));
+    Qassert(errors.size() >= size_t(nvec));
     v0.resize(nread * 2);
     e0.resize(nread);
     for (int iv = 0; iv < nread * 2; iv++) {

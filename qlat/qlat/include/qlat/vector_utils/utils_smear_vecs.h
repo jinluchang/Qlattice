@@ -1875,10 +1875,12 @@ void smear_propagator_box(T* src, const Int Bsize, smear_fun<T>& smf)
     vprop += (*vL[dir]);
   }
   //
+  using Scalar = typename IsBasicDataType<T>::ElementaryType;
+  const Scalar normalization = Scalar(1) / Scalar(6);
   T* data = vprop.p;
   qacc_for(index, Nvol, {
     for (Int c = 0; c < nsites; c++) {
-      src[index * nsites + c] = data[index * nsites + c] * (1.0 / 6.0);
+      src[index * nsites + c] = data[index * nsites + c] * normalization;
     }
   });
   //

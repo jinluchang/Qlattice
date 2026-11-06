@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     //
     int mom_shifti = 0;
     in.find_para(std::string("mom_shifti"), mom_shifti);
-    Qassert(mom_shifti < int(mom_shiftL.size()));
+    Qassert(mom_shifti >= 0 and mom_shifti < int(mom_shiftL.size()));
     const Coordinate mom_shiftp = mom_shiftL[mom_shifti];
     //
     momentum_dat mdat(geo, in.mom_cut, mom_shiftL);

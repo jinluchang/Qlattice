@@ -15,6 +15,9 @@
 #include <gauge_tools.h>
 
 #include <cstdlib>
+#include <functional>
+#include <utility>
+#include <stdexcept>
 
 #include "general_funs.h"
 #include "quda_para.h"
@@ -34,6 +37,51 @@ namespace qlat
 // #define DIMCG_DOUBLE 5
 
 struct quda_inverter {
+  // Metadata for QUDA's process-global resident links, not another gauge cache.
+  // Existing loading/solve interfaces maintain this record automatically.
+  struct ResidentGaugeState {
+    const quda_inverter* owner = nullptr;
+    QudaGaugeParam gauge = {};
+    QBOOL twisted = QFALSE;
+    unsigned long long generation = 0, loads = 0;
+  };
+  static ResidentGaugeState& resident_gauge_state() {
+    static ResidentGaugeState state;
+    return state;
+  }
+  static void invalidate_resident_gauge() {
+    auto& state = resident_gauge_state();
+    state.owner = nullptr;
+    ++state.generation;
+  }
+  // Native solves may replace sloppy links without updating gauge_param.
+  struct ResidentGaugeMutation {
+    ResidentGaugeMutation() { invalidate_resident_gauge(); }
+    ~ResidentGaugeMutation() { invalidate_resident_gauge(); }
+  };
+  void record_resident_gauge() const {
+    auto& state = resident_gauge_state();
+    state.owner = this;
+    state.gauge = gauge_param;
+    state.twisted = qinv_twist_link;
+    ++state.generation;
+    ++state.loads;
+  }
+  bool resident_gauge_matches() const {
+    const auto& state = resident_gauge_state();
+    const auto& g = state.gauge;
+    return state.owner == this && state.twisted == qinv_twist_link &&
+      g.cuda_prec == inv_param.cuda_prec && g.cuda_prec_sloppy == inv_param.cuda_prec_sloppy &&
+      g.type == gauge_param.type && g.reconstruct == gauge_param.reconstruct &&
+      g.reconstruct_sloppy == gauge_param.reconstruct_sloppy &&
+      g.cuda_prec_precondition == gauge_param.cuda_prec_precondition &&
+      g.cuda_prec_eigensolver == gauge_param.cuda_prec_eigensolver &&
+      g.cuda_prec_refinement_sloppy == gauge_param.cuda_prec_refinement_sloppy &&
+      g.reconstruct_precondition == gauge_param.reconstruct_precondition &&
+      g.reconstruct_eigensolver == gauge_param.reconstruct_eigensolver &&
+      g.reconstruct_refinement_sloppy == gauge_param.reconstruct_refinement_sloppy &&
+      g.t_boundary == gauge_param.t_boundary;
+  }
   Long V;
   Int X[4];
   QudaGaugeParam gauge_param;
@@ -96,6 +144,7 @@ struct quda_inverter {
   quda::Dirac* dirac;
   quda::Dirac* dirac_pc;
   quda::Dirac* dirac_pc_odd;
+  quda::Dirac* dirac_pc_sloppy = nullptr;
   //
   // quda::Dirac *dirac_cg;
   // quda::Dirac *dSloppy;
@@ -115,10 +164,17 @@ struct quda_inverter {
   std::vector<quda::ColorSpinorField> src_multishift_gpu;
   //
   std::vector<quda::ColorSpinorField> ZSpace;
-  std::vector<quda::Complex> evalsZ;
+  std::vector<qudaC::Complex> evalsZ;
   /// std::vector<quda::ColorSpinorField *> evecs_;
   Int spinor_site_size;
   Int max_src_qinv;
+  // 0: custom multi-shift CG (default); 1: QUDA multi-shift CG;
+  // 2: independent QUDA CG; 3/4: fixed non-CG probes; 5: standalone DD/D/F CG; 6: standalone DD/D/F multishift CG (single GPU).
+  Int mcg_type = qlat::get_env_long_default("qlat_quda_mcg_type", 0);
+  // Custom MCG owns cached ColorSpinor wrappers keyed by this
+  // inverter.  The MCG header installs this hook on first use so free_mem()
+  // releases those QUDA objects before the inverter's resident resources.
+  std::function<void()> staggered_mcg_cache_cleanup;
   //
   // quda::ColorSpinorParam cs_cpu;
   quda::ColorSpinorParam cs_gpu;
@@ -330,6 +386,10 @@ struct quda_inverter {
   // inline void setup_inv_mass(const double mass);
   // setup masses and Dirac
   inline void setup_mat_mass(const double mass, const bool force_do = false);
+  // Prepare once before an internal staggered solve, after external gauge or
+  // precision changes. Operators borrow QUDA's resident links; no gauge copies.
+  inline void prepare_staggered_dslash();
+  inline quda::Dirac& staggered_dslash(bool precise = true);
   inline void clear_mat();
   //
   inline void free_csfield(const Int mode = 0);
@@ -544,6 +604,8 @@ quda_inverter::quda_inverter()
 inline void quda_inverter::init(const Geometry& geo_, QudaTboundary t_boundary)
 {
   TIMER("quda_inverter_constuctor");
+  if (resident_gauge_state().owner == this)
+    invalidate_resident_gauge();
   // set up gauge parameters
   geo.set_mem_type(MemType::Uvm);
   geo.set(geo_);
@@ -804,6 +866,7 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
+  invalidate_resident_gauge();
   freeGaugeQuda();
   if (twist_link == QTRUE) {
     // twisted boundary have not support on RECONSTRUCT yet in QUA
@@ -866,6 +929,7 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
       cpy_mem(&quda_gf_default[0], quda_gf, V * 3 * 3 * 4);
     }
   }
+  record_resident_gauge();
   // if (gauge_with_phase == false) {
   //   errorQuda("Quda stagger need link phases! \n");
   // }
@@ -1499,6 +1563,13 @@ inline void quda_inverter::alloc_csfield_initial()
 inline void quda_inverter::free_mem()
 {
   TIMER("quda free_mem");
+  if (resident_gauge_state().owner == this)
+    invalidate_resident_gauge();
+  if (staggered_mcg_cache_cleanup) {
+    auto cleanup = std::move(staggered_mcg_cache_cleanup);
+    staggered_mcg_cache_cleanup = {};
+    cleanup();
+  }
   buf_inv.resize(0);
   V = 0;
   for (Int i = 0; i < 4; i++) {
@@ -1873,6 +1944,8 @@ inline void quda_inverter::clear_mat()
     delete dirac_pc_odd;
     dirac_pc_odd = NULL;
   }
+  delete dirac_pc_sloppy;
+  dirac_pc_sloppy = nullptr;
   free_quda_split();
   // if(dSloppy != NULL){delete dSloppy;dSloppy=NULL;}
   // if(dPre != NULL){delete dPre;dPre=NULL;}
@@ -1906,6 +1979,84 @@ inline void quda_inverter::clear_mat()
   //
   mat_E = NULL;
   // clear_CG();
+}
+
+inline void quda_inverter::prepare_staggered_dslash()
+{
+  Qassert(inv_param.dslash_type == QUDA_STAGGERED_DSLASH ||
+          inv_param.dslash_type == QUDA_ASQTAD_DSLASH);
+  Qassert(inv_param.dagger == QUDA_DAG_NO);
+  QudaInvertParam param = inv_param;
+  param.matpc_type = QUDA_MATPC_EVEN_EVEN;
+  if (!resident_gauge_matches()) {
+    TIMER("restore_staggered_links");
+    // Derive the mode from the requested pair: prec_type_check can be stale
+    // after a caller restores inv_param following a native measurement.
+    const Int mode = inv_param.cuda_prec == QUDA_DOUBLE_PRECISION
+      ? (inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION ? 10 : 0) : 11;
+    Qassert((mode == 10 && inv_param.cuda_prec_sloppy == QUDA_DOUBLE_PRECISION) ||
+            (mode == 0 && inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION) ||
+            (mode == 11 && inv_param.cuda_prec == QUDA_SINGLE_PRECISION &&
+             inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION));
+    const auto saved_inv = inv_param;
+    const auto saved_gauge = gauge_param;
+    const Int saved_prec = prec_type_check;
+    auto restore_parameters = [&] {
+      inv_param = saved_inv;
+      gauge_param = saved_gauge;
+      prec_type_check = saved_prec;
+    };
+    try {
+      // Includes setup_link_p(), spinor allocation and matrix rebuilding.
+      // It reloads the already-phased default/twisted buffer exactly once.
+      setup_inv_param_prec(mode, true);
+    } catch (...) {
+      restore_parameters();
+      invalidate_resident_gauge();
+      throw;
+    }
+    restore_parameters();
+  }
+  if (dirac_pc && (dirac_pc->getDslashType() != param.dslash_type ||
+                   dirac_pc->getMatPCType() != param.matpc_type))
+    clear_mat();
+  auto bind = [&](quda::Dirac*& op, bool sloppy, bool pc = true) {
+    quda::DiracParam dp;
+    if (sloppy)
+      quda::setDiracSloppyParam(dp, &param, pc);
+    else
+      quda::setDiracParam(dp, &param, pc);
+    if (!op)
+      op = quda::Dirac::create(dp);
+    else {
+      op->updateFields(dp.gauge, dp.fatGauge, dp.longGauge, dp.clover);
+      op->setMass(param.mass);
+      op->Dagger(param.dagger);
+    }
+  };
+  bind(dirac_pc, false);
+  if (param.cuda_prec_sloppy != param.cuda_prec)
+    bind(dirac_pc_sloppy, true);
+  else {
+    delete dirac_pc_sloppy;
+    dirac_pc_sloppy = nullptr;
+  }
+  // Keep the inverter's other existing precise operators usable after a gauge
+  // reload too. Their DiracMatrix wrappers continue referring to these objects.
+  if (dirac)
+    bind(dirac, false, false);
+  if (dirac_pc_odd) {
+    param.matpc_type = QUDA_MATPC_ODD_ODD;
+    bind(dirac_pc_odd, false);
+  }
+}
+
+inline quda::Dirac& quda_inverter::staggered_dslash(bool precise)
+{
+  quda::Dirac* op = precise || inv_param.cuda_prec_sloppy == inv_param.cuda_prec
+      ? dirac_pc : dirac_pc_sloppy;
+  Qassert(op != nullptr);
+  return *op;
 }
 
 // equal mass to inverter and set verbose
@@ -1983,17 +2134,17 @@ inline void quda_inverter::setup_mat_mass(const double mass,
     setVerbosity(QUDA_SILENT);
     inv_param.verbosity = QUDA_SILENT;
   }
-  //
-  if (verbos == 0) {
+  // Levels 0/1 summarize solves; per-iteration output starts at level 2.
+  if (verbos == 0 or verbos == 1) {
     setVerbosity(QUDA_SUMMARIZE);
     inv_param.verbosity = QUDA_SUMMARIZE;
   }
-  if (verbos == 1) {
+  if (verbos == 2) {
     setVerbosity(QUDA_VERBOSE);
     inv_param.verbosity = QUDA_VERBOSE;
   }
   //
-  if (verbos == 2) {
+  if (verbos >= 3) {
     setVerbosity(QUDA_DEBUG_VERBOSE);
     inv_param.verbosity = QUDA_VERBOSE;
   }
@@ -2278,7 +2429,6 @@ inline void quda_inverter::random_src(const Int seed)
   random_Ty((qlat::ComplexD*)gsrc->data(), gsrc->Volume() * spinor_site_size, 1,
             seed + 111111, random_mode);
   quda::blas::ax(0.05, *gsrc);
-  quda::Complex* tmp = (quda::Complex*)(gsrc->data());
   Long totalN = gsrc->Volume() * spinor_site_size;
   // for(Long i=0;i<totalN/200 + 1;i++)
   // for(Long i=0;i< 50;i++)
@@ -3056,6 +3206,7 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector<void*>& res,
                                             Int max_src)
 {
   TIMER_FLOPS("invertQuda Multi");
+  ResidentGaugeMutation resident_mutation;
   Qassert(src.size() == res.size());
   Int max_src_inv = -1;
   if (max_src_qinv != -1) {
@@ -3079,6 +3230,8 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector<void*>& res,
       jobA[(njobs - 1) * 2 + 0] -= 2;
     }
     //
+    double total_secs=0, total_gflops=0;
+    Int total_iter=0;
     std::vector<void*> res_new;
     std::vector<void*> src_new;
     for (LInt jobi = 0; jobi < jobA.size() / 2; jobi++) {
@@ -3094,7 +3247,10 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector<void*>& res,
       // int(num_src));
       inv_param.num_src = bcut;
       invertMultiSrcQuda(res_new.data(), src_new.data(), &inv_param);
+      total_secs += inv_param.secs; total_gflops += inv_param.gflops;
+      total_iter += inv_param.iter;
     }
+    inv_param.secs=total_secs; inv_param.gflops=total_gflops; inv_param.iter=total_iter;
   }
   //
   timer.flops += inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
@@ -3704,6 +3860,7 @@ inline void quda_inverter::free_quda_split()
   split_fields_buffer.resize(0);
   split_setup = false;
   if (split_dirac_pc != NULL) {
+    ResidentGaugeMutation resident_mutation;
     // swap current gauges with the split ones if split ones are not null
     swapGaugeSplit(true);
     // free the split gauges and swap the split gauges with the buffered gauges,
@@ -3726,6 +3883,7 @@ inline void quda_inverter::rotate_quda_split(const bool swap_gauge)
     split_comm_buff = true;
   }
   if (swap_gauge) {
+    invalidate_resident_gauge();
     swapGaugeSplit(true);
   }
   updateR();
@@ -4164,7 +4322,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty*>& src,
         //
         quda::Dirac& xpay = *dirac_pc;
         double mass2 = 4 * xpay.Mass() * xpay.Mass();
-        quda::Complex One = quda::Complex(1.0, 0.0);
+        qudaC::Complex One = qudaC::Complex(1.0, 0.0);
         Int iter_total = 0;
         Int count_diverge = 0;
         //
@@ -4567,13 +4725,14 @@ inline double get_stagger_even_flops(const Geometry& geo)
   not used ?
 */
 template <typename Ty>
-void get_staggered_multishift(quda_inverter& qinv,
+void get_staggered_multishift_v0(quda_inverter& qinv,
                               std::vector<qlat::FieldM<Ty, 3>>& res,
                               std::vector<qlat::FieldM<Ty, 3>>& src,
                               const std::vector<double>& masses2,
                               const double err, const Int niter)
 {
   TIMER("get_staggered_multishift");
+  quda_inverter::ResidentGaugeMutation resident_mutation;
   Qassert(src.size() != 0);
   //
   // const Int DIM = 3;
@@ -4732,88 +4891,75 @@ void get_staggered_multishift(quda_inverter& qinv,
   qinv.inv_param.iter = inv_param.iter;
 }
 
-////get even-even solutions
-// minimum qinv gpu memeory usage
-// GPU memory input and output
+// Native QUDA even-even multishift adapter. GPU pointers and output order
+// match the public dispatcher; retain native solve/refinement semantics.
+// Shared QUDA multiple-RHS CG correction, defined by the custom adapter below.
+// Mixed double-I/O/single-Dslash solution accumulation: 0 backend default,
+// 1 single (QUDA partial accumulator), 2 double. Stable for this process.
+inline Int get_mcg_mixed_accumulation() {
+  static const Int choice = [] {
+    const Long value = qlat::get_env_long_default("qlat_mcg_mixed_accumulation", 0);
+    if (value < 0 || value > 2)
+      throw std::invalid_argument("qlat_mcg_mixed_accumulation must be 0 (backend default), 1 (single), or 2 (double)");
+    return Int(value);
+  }();
+  return choice;
+}
+
 template <typename Ty>
-void get_staggered_multishift_even(quda_inverter& qinv, std::vector<Ty*> res,
-                                   std::vector<Ty*> src,
-                                   const std::vector<double>& masses2,
-                                   const double err, const Int niter)
-{
+void staggered_multishift_cg_correction(quda_inverter&, const std::vector<Ty*>&, const std::vector<Ty*>&,
+                                        const std::vector<double>&, double);
+
+template <typename Ty>
+void get_staggered_multishift_even_quda(quda_inverter& qinv, std::vector<Ty*> res, std::vector<Ty*> src,
+                                        const std::vector<double>& masses2, const double err,
+                                        const Int niter) {
   TIMER_FLOPS("get_staggered_multishift_even");
+  quda_inverter::ResidentGaugeMutation resident_mutation;
   Qassert(src.size() != 0);
-  if (qinv.quda_verbos >= 0) {
+  if (qinv.quda_verbos >= 2) {
     print_mem_info();
   }
-  //
-  // const Int DIM = 3;
-  //
   const Int Nsrc = src.size();
   const Int Nres = res.size();
   const Int multishift = masses2.size();
-  //
   Qassert(Nres == Nsrc * multishift);
-  // for(unsigned int i=0;i<src.size();i++){Qassert(src[i].initialized);}
-  // for(unsigned int i=0;i<res.size();i++){Qassert(res[i].initialized);}
-  // const Geometry& geo_src = src[0].geo();
-  // Qassert(geo_src.node_site == geo.node_site and geo_src.geon.size_node ==
-  // geo.geon.size_node);
-  //
-  /// qinv.setup_mat_mass(0.0);
-  // qinv.setup_CG();
-  ////reload QUDA links
-  // qinv.setup_inv_param_prec(prec_type);
-  //
-  // QudaInvertParam  inv_param_copy = qinv.inv_param;
-  //
-  // std::vector<quda::ColorSpinorField> out_multishift_gpu(multishift);
-  //
-  // quda::ColorSpinorField& ref = *qinv.gsrc;
-  // const Int Cdim = ref.CompositeDim();
-  // const size_t Lsize = ref.TotalBytes() / Cdim;
-  //
-  // int buf_prec = -1;
-  // if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
-  // if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
-  // if(buf_prec == -1){abort_r("QUDA buffer prec not supported yet!");}
-  // Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION or
-  // qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION);
-  //
   if (get_data_type_is_double<Ty>()) {
     Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
   } else {
     Qassert(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION);
-    Qassert(false);  // default inverter could not copy single source correcttly
   }
-  //
   QudaInvertParam inv_param_bak = qinv.inv_param;
   QudaInvertParam& inv_param = qinv.inv_param;
+  const Int accumulation = get_mcg_mixed_accumulation();
+  if (inv_param.cuda_prec == QUDA_DOUBLE_PRECISION && inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION)
+    inv_param.use_sloppy_partial_accumulator = accumulation == 1;
+  inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
+  Long tot_iterations = 0;
+  double tot_gflops = 0;
+  double tot_secs = 0;
   inv_param.secs = 0;
   inv_param.gflops = 0;
   inv_param.iter = 0;
-  inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
-  //
   inv_param.tol = err;
+  // Retain the legacy base-solve settings, using the caller's iteration limit.
   inv_param.maxiter = niter;
-  //
-  ////check whether multishift is needed
+  const Int qlat_multi_refine = qlat::get_env_long_default(std::string("qlat_multi_refine"), 0);
+  if (qlat_multi_refine < 0 || qlat_multi_refine > 2) {
+    qinv.inv_param = inv_param_bak;
+    throw std::invalid_argument("qlat_multi_refine must be 0, 1, or 2");
+  }
+  if (qlat_multi_refine == 2) {
+    inv_param.compute_true_res = 0;
+  } else {
+    inv_param.compute_true_res = qlat_multi_refine;
+  }
   if (multishift == 1) {
     inv_param.mass = std::sqrt(masses2[0] / 4.0);
   } else {
     inv_param.num_offset = multishift;
-    //
-    // temporary hack for refinement
-    Int qlat_multi_refine = 1;
-    std::string val = qlat::get_env(std::string("qlat_multi_refine"));
-    if (val != "") {
-      qlat_multi_refine = stringtonum(val);
-    }
-    //
-    inv_param.compute_true_res = qlat_multi_refine;
-    // inv_param.mass = masses[0];
-    double max_tol = 1e-13;
-    // inv_param.cuda_prec_sloppy              = QUDA_DOUBLE_PRECISION;
+    // Preserve the legacy precision-dependent higher-shift tolerance schedule.
+    double max_tol = 1e-14;
     if (inv_param.cuda_prec_sloppy == QUDA_SINGLE_PRECISION and
         inv_param.cuda_prec == QUDA_DOUBLE_PRECISION) {
       max_tol = 1e-8;
@@ -4822,41 +4968,25 @@ void get_staggered_multishift_even(quda_inverter& qinv, std::vector<Ty*> res,
         inv_param.cuda_prec == QUDA_SINGLE_PRECISION) {
       max_tol = 1e-6;
     }
-    //
     double gap = 0.0;
     const double tol = inv_param.tol;
     const double Etol = std::log10(tol);
-    //
-    // treak the inv precision for double dslash
     if (tol > max_tol and tol > 0) {
       double Emax = std::log10(max_tol);
       gap = (Etol - Emax) / (multishift - 1.0);
     }
-    //
-    //(inv_param.tol - max_tol) / std::sqrt(multishift - 1.0);
-    // if(gap < 0 or inv_param.tol < 1e-11){gap = 0.0;}
-    // if(qlat_multi_refine == 0){gap = 0.0;}//to zero if no refinement
-    //
     for (Int i = 0; i < multishift; i++) {
-      // Set masses and offsets
-      // inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] *
-      // masses[0];
       inv_param.offset[i] = masses2[i];
+      inv_param.tol_hq_offset[i] = 5e-8; /// donot check heavy quark, tol_hq, not used currently
       inv_param.tol_offset[i] = std::pow(10, Etol - gap * i);
-      //
-      inv_param.tol_hq_offset[i] =
-          5e-8;  /// donot check heavy quark, tol_hq, not used currently
     }
   }
-  //
   inv_param.solution_type = QUDA_MATPC_SOLUTION;
   inv_param.solve_type = QUDA_DIRECT_PC_SOLVE;
   inv_param.input_location = QUDA_CUDA_FIELD_LOCATION;
   inv_param.output_location = QUDA_CUDA_FIELD_LOCATION;
   inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
-  //
   std::vector<void*> _hp_multi_x(multishift);
-  //
   if (multishift == 1) {
     qlat::vector<void*> srcP;
     srcP.resize(Nsrc);
@@ -4867,28 +4997,49 @@ void get_staggered_multishift_even(quda_inverter& qinv, std::vector<Ty*> res,
       resP[srci] = res[srci];
     }
     qinv.callMultiSrcQuda(resP, srcP);
+    if (qinv.quda_verbos >= 2)
+      qmessage("QUDA_MSCG_BATCH_ITER,%d,%d,%d,%.12e,%.12e\n", Nsrc, multishift, inv_param.iter,
+               inv_param.secs, inv_param.gflops);
+    tot_iterations += inv_param.iter;
+    tot_gflops += inv_param.gflops;
+    tot_secs += inv_param.secs;
   } else {
     for (Int srci = 0; srci < Nsrc; srci++) {
       for (Int mi = 0; mi < multishift; mi++) {
         _hp_multi_x[mi] = res[mi * Nsrc + srci];
       }
       invertMultiShiftQuda(_hp_multi_x.data(), src[srci], &inv_param);
+      if (qinv.quda_verbos >= 2)
+        qmessage("QUDA_MSCG_SOURCE_ITER,%d,%d,%d,%.12e,%.12e\n", srci, multishift, inv_param.iter,
+                 inv_param.secs, inv_param.gflops);
+      tot_iterations += inv_param.iter;
+      tot_gflops += inv_param.gflops;
+      tot_secs += inv_param.secs;
     }
   }
-  //
-  ////restore default inv_param
-  if (qinv.quda_verbos >= 0 or qinv.quda_verbos == -2) {
-    qmessage(
-        "Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, "
-        "Cost %.3f Gflops \n",
-        inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
-        inv_param.gflops / (inv_param.secs * qlat::get_num_node()),
-        inv_param.gflops);
+  // Optional extension to the legacy base solve: QUDA CG/MRH corrections in
+  // the public vector precision. Modes 0/1 use the original QUDA path above.
+  if (qlat_multi_refine == 2) {
+    staggered_multishift_cg_correction(qinv, res, src, masses2, err);
+    tot_iterations += inv_param.iter;
+    tot_gflops += inv_param.gflops;
+    tot_secs += inv_param.secs;
   }
+  inv_param.gflops = tot_gflops;
+  inv_param.secs = tot_secs;
+  inv_param.iter = tot_iterations;
+  if (qinv.quda_verbos >= 0 or qinv.quda_verbos == -2) {
+    qmessage("Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, "
+             "Cost %.3f Gflops \n",
+             inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
+             inv_param.gflops / (inv_param.secs * qlat::get_num_node()), inv_param.gflops);
+  }
+  const double measured_secs = inv_param.secs, measured_gflops = inv_param.gflops;
+  const Int measured_iter = inv_param.iter;
   qinv.inv_param = inv_param_bak;
-  qinv.inv_param.secs = inv_param.secs;
-  qinv.inv_param.gflops = inv_param.gflops;
-  qinv.inv_param.iter = inv_param.iter;
+  qinv.inv_param.secs = measured_secs;
+  qinv.inv_param.gflops = measured_gflops;
+  qinv.inv_param.iter = measured_iter;
   timer.flops += inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
 }
 
@@ -5001,5 +5152,8 @@ inline void quda_inverter::gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir,
 }
 
 }  // namespace qlat
+
+// Preserve the six-argument public interface for callers including only this header.
+#include "utils_staggered_multishift_mcg.h"
 
 #endif

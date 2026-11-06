@@ -961,10 +961,10 @@ inline void quda_clover_inverter::setup_clover(const double kappa,
           72;  // real numbers per block-diagonal clover matrix
       ////size_t host_clover_data_type_size = (cpu_prec ==
       /// QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-      Int host_clover_data_type_size = sizeof(quda::Complex) / 2;
+      Int host_clover_data_type_size = sizeof(qudaC::Complex) / 2;
       ////size_t host_spinor_data_type_size = (cpu_prec ==
       /// QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-      Int host_spinor_data_type_size = sizeof(quda::Complex) / 2;
+      Int host_spinor_data_type_size = sizeof(qudaC::Complex) / 2;
       //
       QUDA_clover.resize(V * clover_site_size * host_clover_data_type_size);
       QUDA_clover_inv.resize(V * clover_site_size * host_spinor_data_type_size);
@@ -1126,7 +1126,6 @@ inline void quda_clover_inverter::random_src(const Int seed)
   random_Ty((qlat::ComplexD*)gsrc->data(), gsrc->Volume() * spinor_site_size, 1,
             seed + 111111, random_mode);
   quda::blas::ax(0.05, *gsrc);
-  quda::Complex* tmp = (quda::Complex*)(gsrc->data());
   Long totalN = gsrc->Volume() * spinor_site_size;
 }
 

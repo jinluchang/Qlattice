@@ -7,6 +7,9 @@
 
 #pragma once
 #include "utils_float_type.h"
+#include "utils_cg_precision.h"
+#include <limits>
+#include <stdexcept>
 
 namespace qlat
 {
@@ -37,6 +40,48 @@ inline double check_residue(Tv& res, Tv& src, M& mat, const Int ir = 0,
   return residu.real();
 }
 
+// Opt-in precision-preserving CG status.  These types are independent of the
+// historic iter()/call() entry points below, whose arithmetic remains intact.
+enum class TypedCGStop {
+  converged,
+  zero_source,
+  iteration_limit,
+  numerical_breakdown
+};
+
+inline const char* typed_cg_stop_name(TypedCGStop reason)
+{
+  switch (reason) {
+  case TypedCGStop::converged: return "tolerance";
+  case TypedCGStop::zero_source: return "zero_source";
+  case TypedCGStop::iteration_limit: return "iteration_limit";
+  case TypedCGStop::numerical_breakdown: return "numerical_breakdown";
+  }
+  return "numerical_breakdown";
+}
+
+template<class Real> struct TypedCGResult {
+  Int iterations = 0;
+  Int matrix_calls = 0;
+  double vector_flops = 0;
+  TypedCGStop reason = TypedCGStop::iteration_limit;
+  Real source_norm2 = Real(0.0);
+  Real residual_norm2 = Real(0.0);
+
+  bool converged() const
+  {
+    return reason == TypedCGStop::converged || reason == TypedCGStop::zero_source;
+  }
+  double relative_residual() const
+  {
+    if (reason == TypedCGStop::zero_source) return 0.0;
+    if (!cg_real_finite(source_norm2) || !cg_real_positive(source_norm2) ||
+        !cg_real_finite(residual_norm2) || residual_norm2 < Real(0.0))
+      return std::numeric_limits<double>::infinity();
+    return std::sqrt(double(cg_real_div(residual_norm2, source_norm2)));
+  }
+};
+
 template <class M>
 struct cg_iter {
   // double resid;
@@ -66,6 +111,116 @@ struct cg_iter {
     verbose = qlat::get_env_long_default(std::string("qlat_cg_verbose"), 1);
     ;
     debug_mat = debug_mat_;
+  }
+
+  // Classic real-coefficient CG from a zero guess on raw complex pointers.
+  // All vectors, products, tree reductions, alpha/beta coefficients, and the
+  // squared-residual comparison remain in Real.  Only diagnostics returned by
+  // relative_residual() narrow to double.  Caller-owned buffers and an optional
+  // preallocated reduction keep setup outside the caller's solve timing.
+  //
+  // original_source_nonzero must describe the public source before conversion:
+  // a nonzero double source which becomes zero (or has a zero norm) in float is
+  // numerical breakdown, not successful zero-source convergence.
+  template<class Real>
+  inline TypedCGResult<Real> solve_typed(
+      ComplexT<Real>* x, const ComplexT<Real>* source,
+      ComplexT<Real>* r, ComplexT<Real>* p, ComplexT<Real>* ap,
+      Long length, Int max_iterations, double relative_tolerance,
+      bool original_source_nonzero = false,
+      CGTypedReduction<Real>* prepared_reduction = nullptr)
+  {
+    if (length < 0 || max_iterations < 0 ||
+        !std::isfinite(relative_tolerance) || relative_tolerance < 0.0)
+      throw std::invalid_argument("typed CG requires nonnegative length, cap, and finite tolerance");
+    Qassert(matP != nullptr);
+    Qassert(x != source && r != source && p != source && ap != source);
+    Qassert(x != r && x != p && x != ap && r != p && r != ap && p != ap);
+    TypedCGResult<Real> stats;
+    multi_count = 0;
+    niter = max_iterations;
+    resid = relative_tolerance;
+    it_res = 0.0;
+    CGTypedReduction<Real> local_reduction;
+    CGTypedReduction<Real>& reduction = prepared_reduction ?
+      *prepared_reduction : local_reduction;
+    if (!prepared_reduction) reduction.prepare(length);
+    qacc_for(i, length, {
+      x[i] = ComplexT<Real>(Real(0.0), Real(0.0));
+      r[i] = source[i];
+      p[i] = source[i];
+    });
+    Real rho = reduction.dot(r, r, length);
+    stats.vector_flops += 4.0 * length;
+    stats.source_norm2 = rho;
+    stats.residual_norm2 = rho;
+    const Real tolerance = Real(relative_tolerance);
+    const Real threshold = cg_real_mul(cg_real_mul(tolerance, tolerance), rho);
+    stats.vector_flops += 2.0;
+    if (!cg_real_finite(rho) || rho < Real(0.0) ||
+        !cg_real_finite(tolerance) || !cg_real_finite(threshold)) {
+      stats.reason = TypedCGStop::numerical_breakdown;
+    } else if (cg_real_zero(rho)) {
+      stats.reason = original_source_nonzero ? TypedCGStop::numerical_breakdown :
+                                              TypedCGStop::zero_source;
+    } else if (cg_real_leq(rho, threshold)) {
+      stats.reason = TypedCGStop::converged;
+    } else {
+      for (Int iteration = 0; iteration < max_iterations; ++iteration) {
+        matP->multi(ap, p);
+        ++stats.matrix_calls;
+        const Real curvature = reduction.dot(p, ap, length);
+        stats.vector_flops += 4.0 * length;
+        if (!cg_real_finite(curvature) || !cg_real_positive(curvature)) {
+          stats.reason = TypedCGStop::numerical_breakdown;
+          break;
+        }
+        const Real alpha = cg_real_div(rho, curvature);
+        stats.vector_flops += 1.0;
+        if (!cg_real_finite(alpha)) {
+          stats.reason = TypedCGStop::numerical_breakdown;
+          break;
+        }
+        qacc_for(i, length, {
+          const ComplexT<Real> next_x = cg_complex_add(x[i], cg_complex_scale(alpha, p[i]));
+          x[i] = next_x;
+          // An overflowing solution must not appear converged merely because
+          // the recurrence residual cancels. Propagate it into the norm pass.
+          r[i] = cg_complex_finite(next_x) ?
+            cg_complex_sub(r[i], cg_complex_scale(alpha, ap[i])) :
+            ComplexT<Real>(Real(NAN), Real(0.0));
+        });
+        ++stats.iterations;
+        stats.vector_flops += 8.0 * length;
+        const Real next_rho = reduction.dot(r, r, length);
+        stats.vector_flops += 4.0 * length;
+        stats.residual_norm2 = next_rho;
+        if (!cg_real_finite(next_rho) || next_rho < Real(0.0)) {
+          stats.reason = TypedCGStop::numerical_breakdown;
+          break;
+        }
+        // Exact zero is a valid solution even when a tiny tolerance squared
+        // underflows in the selected working precision.
+        if (cg_real_zero(next_rho) || cg_real_leq(next_rho, threshold)) {
+          stats.reason = TypedCGStop::converged;
+          break;
+        }
+        const Real beta = cg_real_div(next_rho, rho);
+        stats.vector_flops += 1.0;
+        if (!cg_real_finite(beta)) {
+          stats.reason = TypedCGStop::numerical_breakdown;
+          break;
+        }
+        qacc_for(i, length, {
+          p[i] = cg_complex_add(r[i], cg_complex_scale(beta, p[i]));
+        });
+        stats.vector_flops += 4.0 * length;
+        rho = next_rho;
+      }
+    }
+    multi_count = stats.matrix_calls;
+    it_res = stats.relative_residual();
+    return stats;
   }
 
   // template<typename Tv, typename Ty>

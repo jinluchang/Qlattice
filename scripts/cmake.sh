@@ -14,6 +14,12 @@ source qcore/set-prefix.sh $name
     time-run tar xaf $distfiles/$name-*.tar.*
 
     cd $name-*
+    # cmcppdap uses uint32_t in its public header without including its definition.
+    # Include it explicitly so builds do not depend on transitive standard headers.
+    if ! grep -q '^#include <cstdint>$' Utilities/cmcppdap/include/dap/network.h; then
+        sed -i '/^#include <memory>$/a #include <cstdint>' \
+            Utilities/cmcppdap/include/dap/network.h
+    fi
     time-run ./bootstrap \
         --prefix=$prefix \
         --parallel=$num_proc \

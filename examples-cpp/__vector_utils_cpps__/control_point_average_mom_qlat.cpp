@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
     //
     int mom_shifti = 0;
     in.find_para(std::string("mom_shifti"), mom_shifti);
-    Qassert(mom_shifti < int(mom_shiftL.size()));
+    Qassert(mom_shifti >= 0 and mom_shifti < int(mom_shiftL.size()));
     const Coordinate mom_shiftp = mom_shiftL[mom_shifti];
     //
     for (int mg = 0; mg < mass_group; mg++) {
@@ -171,6 +171,7 @@ int main(int argc, char* argv[])
       int nsource = npoint + ngrid;
       //
       ////==check setup and scales
+      Qassert(pt_info[1] > pt_info[0]);
       Qassert(gr_info[1] > gr_info[0]);
       Qassert(gr_info[2] > 1);
       ////===setup basic info and factors

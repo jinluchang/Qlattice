@@ -776,9 +776,9 @@ inline void get_grid_psel(std::vector<Coordinate>& psel, const Coordinate& nv,
   // psel.init();
   //  Long total = 1;
   for (Int i = 0; i < 4; i++) {
-    if (nv[i] < 0 or grid[i] < 0 or nv[i] % grid[i] != 0) {
-      qmessage("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);
-    }
+    Qassert(nv[i] > 0);
+    Qassert(grid[i] > 0);
+    Qassert(nv[i] % grid[i] == 0);
     // total *= grid[i];
   }
   //

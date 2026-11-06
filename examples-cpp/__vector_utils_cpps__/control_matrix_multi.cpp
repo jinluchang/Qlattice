@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   LInt L = ncpy;
   LInt m = nsrc;
   LInt n = nvec;
-  LInt w = in.nx * in.ny * in.nz * in.nt;
+  LInt w = static_cast<LInt>(in.nx) * in.ny * in.nz * in.nt;
   //
   qlat::vector_gpu<ComplexM> a;
   a.resize(L * m * w);

@@ -874,7 +874,7 @@ struct inputpara {
     if (find_para(std::string("mode_dis"), mode_dis) == 0) mode_dis = 12;
     if (find_para(std::string("split_save"), split_save) == 0) split_save = 0;
     if (find_para(std::string("ndouble"), ndouble) == 0) ndouble = 200;
-    if (find_para(std::string("fermion_type"), fermion_type) == 1)
+    if (find_para(std::string("fermion_type"), fermion_type) == 0)
       fermion_type = 1;
     if (find_para(std::string("gridtem"), gridtem) == 0) gridtem = 1;
     if (find_para(std::string("sparsefactor"), sparsefactor) == 0)

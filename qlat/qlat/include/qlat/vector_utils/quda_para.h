@@ -6,11 +6,44 @@
 #include <invert_quda.h>
 #include <quda.h>
 
+#include <complex>
 #include <cstdlib>
+#include <type_traits>
 
 #include "utils_float_type.h"
 #include "utils_gauge_field.h"
 #include "utils_stagger_contractions.h"
+
+namespace qudaC
+{
+
+#if defined(QUDA_SCALAR_TYPE)
+
+static_assert(std::is_same<quda::real_t, double>::value,
+              "This application requires QUDA real_t == double");
+
+using RealD = quda::real_t;
+using ComplexD = quda::complex_t;
+
+#else
+
+static_assert(std::is_same<quda::Complex, std::complex<double>>::value,
+              "This application requires legacy QUDA Complex == std::complex<double>");
+
+using RealD = double;
+using ComplexD = quda::Complex;
+
+#endif
+
+static_assert(std::is_same<RealD, double>::value,
+              "This application supports only double-precision QUDA");
+static_assert(std::is_same<ComplexD, std::complex<double>>::value,
+              "This application requires a host std::complex<double> QUDA type");
+
+using Real = RealD;
+using Complex = ComplexD;
+
+} // namespace qudaC
 
 namespace quda
 {

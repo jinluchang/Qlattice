@@ -11,12 +11,20 @@
 
 #ifdef __NVCC__
 
+#include <cuda_profiler_api.h>
+
 #define qacc_DeviceProp cudaDeviceProp
 #define qacc_DeviceReset cudaDeviceReset
 #define qacc_DeviceSetCacheConfig cudaDeviceSetCacheConfig
 #define qacc_ErrorUnloading cudaErrorCudartUnloading
 #define qacc_ErrorUnknown cudaErrorUnknown
 #define qacc_Error cudaError
+#define qacc_Event_t cudaEvent_t
+#define qacc_EventCreate cudaEventCreate
+#define qacc_EventDestroy cudaEventDestroy
+#define qacc_EventRecord cudaEventRecord
+#define qacc_EventSynchronize cudaEventSynchronize
+#define qacc_EventElapsedTime cudaEventElapsedTime
 #define qacc_Free cudaFree
 #define qacc_FuncCachePreferL1 cudaFuncCachePreferL1
 #define qacc_FuncCachePreferNone cudaFuncCachePreferNone
@@ -26,6 +34,12 @@
 #define qacc_GetDeviceProperties cudaGetDeviceProperties
 #define qacc_GetErrorString cudaGetErrorString
 #define qacc_GetLastError cudaGetLastError
+#define qacc_Graph_t cudaGraph_t
+#define qacc_GraphExec_t cudaGraphExec_t
+#define qacc_GraphInstantiate cudaGraphInstantiate
+#define qacc_GraphLaunch cudaGraphLaunch
+#define qacc_GraphDestroy cudaGraphDestroy
+#define qacc_GraphExecDestroy cudaGraphExecDestroy
 #define qacc_Malloc cudaMalloc
 #define qacc_Malloc3D cudaMalloc3D
 #define qacc_MallocManaged cudaMallocManaged
@@ -49,11 +63,17 @@
 #define qacc_MemsetAsync cudaMemsetAsync
 #define qacc_SetDevice cudaSetDevice
 #define qacc_StreamCreate cudaStreamCreate
+#define qacc_StreamBeginCapture cudaStreamBeginCapture
+#define qacc_StreamCaptureModeGlobal cudaStreamCaptureModeGlobal
 #define qacc_Stream_t cudaStream_t
 #define qacc_Success cudaSuccess
 #define qacc_StreamDestroy cudaStreamDestroy
+#define qacc_StreamEndCapture cudaStreamEndCapture
+#define qacc_StreamSynchronize cudaStreamSynchronize
 #define qacc_PointerAttributes cudaPointerAttributes
 #define qacc_PointerGetAttributes cudaPointerGetAttributes
+#define qacc_ProfilerStart cudaProfilerStart
+#define qacc_ProfilerStop cudaProfilerStop
 #define qacc_MemoryTypeHost cudaMemoryTypeHost
 #define qacc_MemoryTypeDevice cudaMemoryTypeDevice
 #define qacc_MemoryTypeManaged cudaMemoryTypeManaged
@@ -73,6 +93,12 @@
 #define qacc_ErrorUnloading hipErrorDeinitialized
 #define qacc_ErrorUnknown hipErrorUnknown
 #define qacc_Error hipError_t
+#define qacc_Event_t hipEvent_t
+#define qacc_EventCreate hipEventCreate
+#define qacc_EventDestroy hipEventDestroy
+#define qacc_EventRecord hipEventRecord
+#define qacc_EventSynchronize hipEventSynchronize
+#define qacc_EventElapsedTime hipEventElapsedTime
 #define qacc_Free hipFree
 #define qacc_FuncCachePreferL1 hipFuncCachePreferL1
 #define qacc_FuncCachePreferNone hipFuncCachePreferNone
@@ -82,6 +108,12 @@
 #define qacc_GetDeviceProperties hipGetDeviceProperties
 #define qacc_GetErrorString hipGetErrorString
 #define qacc_GetLastError hipGetLastError
+#define qacc_Graph_t hipGraph_t
+#define qacc_GraphExec_t hipGraphExec_t
+#define qacc_GraphInstantiate hipGraphInstantiate
+#define qacc_GraphLaunch hipGraphLaunch
+#define qacc_GraphDestroy hipGraphDestroy
+#define qacc_GraphExecDestroy hipGraphExecDestroy
 #define qacc_Malloc hipMalloc
 #define qacc_Malloc3D hipMalloc3D
 #define qacc_MallocManaged hipMallocManaged
@@ -105,11 +137,17 @@
 #define qacc_MemsetAsync hipMemsetAsync
 #define qacc_SetDevice hipSetDevice
 #define qacc_StreamCreate hipStreamCreate
+#define qacc_StreamBeginCapture hipStreamBeginCapture
+#define qacc_StreamCaptureModeGlobal hipStreamCaptureModeGlobal
 #define qacc_Stream_t hipStream_t
 #define qacc_Success hipSuccess
 #define qacc_StreamDestroy hipStreamDestroy
+#define qacc_StreamEndCapture hipStreamEndCapture
+#define qacc_StreamSynchronize hipStreamSynchronize
 #define qacc_PointerAttributes hipPointerAttribute_t
 #define qacc_PointerGetAttributes hipPointerGetAttributes
+#define qacc_ProfilerStart hipProfilerStart
+#define qacc_ProfilerStop hipProfilerStop
 #define qacc_MemoryTypeHost hipMemoryTypeHost
 #define qacc_MemoryTypeDevice hipMemoryTypeDevice
 #define qacc_MemoryTypeManaged hipMemoryTypeManaged
@@ -119,6 +157,11 @@
 #define qacc_DeviceSynchronize hipDeviceSynchronize
 
 #endif
+
+#else
+
+inline void qacc_ProfilerStart() {}
+inline void qacc_ProfilerStop() {}
 
 #endif
 

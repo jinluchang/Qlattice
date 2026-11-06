@@ -12,7 +12,8 @@ source qcore/set-prefix.sh $name
     cd $src_dir
     time-run tar xzf $distfiles/$name-*.tar.*
 
-    export CFLAGS="$CFLAGS -fPIC"
+    # Cuba 4.2.2 defines bool/true/false, which are keywords in C23.
+    export CFLAGS="$CFLAGS -std=gnu17 -fPIC"
     export CXXFLAGS="$CXXFLAGS -fPIC"
 
     cd $name-*

@@ -7,6 +7,7 @@
 
 #pragma once
 #include <qlat/qcd.h>
+#include <type_traits>
 
 #include "utils_COPY_data.h"
 #include "utils_float_type.h"
@@ -1194,7 +1195,11 @@ struct vector_cs {
     const Long& b_size = this->b_size;
     ////const Long Ndata = btotal * b_size;
     const Long& btotal = this->btotal;
-    const T alpha = alpha_;
+    // Convert once so coefficients cannot promote each element multiplication.
+    using Scalar = typename IsBasicDataType<Ty>::ElementaryType;
+    using Coefficient =
+        std::conditional_t<IsBasicDataType<T>::is_complex, Ty, Scalar>;
+    const Coefficient alpha = Coefficient(alpha_);
     const QMEM GPU_ = GPU;
     // std::vector<qlat::vector_gpu<Ty* > > vL;vL.resize(nvec);
     for (Long ni = 0; ni < nvec; ni++) {
@@ -2031,10 +2036,8 @@ template <typename Ty>
 void vector_cs_resize(vector_cs<Ty>& A, const Int nadd)
 {
   TIMER("vector_cs_resize");
-  if (nadd == 0) {
-    return;
-  }
-  if (nadd > 0) {
+  if(nadd == 0){return ;}
+  if(nadd > 0){
     vector_cs<Ty> B;
     B.resize(nadd, A);
     const Int GPU = A.GPU == QMGPU ? 1 : 0;
