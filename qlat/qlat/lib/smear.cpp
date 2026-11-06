@@ -196,7 +196,8 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
 // accumulated smearing `sum(a)` does not exceed `accumulated_alpha`.
 // The loop also stops when `M` is degenerate (zero or not finite) or when
 // `a` or the accumulated smearing makes no progress in floating point.
-// Progress is printed at verbose level every 4 steps and on the last step.
+// Progress is printed at verbose level 0 every 4 steps and on the last step;
+// the shortfall is reported at level -1, so it is always printed.
 // `alpha = 0` or `accumulated_alpha = 0` leaves the field unchanged.
 // gf can be the same object as gf0.
 {
@@ -228,7 +229,7 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     acc += a;
     if ((k % 4 == 0) || (acc >= target)) {
       displayln_info(
-          1, ssprintf("gf_ape_smear_no_proj: k = %ld a = %.9f acc = %.9f / "
+          0, ssprintf("gf_ape_smear_no_proj: k = %ld a = %.9f acc = %.9f / "
                       "%.9f max_sq = %.9f factor = %.9f",
                       k, a, acc, target, max_sq, factor));
     }
@@ -237,11 +238,11 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     }
   }
   if (acc < target) {
-    displayln_info(1, ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
-                               "accumulated_alpha = %0.9f (stopped early: "
-                               "alpha <= 0, degenerate field, or no further "
-                               "representable progress)",
-                               acc, target));
+    displayln_info(-1, ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
+                                "accumulated_alpha = %0.9f (stopped early: "
+                                "alpha <= 0, degenerate field, or no further "
+                                "representable progress)",
+                                acc, target));
   }
 }
 

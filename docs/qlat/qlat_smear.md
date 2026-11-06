@@ -158,13 +158,15 @@ The loop also stops early when the field degenerates (`M_k <= 0` or not
 finite, so `factor_k` cannot be formed) or when floating-point arithmetic can
 no longer make progress towards the target -- the accumulated sum stops
 increasing, which is what happens when the field growth caps the accumulated
-weight below the target. At verbose level 1 and above, the progress of the
-iteration -- the step index, `a_k`, the accumulated total and `M_k` -- is
-printed every fourth step and on the final step. When the loop ends below the
-target, the shortfall is reported on screen at verbose level 1 and above
-(`gf_ape_smear_no_proj: reached only <acc> of accumulated_alpha = <target>`);
-at the default verbosity the function stops silently, so a caller that needs
-the achieved total must either run verbose or track it itself.
+weight below the target. At verbose level 0 and above (`q_verbose >= 0`), the
+progress of the iteration -- the step index, `a_k`, the accumulated total and
+`M_k` -- is printed every fourth step and on the final step. When the loop ends
+below the target, the shortfall is always printed on screen, because it is a
+level `-1` message: it appears even at the library default verbosity
+(`q_verbose` unset, i.e. `-1`). The message reads
+`gf_ape_smear_no_proj: reached only <acc> of accumulated_alpha = <target>`.
+Neither message carries a `CHECK:`, `INFO:` or `WARNING` marker, so neither
+reaches the harvested `<name>.log` / `.check.txt` reference files.
 
 > **Warning:** the update is additive, so the field amplitude is not
 > conserved: for near-unitary links `staple_k ~ 6 U_k`, and one step is
