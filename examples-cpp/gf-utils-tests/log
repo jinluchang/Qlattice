@@ -3,7 +3,7 @@ CHECK: gf_stout_smear with gf == gf0: qnorm(diff) = 0.00E+00
 CHECK: gf_stout_smear num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
 CHECK: gf_stout_smear with num_step = 0: qnorm(diff) = 0.00E+00
 CHECK: gf_ape_smear_no_proj num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
-CHECK: gf_ape_smear_no_proj with alpha = 0: qnorm(diff) = 0.00E+00
+CHECK: gf_ape_smear_no_proj with alpha = 0: qnorm(diff) = 8.45E-24
 CHECK: gf_ape_smear_no_proj with gf == gf0: qnorm(diff) = 0.00E+00
 CHECK: gf_hyp_smear num_step = 2 vs two num_step = 1: qnorm(diff) = 0.00E+00
 CHECK: gf_hyp_smear with num_step = 0: qnorm(diff) = 0.00E+00

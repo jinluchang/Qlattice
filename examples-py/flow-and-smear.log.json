@@ -206,13 +206,32 @@
  ],
  [
   "gf_simple_no_proj_smear steps=1 plaq",
-  0.04070315206924724,
+  0.48594418371457915,
   1e-10
  ],
  [
   "gf_simple_no_proj_smear steps=3 plaq",
-  0.0004100896200715955,
+  0.9164489844104107,
   1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj per-step <N^2> max deviation from 3",
+  8.881784197001252e-16
+ ],
+ [
+  "gf_ape_smear_no_proj single-step link-wise rescale uniformity",
+  1.7763568394002505e-15
+ ],
+ [
+  "gf_ape_smear_no_proj single-step rescale is a real scalar",
+  7.165485749239704e-16
+ ],
+ [
+  "gf_ape_smear_no_proj num_step=0 unchanged = True"
+ ],
+ [
+  "gf_ape_smear_no_proj num_step=3 vs three num_step=1",
+  0.0
  ],
  [
   "gf_stout_smear steps=1 plaq",

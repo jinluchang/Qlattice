@@ -3,6 +3,22 @@
 import qlat as q
 import numpy as np
 
+def get_link_norm_sqr_arr(gf):
+    # Tr(U^dag U) = sum_{i,j} |U_ij|^2 for every link, shape (local_volume, DIMN)
+    arr = np.asarray(gf)
+    n2_arr = np.sum(np.abs(arr) ** 2, axis=(2, 3))
+    return n2_arr
+
+def get_glb_avg_link_norm_sqr(gf):
+    # Global <N^2> = (1/(V*DIMN)) sum_{x,mu} Tr(U_mu(x)^dag U_mu(x)), MPI-reduced
+    n2_sum = float(np.sum(get_link_norm_sqr_arr(gf)))
+    n_link = int(gf.geo.total_volume) * int(gf.multiplicity)
+    return float(q.glb_sum(n2_sum)) / n_link
+
+def get_max_rel_dev(arr, arr_ref):
+    # max |arr - arr_ref| normalized by max |arr_ref|
+    return float(np.max(np.abs(arr - arr_ref)) / np.max(np.abs(arr_ref)))
+
 size_node_list = [
     [1, 1, 1, 1],
     [1, 1, 1, 2],
@@ -130,6 +146,72 @@ for steps in [1, 3]:
     q.json_results_append(
         f"gf_simple_no_proj_smear steps={steps} plaq", gf_test.plaq(), 1e-10
     )
+
+# ---- gf_ape_smear_no_proj: unconditional per-step rescale to <N^2> = 3 ----
+
+gf_np_before = gf.copy()
+arr_before = np.asarray(gf_np_before).copy()
+
+# (a) after EVERY num_step=1 application the global average must be <N^2> = 3
+gf_iter = gf_np_before.copy()
+max_step_dev = 0.0
+for k in range(1, 5):
+    gf_iter = q.gf_ape_smear_no_proj(gf_iter, 0.5, 1)
+    max_step_dev = max(max_step_dev, abs(get_glb_avg_link_norm_sqr(gf_iter) - 3.0))
+q.json_results_append(
+    "gf_ape_smear_no_proj per-step <N^2> max deviation from 3", max_step_dev
+)
+assert max_step_dev < 1e-13
+
+# (b) one step is a uniform rescale: N^2_after / N^2_before == s^2 on every link.
+# alpha = 0 keeps the raw update equal to the input, isolating the global
+# rescale from the non-uniform staple update.  The input is multiplied by 0.5
+# first (so s^2 = 4 and a missing rescale cannot hide: the random field itself
+# already has <N^2> ~ 3, i.e. s ~ 1, which would make this check vacuous).
+gf_low = gf_np_before.copy()
+gf_low *= 0.5
+avg_n2_low = get_glb_avg_link_norm_sqr(gf_low)
+arr_low = np.asarray(gf_low).copy()
+s_sq = 3.0 / avg_n2_low
+s = float(np.sqrt(s_sq))
+gf_scaled = q.gf_ape_smear_no_proj(gf_low, 0.0, 1)
+n2_low = get_link_norm_sqr_arr(gf_low)
+n2_scaled = get_link_norm_sqr_arr(gf_scaled)
+max_ratio_dev = float(np.max(np.abs(n2_scaled / n2_low / s_sq - 1.0)))
+q.json_results_append(
+    "gf_ape_smear_no_proj single-step link-wise rescale uniformity", max_ratio_dev
+)
+assert max_ratio_dev < 1e-12
+
+# (c) the rescale is real and non-negative: the output is s times the input
+arr_scaled = np.asarray(gf_scaled).copy()
+max_real_dev = get_max_rel_dev(arr_scaled, s * arr_low)
+q.json_results_append(
+    "gf_ape_smear_no_proj single-step rescale is a real scalar", max_real_dev
+)
+assert max_real_dev < 1e-12
+
+# (d) num_step=0 returns the input field unchanged
+gf_zero = q.gf_ape_smear_no_proj(gf_np_before, 0.5, 0)
+is_zero_unchanged = bool(np.array_equal(np.asarray(gf_zero), arr_before))
+q.json_results_append(
+    f"gf_ape_smear_no_proj num_step=0 unchanged = {is_zero_unchanged}"
+)
+assert is_zero_unchanged
+
+# (e) the rescale is applied after EVERY iteration, not only at the end:
+# num_step=3 must equal three num_step=1 calls (the staple is quadratic, so
+# scaling between iterations is observable)
+gf_ns3 = q.gf_ape_smear_no_proj(gf_np_before, 0.5, 3)
+gf_rep = gf_np_before.copy()
+for _ in range(3):
+    gf_rep = q.gf_ape_smear_no_proj(gf_rep, 0.5, 1)
+max_per_step_dev = get_max_rel_dev(np.asarray(gf_ns3).copy(), np.asarray(gf_rep).copy())
+q.json_results_append(
+    "gf_ape_smear_no_proj num_step=3 vs three num_step=1", max_per_step_dev
+)
+assert max_per_step_dev < 1e-13
+assert np.array_equal(np.asarray(gf_np_before), arr_before)
 
 # ---- gf_stout_smear ----
 

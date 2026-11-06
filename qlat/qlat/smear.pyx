@@ -31,6 +31,11 @@ def gf_ape_smear(GaugeField gf, double alpha, cc.Long num_step=1):
 def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.Long num_step=1):
     """
     Similar to `gf_ape_smear` but the SU(3) projection step is omitted.
+    Every step updates the links as `U' = (1 - alpha) U + (alpha / 6) S`
+    and then multiplies the whole field by the real scalar
+    `s = sqrt(3 / <N^2>)`, with `<N^2> = <Tr(U_mu(x)^dag U_mu(x))>` the
+    global average over all links, so that `<N^2> = 3` after every step.
+    This rescaling changes the dynamics of the smearing.
     Returns a new gauge field; `gf` is not modified.
     """
     cdef GaugeField gf1 = gf.copy()

@@ -89,20 +89,66 @@ gf_ape_smear_no_proj(
 ) -> GaugeField
 ```
 
-Perform an APE-like smearing that omits the SU(3) projection step. It uses
-the same weighted link/staple combination as `gf_ape_smear`:
+Perform an APE-like smearing that omits the SU(3) projection step. Each
+iteration uses the same weighted link/staple combination as `gf_ape_smear`:
 
 ```
 U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
 ```
 
-but does not re-project the result to SU(3). After `num_step` iterations the
-smeared field is returned. The input `gf` is not modified.
+but the result is **not** re-projected to SU(3), so the update alone does not
+pin the link amplitude. To compensate, after every iteration -- including the
+last one -- the whole field is multiplied by one real scalar
+
+```
+s_k = sqrt( 3 / <N^2>_raw )
+
+<N^2>_raw = (1 / (V * DIMN)) * sum_{x, mu} Tr( U_mu(x)^dag U_mu(x) )
+```
+
+where `V = geo.total_volume()`, `DIMN` is the number of spacetime dimensions
+and `<N^2>_raw` is a **global** (MPI-reduced) average over all links, so every
+node applies the same `s_k`. Step 0 is the raw input (`s_0 = 1`); after every
+rescaled step this global average is `<N^2> = 3`, the value for a unitary link.
+The input `gf` is not modified; with `num_step == 0` the returned field is an
+unchanged copy.
+
+The reported statistic is `N^2 = Tr(U^dag U) = sum_ab |U_ab|^2`, never its
+square root: `N^2` is the natural link magnitude (exactly 3 for a unitary
+link), it is the quantity the unprojected update shrinks, and it avoids taking
+a square root of a quantity that can pass through zero when links vanish. The
+square root appears only in `s_k`, because the correction acts on the amplitude
+while the constraint is on the squared norm.
+
+The rescale is unconditional: there is no parameter or flag that disables it.
+In particular `alpha = 0` disables only the staple term, so a non-unitary input
+is still rescaled towards `<N^2> = 3` at every step (for a unitary input
+`s = 1` up to rounding). If the measured mean is not strictly positive (e.g. an
+all-zero or NaN field), that step's rescale is skipped instead of producing
+`inf`/`NaN`; this is the only case in which the field is not rescaled.
+
+> **Warning:** the rescale sits inside the iteration, so it changes the
+> update; it is not a pure post-processing factor. The map is not scale
+> invariant (the linear term is first order in the field, the staple term
+> third order), so removing the overall shrinkage keeps the cubic term at
+> `O(1)` relative to the linear term and the iteration becomes genuinely
+> nonlinear. At `alpha = 0.5` the field degenerates by roughly step 8: the
+> unitarity deviation saturates at ~2.7, the mean `|det U|` falls to ~5e-6 at
+> step 8 and ~1e-24 by step 16, and at step 32 most sites have `|det U| = 0`.
+> There is no fixed scale factor either: measured values start at
+> `s_1 = 1.224` (the first step grows the field slightly), fall to
+> `s_4 = 1.0014`, then go below 1 from step 5 on (`s_k < 1`) and collapse to
+> `s_8 ~ 2e-3`, while the cumulative product `S_k = s_1 * ... * s_k` is not
+> monotone (it grows to ~1.359 at step 4, then decays). Do not use more than
+> about 7 steps on this map at `alpha = 0.5`; the informative range is 1-4
+> steps, and beyond that the configuration is not physical. If only a common
+> overall amplitude is required, apply one factor after the whole ladder
+> instead of running a long unprojected APE chain.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field |
-| `alpha` | `float` | — | Smearing weight (0 = no smearing, 1 = full staple) |
+| `alpha` | `float` | — | Smearing weight (0 = no staple mixing, 1 = full staple); the per-step rescale applies regardless |
 | `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
@@ -276,7 +322,8 @@ gf.set_unit()  # placeholder
 gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
 
-# APE-like smearing without the SU(3) projection
+# APE-like smearing without the SU(3) projection. The field is rescaled to
+# <N^2> = 3 after every step; keep the ladder short (a few steps at most).
 gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, num_step=3)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 

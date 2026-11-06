@@ -10,6 +10,11 @@ namespace qlat
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
                   const Long num_step = 1);
 
+// Same as `gf_ape_smear` but without the SU(3) projection step.
+// After every step the whole field is multiplied by the real scalar
+// `s = sqrt(3 / mean_sq)`, with `mean_sq` the global average of
+// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` after every
+// step (no projection is performed).
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
                           const RealD alpha, const Long num_step = 1);
 

@@ -148,9 +148,39 @@ static void gf_ape_smear_no_proj_no_comm(GaugeField& gf, const GaugeField& gf0,
   });
 }
 
+static RealD gf_ape_smear_no_proj_avg_norm_sq(const GaugeField& gf)
+// Return the global average of `Tr(U_mu(x)^dag U_mu(x))` over all links.
+// The per-site values are summed with `field_sum` and then reduced with
+// `glb_sum`, so every rank obtains the same value.
+{
+  TIMER("gf_ape_smear_no_proj_avg_norm_sq");
+  const Geometry geo = geo_resize(gf.geo());
+  FieldM<RealD, 1> cf;
+  cf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = cf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+    RealD sum = 0.0;
+    for (Int mu = 0; mu < DIMN; ++mu) {
+      sum += qnorm(v[mu]);
+    }
+    cf.get_elem(index) = sum;
+  });
+  const std::vector<RealD> sum_vec = field_sum(cf);
+  qassert(sum_vec.size() == 1);
+  RealD sum = sum_vec[0];
+  glb_sum(sum);
+  return sum / ((RealD)geo.total_volume() * (RealD)DIMN);
+}
+
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
                           const RealD alpha, const Long num_step)
 // Same as `gf_ape_smear` but without the SU(3) projection step.
+// After every step the whole field is multiplied by the real scalar
+// `s = sqrt(3 / mean_sq)`, where `mean_sq` is the global average of
+// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` after
+// every step. No SU(3) projection is performed.
 // gf can be the same object as gf0.
 {
   TIMER_VERBOSE("gf_ape_smear_no_proj");
@@ -161,6 +191,10 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     gf1 = gf;
     refresh_expanded(gf1);
     gf_ape_smear_no_proj_no_comm(gf, gf1, alpha);
+    const RealD mean_sq = gf_ape_smear_no_proj_avg_norm_sq(gf);
+    if (mean_sq > 0.0) {
+      gf *= std::sqrt(3.0 / mean_sq);
+    }
   }
 }
 
