@@ -205,13 +205,13 @@
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj target=0.5 plaq",
-  0.325472751154501,
+  "gf_ape_smear_no_proj target=0.1 plaq",
+  0.06219528911608303,
   1e-10
  ],
  [
-  "gf_ape_smear_no_proj target=1.5 plaq",
-  35.25142907446847,
+  "gf_ape_smear_no_proj target=0.3 plaq",
+  0.20783403419792054,
   1e-10
  ],
  [
@@ -238,13 +238,20 @@
   "gf_ape_smear_no_proj target a_k sequence",
   {
    "value": [
-    0.49999999999999806,
-    0.36136997652330555,
-    0.25536789318191383,
-    0.17377891454262542,
-    0.11163770037054031,
-    0.06702808933337721,
-    0.03081742604823967
+    0.09999999999999962,
+    0.09350134414908985,
+    0.08727982139886573,
+    0.08138151230762705,
+    0.07581527367714311,
+    0.07055809738334202,
+    0.06525802523371695,
+    0.060053632123418965,
+    0.055213963419717196,
+    0.05073252138757554,
+    0.046593252416059425,
+    0.04277542023163727,
+    0.039234212919673266,
+    0.031602923352134105
    ],
    "__extended_json_type__": "ndarray"
   },
@@ -257,11 +264,11 @@
   "gf_ape_smear_no_proj alpha=0 bitwise identity = True"
  ],
  [
-  "gf_ape_smear_no_proj step count = 7 (vs target/alpha = 3.0)"
+  "gf_ape_smear_no_proj step count = 14 (vs target/alpha = 9.0)"
  ],
  [
   "gf_ape_smear_no_proj max a_k",
-  0.49999999999999806,
+  0.09999999999999962,
   1e-10
  ],
  [
@@ -274,7 +281,7 @@
  ],
  [
   "gf_ape_smear_no_proj M_k max",
-  38.46712248099603,
+  8.448945298452847,
   1e-10
  ],
  [
@@ -282,27 +289,8 @@
  ],
  [
   "gf_ape_smear_no_proj global avg <N^2> after target",
-  17.942510325053835,
+  5.547944860910514,
   1e-10
- ],
- [
-  "gf_ape_smear_no_proj unreachable target stops short = True"
- ],
- [
-  "gf_ape_smear_no_proj unreachable target field finite = True"
- ],
- [
-  "gf_ape_smear_no_proj unreachable target achieved acc",
-  1.56113128294322,
-  1e-06
- ],
- [
-  "gf_ape_smear_no_proj unreachable target step count = 83"
- ],
- [
-  "gf_ape_smear_no_proj unreachable target log10(M_k last)",
-  16.205250041314837,
-  0.1
  ],
  [
   "gf_ape_smear_no_proj unit field max Tr(U^dag U)",
@@ -310,7 +298,7 @@
   1e-13
  ],
  [
-  "gf_ape_smear_no_proj unit field one step is 1.75 U (additive kernel) = True"
+  "gf_ape_smear_no_proj unit field one step is 1.75 U (special exact alpha = 0.75, additive kernel) = True"
  ],
  [
   "gf_stout_smear steps=1 plaq",

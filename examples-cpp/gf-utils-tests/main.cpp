@@ -138,7 +138,7 @@ void simple_tests()
                  qnorm(gfs_no_proj_zero)));
     gfs_no_proj_alpha_zero = gf_scaled;
     gf_ape_smear_no_proj(gfs_no_proj_alpha_zero, gfs_no_proj_alpha_zero, 0.0,
-                         1.0);
+                         0.5);
     gfs_no_proj_alpha_zero -= gf_scaled;
     displayln_info(
         ssprintf("CHECK: gf_ape_smear_no_proj with alpha = 0: "

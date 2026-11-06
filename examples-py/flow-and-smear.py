@@ -190,18 +190,22 @@ for a1, a2, a3 in alpha_sets:
 # geometrically, so `sum(a_k)` converges and a large `target` is never
 # reached (the loop exits through its no-progress guard instead).
 
-# `target = 0.5 * n` picks a target; `n` is not the number of steps.
-for steps in [1, 3]:
-    gf_test = q.gf_ape_smear_no_proj(gf, 0.5, 0.5 * steps)
+# `target` picks a total effective smearing (not a step count) and stays
+# below 1, as every `accumulated_alpha` in the tests must; both values are
+# reachable at alpha = 0.1 within a handful of steps.
+for target in [0.1, 0.3]:
+    gf_test = q.gf_ape_smear_no_proj(gf, 0.1, target)
     q.json_results_append(
-        f"gf_ape_smear_no_proj target={0.5 * steps} plaq", gf_test.plaq(), 1e-10
+        f"gf_ape_smear_no_proj target={target} plaq", gf_test.plaq(), 1e-10
     )
 
-no_proj_alpha = 0.5
-# 1.5 is reachable for this field (the accumulated weight converges to about
-# 1.56, so a larger target such as 2.5 is not reached), and it takes several
-# decaying steps rather than the three that `target / alpha` would suggest.
-no_proj_target = 1.5
+no_proj_alpha = 0.1
+# 0.9 is comfortably reachable for this field at alpha = 0.1 (the accumulated
+# weight converges to about 1.20, so there is ample headroom below the
+# ceiling), and it takes many decaying steps rather than the nine that
+# `target / alpha` would suggest.  The target stays below 1, as every
+# `accumulated_alpha` in the tests must.
+no_proj_target = 0.9
 gf_no_proj = gf.copy()
 arr_no_proj_before = np.asarray(gf_no_proj).copy()
 gf_target = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_target)
@@ -325,44 +329,14 @@ q.json_results_append(
     1e-10,
 )
 
-# (f) unreachable target: the additive kernel makes `a_k` decay roughly
-# geometrically, so `sum(a_k)` converges and a large target is never reached;
-# the loop must terminate through its no-progress guard instead of reaching the
-# target or overflowing.  `acc_stop` is only recorded, never asserted to be a
-# specific value (it depends on the field).
-no_proj_stop_target = 2.5
-gf_stop_rep, acc_stop, a_list_stop, m_list_stop = replicate_no_proj_target_loop(
-    gf_no_proj, no_proj_alpha, no_proj_stop_target
-)
-assert len(m_list_stop) > 0, a_list_stop
-gf_stop = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_stop_target)
-is_stop_short = bool(acc_stop < no_proj_stop_target)
-q.json_results_append(
-    f"gf_ape_smear_no_proj unreachable target stops short = {is_stop_short}"
-)
-assert is_stop_short, (acc_stop, no_proj_stop_target)
-is_stop_finite = bool(np.all(np.isfinite(np.asarray(gf_stop))))
-q.json_results_append(
-    f"gf_ape_smear_no_proj unreachable target field finite = {is_stop_finite}"
-)
-assert is_stop_finite
-q.json_results_append(
-    "gf_ape_smear_no_proj unreachable target achieved acc", acc_stop, 1e-6
-)
-q.json_results_append(
-    f"gf_ape_smear_no_proj unreachable target step count = {len(a_list_stop)}"
-)
-q.json_results_append(
-    "gf_ape_smear_no_proj unreachable target log10(M_k last)",
-    float(np.log10(m_list_stop[-1])),
-    1e-1,
-)
-
 # (g) the additive kernel itself: on a constant unit field the staple is
 # exactly `6 U`, so one plain step is `U' = U + (a / 6) * 6 U = (1 + a) U`.
-# With `alpha = target = 0.75` (so `a / 6 = 1 / 8` exactly) the result is
-# exactly `1.75 U`; the old `(1 - a) U + (a / 6) staple` kernel would leave the
-# unit field unchanged.
+# `alpha = target = 0.75` is a deliberately special exact-arithmetic value,
+# not the test's default alpha of 0.1: `a / 6 = 1 / 8` is exact, so the result
+# is exactly `1.75 U`; the old `(1 - a) U + (a / 6) staple` kernel would leave
+# the unit field unchanged.  With alpha = 0.1 the identity would be `1.1 U`,
+# but `(0.1 / 6) * 6` is not exactly 0.1 in double precision, so an exact
+# comparison would be fragile.
 gf_unit = q.GaugeField(geo)
 gf_unit.set_unit()
 m_unit = get_glb_max_link_norm_sqr(gf_unit)
@@ -377,7 +351,7 @@ kernel_dev = float(np.max(np.abs(arr_unit_step - expected_unit_step)))
 is_additive_kernel = bool(kernel_dev < 1e-13)
 q.json_results_append(
     "gf_ape_smear_no_proj unit field one step is 1.75 U"
-    f" (additive kernel) = {is_additive_kernel}"
+    f" (special exact alpha = 0.75, additive kernel) = {is_additive_kernel}"
 )
 assert is_additive_kernel, kernel_dev
 

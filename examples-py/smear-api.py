@@ -197,7 +197,8 @@ check_returns_new_object(
 )
 check_returns_new_object(
     "gf_ape_smear_no_proj",
-    lambda: q.gf_ape_smear_no_proj(gf, 0.5, 0.5),
+    # alpha = 0.1, target = 0.1: the target must stay below 1 in the tests.
+    lambda: q.gf_ape_smear_no_proj(gf, 0.1, 0.1),
     gf,
     get_arr_sig,
 )
