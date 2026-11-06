@@ -44,5 +44,13 @@ vector_utils_header_files = files(
   'utils_geo_cache.h',
   'utils_macro_defines.h',
   'utils_cg_iter.h',
+  'utils_multi_shift_cg.h',
+  'utils_staggered_multishift_mcg.h',
+  'utils_mcg_reduction.h',
+  'utils_mcg_signature.h',
+  'utils_mcg_debug.h',
+  'utils_cg_precision.h',
+  'utils_multi_shift_cg_typed.h',
+  'utils_staggered_simple.h',
   )
 py3.install_sources(vector_utils_header_files, subdir: 'qlat/include/qlat/vector_utils')
