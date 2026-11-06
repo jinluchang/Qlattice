@@ -314,7 +314,8 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
   if (aligned) {
     const Long num = n / sizeof(Long);
     const Long offset = num * sizeof(Long);
-    const Long rem = n - offset;
+    // possible issues ?
+    //const Long rem = n - offset;
     Long* lpx = (Long*)px;
     const Long* lpy = (Long*)py;
     for (Long i = 0; i < num; ++i) {
