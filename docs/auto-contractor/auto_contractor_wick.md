@@ -113,9 +113,21 @@ Arithmetic operators (`+`, `-`, `*`) are supported. Adding a `str` sets the desc
 | `contract_term(term)` | Contract a single term |
 
 The contraction pushes `Qv` and `Qb` operators through the term, replacing
-them with propagators `S` via:
-- $Qv \cdot HbS \to S$ (with sign tracking for fermion ordering)
-- $Qb \cdot SHv \to S$
+them with propagators `S` via
+
+$$
+Qv \cdot HbS \to S
+\tag{1}
+$$
+
+and
+
+$$
+Qb \cdot SHv \to S
+\tag{2}
+$$
+
+The sign from the fermion ordering is tracked.
 
 ## Simplification
 

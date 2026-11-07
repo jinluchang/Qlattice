@@ -27,12 +27,19 @@ Source: `qlat/auto_contractor/operators.py`
 
 `operators` builds symbolic hadronic operators for lattice QCD correlation
 functions. It provides factory functions for mesons, baryons, currents, and
-four-quark operators (including $\Delta S = 1$ four-quark operators $Q_1$–$Q_{10}$
-in both standard and $(8,1)$ representations). All operators are constructed
-using `Qb`, `Qv`, `G`, and `Bfield` from the `wick` module and support the
-`is_dagger` flag for Hermitian conjugation.
+four-quark operators (including $Q_1$–$Q_{10}$ in both standard and $(8,1)$
+representations). All operators are constructed using `Qb`, `Qv`, `G`, and
+`Bfield` from the `wick` module and support the `is_dagger` flag for Hermitian
+conjugation.
 
-Pi and K operators follow Eq.(103,122) of [Christ et al., Phys. Rev. D 101 (2020) 014506](https://arxiv.org/abs/1908.08640).
+The strangeness change of the four-quark operators $Q_1$–$Q_{10}$ is
+
+$$
+\Delta S = 1
+\tag{1}
+$$
+
+Pi and K operators follow equations (103) and (122) of [Christ et al., Phys. Rev. D 101 (2020) 014506](https://arxiv.org/abs/1908.08640).
 
 ## Quark Bilinears
 
@@ -157,7 +164,7 @@ Two-meson functions accept `is_sym=True` to symmetrize over momentum arguments.
 | `mk_4qOp_LL(...)` | VV - VA - AV + AA |
 | `mk_4qOp_LR(...)` | VV + VA - AV - AA |
 
-### $\Delta S = 1$ Operators ($Q_1$–$Q_{10}$)
+### Operators with $\Delta S$ Equal to One ($Q_1$–$Q_{10}$)
 
 | Function | Description |
 |---|---|
