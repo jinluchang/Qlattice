@@ -33,6 +33,8 @@ Qlattice
 
    contents/coding-doc-structure.md
 
+   contents/coding-doc-equations.md
+
    contents/coding-assert-shape.md
 
    contents/how_to_analysis.md

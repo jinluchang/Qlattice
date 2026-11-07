@@ -144,6 +144,9 @@ Source: `package-path/module_name.py`
 > **Note:** Update this document when updating the source file.
 ```
 
+> **Equations:** a page that contains formulas must also follow
+> [coding-doc-equations](coding-doc-equations.md).
+
 Then include:
 
 1. **Outline** — A table of contents with anchor links.

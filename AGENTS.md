@@ -341,6 +341,10 @@ build it (`nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat_docs -o tmp/result-docs`)
 and render it with `./nixpkgs/check-qlat-docs-math.py`, which opens every page
 that contains math in headless chromium and reports the failing expressions.
 
+Equation pages follow `docs/contents/coding-doc-equations.md`: number displays
+with `python3 nixpkgs/number-docs-equations.py <page>` and gate the change
+with `--check`.
+
 ## Key Directories
 
 | Path | Contents |
