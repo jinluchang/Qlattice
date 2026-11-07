@@ -11,32 +11,23 @@
 ### Gamma matrix
 
 $$
-\begin{aligned}
-  \gamma^{\text{va}}_{{\mu}} & = & \left\{ \begin{array}{ll}
-    \gamma_{{\mu}} & 0 \leqslant {\mu}< 4\\
-    \gamma_{{\mu}} \gamma_5 & 4 \leqslant {\mu}< 8
-  \end{array} \right.
-\end{aligned}
+\gamma^{\text{va}}_{{\mu}} = \left\{ \begin{array}{ll} \gamma_{{\mu}} & 0 \leqslant {\mu}< 4 \cr \gamma_{{\mu}} \gamma_5 & 4 \leqslant {\mu}< 8 \end{array} \right.
+\tag{1}
 $$
 
 $$
-\begin{aligned}
-  \Gamma_{a + 2 b + 4 c + 8 d} & = & \gamma_x^a \gamma_y^b \gamma_z^c
-  \gamma_t^d
-\end{aligned}
+\Gamma_{a + 2 b + 4 c + 8 d} = \gamma_x^a \gamma_y^b \gamma_z^c \gamma_t^d
+\tag{2}
 $$
 
 $$
-\begin{aligned}
-  \gamma_5 & = & \Gamma_{15} = \gamma_x \gamma_y \gamma_z \gamma_t
-\end{aligned}
+\gamma_5 = \Gamma_{15} = \gamma_x \gamma_y \gamma_z \gamma_t
+\tag{3}
 $$
 
 $$
-\theta_\mu =  \left\{ \begin{array}{ll}
-    1 & 0 \leqslant {\mu}< 4\\
-   -1 & 4 \leqslant {\mu}< 8
-  \end{array} \right.
+\theta_\mu =  \left\{ \begin{array}{ll} 1 & 0 \leqslant {\mu}< 4 \cr -1 & 4 \leqslant {\mu}< 8 \end{array} \right.
+\tag{4}
 $$
 
 ### Propagator
@@ -44,24 +35,18 @@ $$
 Wall source propagator, with Coulomb gauge fixing:
 
 $$
-\begin{aligned}
-  S (\vec{x}, t_{\text{snk}} ; t_{\text{src}}) & = & \sum_{\vec{y}} S
-  (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
-\end{aligned}
+S (\vec{x}, t_{\text{snk}} ; t_{\text{src}}) = \sum_{\vec{y}} S (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
+\tag{5}
 $$
 
 $$
-\begin{aligned}
-  S (t_{\text{snk}} ; \vec{y}, t_{\text{src}}) & = & \sum_{\vec{x}} S
-  (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
-\end{aligned}
+S (t_{\text{snk}} ; \vec{y}, t_{\text{src}}) = \sum_{\vec{x}} S (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
+\tag{6}
 $$
 
 $$
-\begin{aligned}
-  S (t_{\text{snk}} ; t_{\text{src}}) & = & \sum_{\vec{x}, \vec{y}} S
-  (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
-\end{aligned}
+S (t_{\text{snk}} ; t_{\text{src}}) = \sum_{\vec{x}, \vec{y}} S (\vec{x}, t_{\text{snk}} ; \vec{y}, t_{\text{src}})
+\tag{7}
 $$
 
 ## ```contraction-pion.h```
@@ -82,6 +67,7 @@ inline LatData mk_pion_corr_table(const Coordinate& total_site)
 
 $$
 \text{ld}[0\le t_\text{sep} < T]
+\tag{8}
 $$
 
 ```cpp
@@ -93,9 +79,8 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
 ```
 
 $$
-\text{ld}[t_\text{sep}] =
-\sum_{\vec x}
-\text{Tr}\big(\text{prop}_1(\vec x,t_\text{snk})\text{prop}_2(\vec x,t_\text{snk})^\dagger\big)
+\text{ld}[t_\text{sep}] = \sum_{\vec x} \text{Tr}\big(\text{prop}_1(\vec x,t_\text{snk})\text{prop}_2(\vec x,t_\text{snk})^\dagger\big)
+\tag{9}
 $$
 
 ```cpp
@@ -109,8 +94,8 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
 ```
 
 $$
-\text{ld}[t_\text{sep}] =
-\text{Tr}\big(\sum_{\vec x}\text{prop}_1(\vec x,t_\text{snk})\sum_{\vec y}\text{prop}_2(\vec y,t_\text{snk})^\dagger\big)
+\text{ld}[t_\text{sep}] = \text{Tr}\big(\sum_{\vec x}\text{prop}_1(\vec x,t_\text{snk})\sum_{\vec y}\text{prop}_2(\vec y,t_\text{snk})^\dagger\big)
+\tag{10}
 $$
 
 ### two point function
@@ -130,10 +115,8 @@ inline LatData mk_two_point_table(const Coordinate& total_site)
 ```
 
 $$
-\text{ld}
-[0\le t_\text{sep} < T]
-[0\le\text{op}_\text{src}<16]
-[0\le\text{op}_\text{snk}<16]
+\text{ld} [0\le t_\text{sep} < T][0\le\text{op}_\text{src}<16][0\le\text{op}_\text{snk}<16]
+\tag{11}
 $$
 
 ```cpp
@@ -148,9 +131,8 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
 ```
 
 $$
-\text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
-= \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
-S_2(\vec x,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+\text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}] = \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5 S_2(\vec x,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+\tag{12}
 $$
 
 ```cpp
@@ -172,14 +154,8 @@ inline LatData contract_two_point_wall_snk_function(
 ```
 
 $$
-\begin{aligned}
-\text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
-&=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}}
-\sum_\vec y S_2(t_\text{src};\vec y,t_\text{snk})\big) \Gamma_{\text{op}_\text{snk}} \Big)
-\\
-&=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
-\sum_\vec y S_2(\vec y,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
-\end{aligned}
+\text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}] = \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \sum_\vec y S_2(t_\text{src};\vec y,t_\text{snk})\big) \Gamma_{\text{op}_\text{snk}} \Big) = \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5 \sum_\vec y S_2(\vec y,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+\tag{13}
 $$
 
 ### three point function
@@ -199,10 +175,8 @@ inline LatData mk_three_point_table(const Coordinate& total_site)
 ```
 
 $$
-\text{ld}
-[0\le t_\text{sep} < T]
-[0\le t_\text{op} < T]
-[0\le \text{op} < 16]
+\text{ld} [0\le t_\text{sep} < T][0\le t_\text{op} < T][0\le \text{op} < 16]
+\tag{14}
 $$
 
 ```cpp
@@ -227,28 +201,20 @@ inline LatData contract_three_point_function(
 ```
 
 $$
-\begin{aligned}
-\text{ld}[t_\text{sep}][t_\text{op}][\text{op}]
-= \text{Tr}
-\sum_\vec x
-\Big(
-S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5
-S_3(t_\text{src};t_\text{snk})
-\gamma_5
-\big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
-\Big)
-\Gamma_{\text{op}}
-\end{aligned}
+\text{ld}[t_\text{sep}][t_\text{op}][\text{op}] = \text{Tr} \sum_\vec x \Big( S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 S_3(t_\text{src};t_\text{snk}) \gamma_5 \big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big) \Big) \Gamma_{\text{op}}
+\tag{15}
 $$
 
 ## ```contraction-field.h```
 
 $$
-\begin{aligned}
-t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
-\\
-t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
-\end{aligned}
+t_\text{src} = \min(x_t,y_t) - t_\text{sep}
+\tag{16}
+$$
+
+$$
+t_\text{snk} = \max(x_t,y_t) + t_\text{sep}
+\tag{17}
 $$
 
 ### psel-fsel-distribution
@@ -271,6 +237,7 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
 
 $$
 H(x-y) \texttt{ += } 1
+\tag{18}
 $$
 
 ### utils
@@ -284,6 +251,7 @@ From ``field-shuffle.h``
 
 $$
 H(x) \to H(-x)
+\tag{19}
 $$
 
 ```cpp
@@ -292,6 +260,7 @@ inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f);
 
 $$
 H(x)[8\mu+\nu] = H(x)[8\nu+\mu]
+\tag{20}
 $$
 
 ```cpp
@@ -300,6 +269,7 @@ inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f);
 
 $$
 H(x)[8\mu+\nu] = \theta_\mu \theta_\nu H(x)[8\mu+\nu]
+\tag{21}
 $$
 
 ```cpp
@@ -308,6 +278,7 @@ inline void field_complex_conjugate(Field<Complex>& f);
 
 $$
 H(x) = H(x)^*
+\tag{22}
 $$
 
 ### meson-vv
@@ -328,61 +299,35 @@ inline void contract_meson_vv_acc(
 ```
 
 $$
-\begin{aligned}
-H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\mathrm{Tr}
-[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
-\\
-H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\mathrm{Tr}
-[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
-\end{aligned}
+H_\text{decay-1-2-3}(x-y)[8\mu+\nu] \texttt{ += } \mathrm{Tr}[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
+\tag{23}
+$$
+
+$$
+H_\text{fission-1-2-3}(x-y)[8\mu+\nu] \texttt{ += } \mathrm{Tr}[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
+\tag{24}
 $$
 
 Some properties:
 
 $$
-\begin{aligned}
-\big(H_\text{decay-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
-&=&
-\mathrm{Tr}
-[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]^\dagger
-\\
-&=&
-\mathrm{Tr}
-[{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger S_3(y;x)]
-\\
-&=&
-\mathrm{Tr}
-[ S_3(y;x) {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger]
-\\
-&=&
-\theta_\mu \theta_\nu H_\text{decay-2-1-3}(y-x)[8\nu+\mu]
-\end{aligned}
+\big(H_\text{decay-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger = \mathrm{Tr}[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]^\dagger = \mathrm{Tr}[{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger S_3(y;x)] = \mathrm{Tr}[ S_3(y;x) {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger] = \theta_\mu \theta_\nu H_\text{decay-2-1-3}(y-x)[8\nu+\mu]
+\tag{25}
 $$
 
 $$
-\big(H_\text{fission-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
-=
-\theta_\mu \theta_\nu  H_\text{fission-2-1-3}(y-x)[8\nu+\mu]
+\big(H_\text{fission-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger = \theta_\mu \theta_\nu  H_\text{fission-2-1-3}(y-x)[8\nu+\mu]
+\tag{26}
 $$
 
 $$
-\begin{aligned}
-H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
-&\iff&
-\mathrm{Tr}
-[S_3(-x;-y)\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})\gamma_5 S_1(-t_\text{snk};-x)\gamma^{\mathrm{va}}_\mu]
-\\
-&=&
-\mathrm{Tr}
-[S_3(y;x)\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu]
-\\
-&=&
-H_\text{decay-1-2-3}(y-x)[8\mu+\nu]
-\end{aligned}
+H_\text{fission-1-2-3}(x-y)[8\mu+\nu] \iff \mathrm{Tr}[S_3(-x;-y)\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})\gamma_5 S_1(-t_\text{snk};-x)\gamma^{\mathrm{va}}_\mu]
+\tag{27}
+$$
+
+$$
+\mathrm{Tr}[S_3(-x;-y)\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})\gamma_5 S_1(-t_\text{snk};-x)\gamma^{\mathrm{va}}_\mu] = \mathrm{Tr}[S_3(y;x)\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu] = H_\text{decay-1-2-3}(y-x)[8\mu+\nu]
+\tag{28}
 $$
 
 Possible post processing:
@@ -424,93 +369,35 @@ inline void contract_meson_vv_meson_acc(
 ```
 
 $$
-\begin{aligned}
-H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\mathrm{Tr}[
-S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]
-\\
-H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
-&\texttt{ += }&\mathrm{Tr}[
-S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\end{aligned}
+H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu] \texttt{ += } \mathrm{Tr}[ S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu S_4(x;y) \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src}) \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5 ]
+\tag{29}
+$$
+
+$$
+H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu] \texttt{ += }\mathrm{Tr}[ S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu S_4(x;y) \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk}) \gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 ]
+\tag{30}
 $$
 
 Some properties:
 
 $$
-\begin{aligned}
-&&\hspace{-2cm}
-\big(H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
-\nonumber\\
-&=&
-\mathrm{Tr}[
-S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]^\dagger
-\\
-&=&
-\mathrm{Tr}[
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
-S_4(y;x)
-{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
-]
-\\
-&=&
-\mathrm{Tr}[
-S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
-S_4(y;x)
-{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\\
-&=&
-\theta_\mu \theta_\nu H_\text{backward-2-1-3-4}(y-x)[8\nu+\mu]
-\end{aligned}
+\big(H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger = \mathrm{Tr}[ S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu S_4(x;y) \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src}) \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5 ]^\dagger = \mathrm{Tr}[ \gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger S_4(y;x) {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk}) ] = \mathrm{Tr}[ S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger S_4(y;x) {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk}) \gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 ] = \theta_\mu \theta_\nu H_\text{backward-2-1-3-4}(y-x)[8\nu+\mu]
+\tag{31}
 $$
 
 $$
-\begin{aligned}
-\big(H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
-&=&
-\theta_\mu \theta_\nu H_\text{forward-2-1-3-4}(y-x)[8\nu+\mu]
-\end{aligned}
+\big(H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger = \theta_\mu \theta_\nu H_\text{forward-2-1-3-4}(y-x)[8\nu+\mu]
+\tag{32}
 $$
 
 $$
-\begin{aligned}
-&&\hspace{-2cm}H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
-\nonumber\\
-&\iff&
-\mathrm{Tr}[
-S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu
-S_4(-x;-y)
-\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})
-\gamma_5 S_3(-t_\text{snk};-t_\text{src})\gamma_5
-]
-\\
-&=&
-\mathrm{Tr}[
-S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
-S_4(y;x)
-\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]
-\\
-&=&
-H_\text{forward-1-2-3-4}(y-x)[8\mu+\nu]
-\end{aligned}
+H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu] \iff \mathrm{Tr}[ S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu S_4(-x;-y) \gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk}) \gamma_5 S_3(-t_\text{snk};-t_\text{src})\gamma_5 ]
+\tag{33}
+$$
+
+$$
+\mathrm{Tr}[ S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu S_4(-x;-y) \gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk}) \gamma_5 S_3(-t_\text{snk};-t_\text{src})\gamma_5 ] = \mathrm{Tr}[ S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu S_4(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src}) \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5 ] = H_\text{forward-1-2-3-4}(y-x)[8\mu+\nu]
+\tag{34}
 $$
 
 Possible post processing:
@@ -541,22 +428,15 @@ inline LatData contract_meson(const WallSrcProps& wsp1,
 ```
 
 $$
-\text{ld-1-2}[t_\text{snk}][t_\text{src}]
-=
-\mathrm{Tr}[
-S_1(t_\text{snk};t_\text{src})
-\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
-]
+\text{ld-1-2}[t_\text{snk}][t_\text{src}] = \mathrm{Tr}[ S_1(t_\text{snk};t_\text{src}) \gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5 ]
+\tag{35}
 $$
 
 Some properties:
 
 $$
-\text{ld-1-2}[t_\text{snk}][t_\text{src}]^\dagger
-=
-\text{ld-2-1}[t_\text{snk}][t_\text{src}]
-=
-\text{ld-1-2}[t_\text{src}][t_\text{snk}]
+\text{ld-1-2}[t_\text{snk}][t_\text{src}]^\dagger = \text{ld-2-1}[t_\text{snk}][t_\text{src}] = \text{ld-1-2}[t_\text{src}][t_\text{snk}]
+\tag{36}
 $$
 
 ## chvp
@@ -573,36 +453,20 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
 ```
 
 $$
-H_\text{chvp-1-2} (x-y) [8\mu+\nu] = \mathrm{Tr}[
-S_1(x;y)\gamma^{\mathrm{va}}_\nu
-S_2(y;x)\gamma^{\mathrm{va}}_\mu
-]
+H_\text{chvp-1-2} (x-y) [8\mu+\nu] = \mathrm{Tr}[ S_1(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;x)\gamma^{\mathrm{va}}_\mu ]
+\tag{37}
 $$
 
 Some properties:
 
 $$
 H_\text{chvp-1-2} (x-y) [8\mu+\nu] = H_\text{chvp-2-1} (y-x)[8\nu+\mu]
+\tag{38}
 $$
 
 $$
-\begin{aligned}
-\big(H_\text{chvp-1-2} (x-y) [8\mu+\nu] \big)^\dagger
-&=&
-\mathrm{Tr}[
-{\gamma^{\mathrm{va}}_\mu}^\dagger
-S_2(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger
-S_1(y;x)
-]
-\\
-&=&
-\theta_\mu \theta_\nu
-H_\text{chvp-2-1}(x-y)[8\mu+\nu]
-\\
-&=&
-\theta_\mu \theta_\nu
-H_\text{chvp-1-2}(y-x)[8\nu+\mu]
-\end{aligned}
+\big(H_\text{chvp-1-2} (x-y) [8\mu+\nu] \big)^\dagger = \mathrm{Tr}[ {\gamma^{\mathrm{va}}_\mu}^\dagger S_2(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger S_1(y;x) ] = \theta_\mu \theta_\nu H_\text{chvp-2-1}(x-y)[8\mu+\nu] = \theta_\mu \theta_\nu H_\text{chvp-1-2}(y-x)[8\nu+\mu]
+\tag{39}
 $$
 
 Possible post processing:
@@ -636,69 +500,30 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
 
 
 $$
-\begin{aligned}
-H_\text{1-2-3-4}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\mathrm{Tr}[
-S_1(t_\text{snk};t_\text{src})
-\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
-]
-\mathrm{Tr}[
-S_3(x;y)\gamma^{\mathrm{va}}_\nu
-S_4(y;x)\gamma^{\mathrm{va}}_\mu
-]
-\end{aligned}
+H_\text{1-2-3-4}(x-y)[8\mu+\nu] \texttt{ += } \mathrm{Tr}[ S_1(t_\text{snk};t_\text{src}) \gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5 ] \mathrm{Tr}[ S_3(x;y)\gamma^{\mathrm{va}}_\nu S_4(y;x)\gamma^{\mathrm{va}}_\mu ]
+\tag{40}
 $$
 
 Some properties:
 
 $$
 H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
+\tag{41}
 $$
 
 $$
-\begin{aligned}
-\big(H_\text{1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
-&=&
-\mathrm{Tr}[
-S_1(t_\text{src};t_\text{snk})
-\gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5
-]
-\mathrm{Tr}[
-S_4(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger
-S_3(y;x){\gamma^{\mathrm{va}}_\mu}^\dagger
-]
-\\
-&=&
-\theta_\mu \theta_\nu
-H_\text{2-1-4-3}(x-y)[8\mu+\nu]
-\\
-&=&
-\theta_\mu \theta_\nu
-H_\text{2-1-3-4}(y-x)[8\nu+\mu]
-\end{aligned}
+\big(H_\text{1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger = \mathrm{Tr}[ S_1(t_\text{src};t_\text{snk}) \gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5 ] \mathrm{Tr}[ S_4(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger S_3(y;x){\gamma^{\mathrm{va}}_\mu}^\dagger ] = \theta_\mu \theta_\nu H_\text{2-1-4-3}(x-y)[8\mu+\nu] = \theta_\mu \theta_\nu H_\text{2-1-3-4}(y-x)[8\nu+\mu]
+\tag{42}
 $$
 
 $$
-\begin{aligned}
-&&\hspace{-2cm}H_\text{1-2-3-4}(x-y)[8\mu+\nu]
-\nonumber\\
-&\iff&
-\mathrm{Tr}[
-S_1(t_\text{src};t_\text{snk})
-\gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5
-]
-\mathrm{Tr}[
-S_3(y;x)\gamma^{\mathrm{va}}_\nu
-S_4(x;y)\gamma^{\mathrm{va}}_\mu
-]
-\\
-&=&
-H_\text{2-1-3-4}(y-x)[8\mu+\nu]
-\\
-&=&
-\big(\theta_\mu \theta_\nu H_\text{1-2-3-4}(x-y)[8\nu+\mu]\big)^\dagger
-\end{aligned}
+H_\text{1-2-3-4}(x-y)[8\mu+\nu] \iff \mathrm{Tr}[ S_1(t_\text{src};t_\text{snk}) \gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5 ] \mathrm{Tr}[ S_3(y;x)\gamma^{\mathrm{va}}_\nu S_4(x;y)\gamma^{\mathrm{va}}_\mu ]
+\tag{43}
+$$
+
+$$
+\mathrm{Tr}[ S_1(t_\text{src};t_\text{snk}) \gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5 ] \mathrm{Tr}[ S_3(y;x)\gamma^{\mathrm{va}}_\nu S_4(x;y)\gamma^{\mathrm{va}}_\mu ] = H_\text{2-1-3-4}(y-x)[8\mu+\nu] = \big(\theta_\mu \theta_\nu H_\text{1-2-3-4}(x-y)[8\nu+\mu]\big)^\dagger
+\tag{44}
 $$
 
 Possible post processing:
@@ -737,15 +562,7 @@ inline void contract_meson_v_v_meson_acc(
 ```
 
 $$
-\begin{aligned}
-H_\text{1-2-3-4}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\mathrm{Tr}[
-S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
-S_2(x;t_\text{src})\gamma_5
-S_3(t_\text{src};y) \gamma^{\mathrm{va}}_\nu 
-S_4(y;t_\text{snk})\gamma_5
-]
-\end{aligned}
+H_\text{1-2-3-4}(x-y)[8\mu+\nu] \texttt{ += } \mathrm{Tr}[ S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu S_2(x;t_\text{src})\gamma_5 S_3(t_\text{src};y) \gamma^{\mathrm{va}}_\nu S_4(y;t_\text{snk})\gamma_5 ]
+\tag{45}
 $$
 
