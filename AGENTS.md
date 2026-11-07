@@ -341,9 +341,12 @@ build it (`nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat_docs -o tmp/result-docs`)
 and render it with `./nixpkgs/check-qlat-docs-math.py`, which opens every page
 that contains math in headless chromium and reports the failing expressions.
 
-Equation pages follow `docs/contents/coding-doc-equations.md`: number displays
-with `python3 nixpkgs/number-docs-equations.py <page>` and gate the change
-with `--check`.
+- **Equation rules:** every page with math follows
+  [`docs/contents/coding-doc-equations.md`](docs/contents/coding-doc-equations.md)
+  — inline math is a single token, every other relation is its own `$$`
+  display (fences on their own lines), and displays are numbered only by
+  `python3 nixpkgs/number-docs-equations.py <page>` (run `--check` before
+  hand-off). Keep that page, its rules and the tool in sync.
 
 ## Key Directories
 
