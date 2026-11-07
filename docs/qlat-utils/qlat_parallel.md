@@ -141,7 +141,7 @@ progress.  Useful for monitoring long-running parallel map results.
 |---|---|
 | `tag` | Prefix for log messages (default: function name) |
 | `step_size` | Log every `step_size` elements (default: `1`) |
-| `max_idx` | Total count for `N/M` progress display |
+| `max_idx` | Total count for $N/M$ progress display |
 | `verbose_level` | Logging verbosity level |
 
 ---
@@ -192,7 +192,7 @@ for r in q.trace_iter(results, step_size=10, max_idx=100):
     pass  # progress is logged automatically
 ```
 
-### Sequential fallback (n_proc=0)
+### Sequential fallback (`n_proc=0`)
 
 ```python
 import qlat_utils as q

@@ -307,7 +307,7 @@ modifying `f_rank` directly (e.g., via buffer view).
 
 ### `set_empty(geo: Geometry)`
 
-Set an empty selection (all ranks = -1) with the given geometry.
+Set an empty selection (with every rank equal to $-1$) for the given geometry.
 
 ### `set_uniform(geo: Geometry, val=0)`
 

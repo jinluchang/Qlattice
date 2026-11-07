@@ -74,7 +74,7 @@ q.end_with_mpi()
 ## `GaugeField` Class
 
 `GaugeField` inherits from `FieldColorMatrix` with fixed multiplicity 4.
-Each site stores 4 color matrices — one for each lattice direction mu=0,1,2,3.
+Each site stores 4 color matrices — one for each of the four lattice directions, with $\mu$ running from $0$ to $3$.
 
 ### Constructor
 
@@ -220,7 +220,7 @@ on the operand:
 
 #### `inv() -> GaugeTransform`
 
-Return the inverse transformation V^dagger.
+Return the inverse transformation $V^\dagger$.
 
 ---
 
@@ -291,7 +291,7 @@ Returns a `FieldColorMatrix` with multiplicity `len(path_list)`.
 
 #### `gf_avg_wilson_loop_normalized_tr(gf: GaugeField, l: int, t: int) -> float`
 
-Return the average Wilson loop trace (normalized by Nc=3) for an
+Return the average Wilson loop trace (normalized by $N_c$ equal to $3$) for an
 l x t rectangular loop.
 
 | Parameter | Type | Description |
@@ -360,7 +360,7 @@ solution).
 | `m5` | `float` | — | Domain-wall height |
 | `ls` | `int` | — | Fifth-dimension extent |
 | `t_wick_phase_factor_arr` | array or `None` | `None` | Per-timeslice Wick phase factors |
-| `is_dagger` | `bool` | `False` | Use M^dag if True |
+| `is_dagger` | `bool` | `False` | Use $M^\dagger$ if True |
 | `stop_rsd` | `float` | `1e-8` | Stopping residual |
 | `max_num_iter` | `int` | `50000` | Maximum CG iterations |
 
@@ -382,7 +382,7 @@ Input and output are 5-D fermion fields.
 | `m5` | `float` | — | Domain-wall height |
 | `ls` | `int` | — | Fifth-dimension extent |
 | `t_wick_phase_factor_arr` | array or `None` | `None` | Per-timeslice Wick phase factors |
-| `is_dagger` | `bool` | `False` | Use M M^dag if True |
+| `is_dagger` | `bool` | `False` | Use $M M^\dagger$ if True |
 | `stop_rsd` | `float` | `1e-8` | Stopping residual |
 | `max_num_iter` | `int` | `50000` | Maximum CG iterations |
 
@@ -404,7 +404,7 @@ Apply the DWF operator with QED corrections: compute `out = M * in` (or
 | `m5` | `float` | — | Domain-wall height |
 | `ls` | `int` | — | Fifth-dimension extent |
 | `t_wick_phase_factor_arr` | array or `None` | `None` | Per-timeslice Wick phase factors |
-| `is_dagger` | `bool` | `False` | Apply M^dag if True |
+| `is_dagger` | `bool` | `False` | Apply $M^\dagger$ if True |
 
 ---
 

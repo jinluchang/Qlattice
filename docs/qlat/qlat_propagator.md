@@ -79,7 +79,7 @@ class Prop(FieldWilsonMatrix)
 ```
 
 Full-volume propagator.  Each site stores one `WilsonMatrix` (12x12
-complex matrix, multiplicity = 1).
+complex matrix, with multiplicity equal to $1$).
 
 #### Constructors
 

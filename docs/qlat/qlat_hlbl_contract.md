@@ -197,13 +197,13 @@ Returns a 3-D NumPy array of shape `(n_labels, s_limit, l_limit)`.
 | `idx_xg_x` | `int` | Index of source point x in `psel` |
 | `idx_xg_y` | `int` | Index of sink point y in `psel` |
 | `smf_d` | `SelectedPointsRealD` | Muon-line field at vertex z |
-| `sc_xy` | `SelectedPointsWilsonMatrix` | Local current J(x) for x->y direction |
-| `sc_yx` | `SelectedPointsWilsonMatrix` | Local current J(x) for y->x direction |
-| `cm_xy` | `CurrentMoments` | Current moments for x->y direction |
-| `cm_yx` | `CurrentMoments` | Current moments for y->x direction |
+| `sc_xy` | `SelectedPointsWilsonMatrix` | Local current $J(x)$ for the $x \to y$ direction |
+| `sc_yx` | `SelectedPointsWilsonMatrix` | Local current $J(x)$ for the $y \to x$ direction |
+| `cm_xy` | `CurrentMoments` | Current moments for the $x \to y$ direction |
+| `cm_yx` | `CurrentMoments` | Current moments for the $y \to x$ direction |
 | `inv_type` | `int` | `0` = light quark, `1` = strange quark |
 | `tags` | `list[str]` | Reference point tags (e.g., `["ref-far", "ref-center"]`) |
-| `r_sq_limit` | `int` | Maximum r^2 cutoff |
+| `r_sq_limit` | `int` | Maximum $r^2$ cutoff |
 | `muon_mass` | `float` | Muon mass |
 | `z_v` | `float` | Vector coupling constant |
 
@@ -230,7 +230,7 @@ has shape `(n_labels, s_limit, l_limit)`.
 | `idx_xg_x` | `int` | Index of source point x in `psel` |
 | `lps_hvp_x` | `SelectedPointsComplexD` | HVP tensor at point x |
 | `edl_list_c` | `SelectedPointsComplexD` | External double-line list |
-| `r_sq_limit` | `int` | Maximum r^2 cutoff |
+| `r_sq_limit` | `int` | Maximum $r^2$ cutoff |
 | `muon_mass` | `float` | Muon mass |
 | `z_v` | `float` | Vector coupling constant |
 

@@ -42,7 +42,7 @@ ScalarAction(m_sq: float, lmbd: float, alpha: float)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `m_sq` | `float` | Mass squared (m^2) of the scalar field |
+| `m_sq` | `float` | Mass squared ($m^2$) of the scalar field |
 | `lmbd` | `float` | Quartic self-coupling (lambda) |
 | `alpha` | `float` | Additional coupling parameter (alpha) |
 

@@ -50,7 +50,7 @@ GaugeAction(beta: float, c1: float = 0.0)
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `beta` | `float` | — | Inverse gauge coupling (6 / g^2) |
+| `beta` | `float` | — | Inverse gauge coupling ($6/g^2$) |
 | `c1` | `float` | `0.0` | Coefficient of the rectangle (improvement) term |
 
 - `c1 = 0.0` gives the standard Wilson plaquette action.

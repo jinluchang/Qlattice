@@ -131,7 +131,7 @@ gf_topology_field(gf: GaugeField) -> FieldRealD
 
 Return a `FieldRealD` with `multiplicity == 1` containing the topological
 charge density at each site using the 5-loop improved definition from
-[arXiv:hep-lat/9701012 Eq. (2-7)](https://arxiv.org/abs/hep-lat/9701012).
+[arXiv:hep-lat/9701012 equation (2-7)](https://arxiv.org/abs/hep-lat/9701012).
 This definition reduces discretization errors compared to the basic
 clover-leaf method.
 

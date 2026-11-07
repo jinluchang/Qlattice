@@ -98,7 +98,7 @@ All subclasses also provide the following Python-accessible static methods (wrap
 
 ## Matrix Types
 
-These types represent 2D matrix structures used in lattice QCD calculations. All use `ComplexD` (complex double, `'Zd'`) as their scalar element type.
+These types represent 2D matrix structures used in lattice QCD calculations. All use `ComplexD` (complex double, `'Zd'`) as their scalar element type, so an item occupies 16 bytes.
 
 ### `ElemTypeColorMatrix`
 
@@ -109,7 +109,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"ColorMatrix"` |
 | `ndim` | `2` |
 | `shape` | `(3, 3)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 144 bytes |
 
 ### `ElemTypeWilsonMatrix`
@@ -121,7 +121,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"WilsonMatrix"` |
 | `ndim` | `2` |
 | `shape` | `(12, 12)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 2304 bytes |
 
 ### `ElemTypeNonRelWilsonMatrix`
@@ -133,7 +133,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"NonRelWilsonMatrix"` |
 | `ndim` | `2` |
 | `shape` | `(6, 6)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 576 bytes |
 
 ### `ElemTypeIsospinMatrix`
@@ -145,7 +145,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"IsospinMatrix"` |
 | `ndim` | `2` |
 | `shape` | `(2, 2)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 64 bytes |
 
 ### `ElemTypeSpinMatrix`
@@ -157,7 +157,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"SpinMatrix"` |
 | `ndim` | `2` |
 | `shape` | `(4, 4)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 256 bytes |
 
 ### `ElemTypeWilsonVector`
@@ -169,7 +169,7 @@ These types represent 2D matrix structures used in lattice QCD calculations. All
 | `name` | `"WilsonVector"` |
 | `ndim` | `1` |
 | `shape` | `(12,)` |
-| `itemsize` | `sizeof(ComplexD)` = 16 bytes |
+| `itemsize` | 16 bytes |
 | `size` | 192 bytes |
 
 ---

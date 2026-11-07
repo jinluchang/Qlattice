@@ -238,7 +238,7 @@ of staple construction with independent coefficients, providing stronger UV
 suppression with less link distortion than APE smearing. After `num_step`
 iterations the smeared field is returned.
 
-Reference: [Hasenfratz & Knechtli, Phys. Rev. D 64, 034504 (2001)](https://doi.org/10.1103/PhysRevD.64.034504), Eq. (4).
+Reference: [Hasenfratz & Knechtli, Phys. Rev. D 64, 034504 (2001)](https://doi.org/10.1103/PhysRevD.64.034504), equation (4).
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|

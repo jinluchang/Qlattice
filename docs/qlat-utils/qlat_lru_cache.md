@@ -16,7 +16,7 @@ Source: `qlat-utils/qlat_utils/lru_cache.py`
 
 The `qlat_utils.lru_cache` module provides `LRUCache`, a fixed-capacity
 Least Recently Used cache backed by `collections.OrderedDict`. All operations
-(lookup, insertion, update) run in O(1) time.
+(lookup, insertion, update) run in constant time.
 
 When the cache reaches its capacity, inserting a new item automatically evicts
 the least recently accessed entry. Accessing an item (via `get` or `[]`) moves

@@ -92,7 +92,7 @@ gf_energy_density_dir_field(gf)[:].sum(-1, keepdims=True)
     == gf_energy_density_field(gf)[:]
 ```
 
-See [arXiv:1006.4518 Eq. (2.1)](https://arxiv.org/abs/1006.4518) and
+See [arXiv:1006.4518 equation (2.1)](https://arxiv.org/abs/1006.4518) and
 [arXiv:1203.4469](https://arxiv.org/abs/1203.4469).
 
 ---
