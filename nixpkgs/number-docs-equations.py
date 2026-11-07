@@ -9,9 +9,14 @@ References rewritten (outside fenced code and outside inline code spans):
 A reference whose number has no mapping (the equation was deleted, or was never numbered) is
 reported as DANGLING with its line number and makes the command exit non-zero — the tags are still
 written, so the author can fix the prose.\n
+A display whose body contains a LaTeX line break (two backslashes) is RENDER-UNSAFE: Sphinx wraps
+it in `\\begin{split}`, where MathJax rejects `\\tag`; `\\begin{aligned}`/`\\begin{align}` are unsafe
+for the same reason.  Such a display is an ERROR in both write and `--check` mode and its file is
+left untouched: write the relation on one line, split independent relations into separate displays,
+or use `\\cr` inside a `\\begin{array}` for a piecewise array.\n
 Usage:
     python3 nixpkgs/number-docs-equations.py notes/foo.md [notes/bar.md ...]
-    python3 nixpkgs/number-docs-equations.py --check notes/foo.md     # exit 1 on stale tags, stale refs, or dangling
+    python3 nixpkgs/number-docs-equations.py --check notes/foo.md     # exit 1 on stale tags, stale refs, dangling, or render-unsafe
 """
 
 from __future__ import annotations
@@ -27,6 +32,8 @@ CODE_SPAN_RE = re.compile(r"`[^`]*`")
 REF_RE = re.compile(r"Eqs?\.\s*(?:\(\d+\)(?:\s*(?:,|and|–|—|-|to)\s*)?)+")
 NUM_RE = re.compile(r"\((\d+)\)")
 RANGE_SEP = re.compile(r"[ \t]*(?:–|—|-|to)[ \t]*")
+LINEBREAK = "\\\\"
+ALIGN_ENV_RE = re.compile(r"\\begin\{(?:align|aligned)\}")
 
 def code_fence_mask(lines: list[str]) -> list[bool]:
     """True for the fence lines themselves and for every line inside a fenced block."""
@@ -72,6 +79,18 @@ def scan_blocks(lines: list[str], code: list[bool], warn) -> list[dict]:
             )
         i += 1
     return blocks
+
+def render_unsafe(lines: list[str], block: dict) -> str | None:
+    """Return the render-safety rule a display breaks (`linebreak` or `aligned`), or None."""
+    if block["single"]:
+        text = lines[block["start"]]
+    else:
+        text = "\n".join(lines[block["start"] : block["end"] + 1])
+    if ALIGN_ENV_RE.search(text):
+        return "aligned"
+    if LINEBREAK in text:
+        return "linebreak"
+    return None
 
 def old_tag(lines: list[str], block: dict) -> int | None:
     for k in range(block["start"], block["end"] + 1):
@@ -150,12 +169,19 @@ def number_file(path: str, warn=print) -> dict:
         if t is not None:
             mapping[t] = k
     #
+    unsafe: list[tuple[int, str]] = []
+    for block in blocks:
+        reason = render_unsafe(lines, block)
+        if reason is not None:
+            unsafe.append((block["start"] + 1, reason))
+    #
     stats = {
         "path": path,
         "blocks": len(blocks),
         "changed": [],
         "ranges": [],
         "dangling": [],
+        "unsafe": unsafe,
     }
     out: list[str] = []
     inset: set[int] = set()
@@ -186,7 +212,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="number-docs-equations.py",
         description=__doc__,
         epilog="Exit codes: 0 success; 1 stale tags / stale references / dangling reference / "
-        "missing or unreadable file; 2 command-line misuse.",
+        "render-unsafe display / missing or unreadable file; 2 command-line misuse.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -198,8 +224,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="validate only: exit 1 when tags or references are stale, or a "
-        "reference dangles",
+        help="validate only: exit 1 when tags or references are stale, a "
+        "reference dangles, or a display is render-unsafe",
     )
     return parser
 
@@ -217,6 +243,7 @@ def main(argv: list[str] | None = None) -> int:
     stale_tags: list[str] = []
     stale_refs: list[dict] = []
     dangling: list[tuple[str, int, int]] = []
+    unsafe: list[tuple[str, int, str]] = []
     total = 0
     for path in files:
         st = number_file(path, warn=lambda msg, p=path: warnings.append(f"{p}: {msg}"))
@@ -226,6 +253,9 @@ def main(argv: list[str] | None = None) -> int:
         tags_changed = old_wo_tags != new_wo_tags
         refs_changed = [c for c in st["changed"]]
         dangling += [(path, ln, n) for ln, n in st["dangling"]]
+        if st["unsafe"]:
+            unsafe += [(path, ln, kind) for ln, kind in st["unsafe"]]
+            continue
         if check:
             if tags_changed:
                 stale_tags.append(path)
@@ -259,9 +289,26 @@ def main(argv: list[str] | None = None) -> int:
             f"DANGLING reference: {path} line {ln}: Eq. ({n}) has no numbered equation",
             file=sys.stderr,
         )
+    for path, ln, kind in unsafe:
+        if kind == "linebreak":
+            print(
+                f"RENDER-UNSAFE display: {path} line {ln}: a numbered display must not "
+                "contain \\\\; write the relation on one line, split independent relations "
+                "into separate displays, or use \\cr for a piecewise array",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"RENDER-UNSAFE display: {path} line {ln}: a numbered display must not "
+                "contain \\begin{aligned} or \\begin{align}; flatten it; one relation "
+                "per display",
+                file=sys.stderr,
+            )
     #
     if check:
         reasons = []
+        if unsafe:
+            reasons.append(f"{len(unsafe)} render-unsafe display(s)")
         if stale_tags:
             reasons.append("stale tag numbering in " + ", ".join(stale_tags))
         if stale_refs:
@@ -279,7 +326,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(f"{len(files)} file(s) checked, {total} display equation(s)")
         return 0
-    if dangling:
+    if dangling or unsafe:
         return 1
     print(f"{len(files)} file(s), {total} display equation(s)")
     return 0
