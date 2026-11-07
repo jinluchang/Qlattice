@@ -55,12 +55,14 @@ Standard Wilson flow action:
 
 $$
 S_\mathrm{Wilson} = \frac{\beta}{2}\sum_{x,\mu,\nu} \Big(1 - \frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
+\tag{1}
 $$
 
 Modified flow with plaquette-dependent coupling:
 
 $$
 S_f = -\frac{\beta}{2}\sum_{x,\mu,\nu} f\Big(\frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
+\tag{2}
 $$
 
 ---

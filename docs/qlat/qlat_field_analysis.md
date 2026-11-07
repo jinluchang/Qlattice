@@ -137,11 +137,24 @@ mk_field_smear_mom_kernel(total_site: tuple, radius: float) -> FieldRealD
 
 Build the 4D Gaussian smearing kernel in momentum space:
 
-$$G(k) = \exp\!\Bigl(-\frac{r^2}{4}\sum_{\mu=0}^{3}\sin^2\!\frac{k_\mu}{2}\Bigr)$$
+$$
+G(k) = \exp\!\Bigl(-\frac{r^2}{4}\sum_{\mu=0}^{3}\sin^2\!\frac{k_\mu}{2}\Bigr)
+\tag{1}
+$$
 
-where $k_\mu = 2\pi n_\mu / L_\mu$.
+where
 
-If `radius == np.inf`, the kernel is a delta function at $k = 0$.
+$$
+k_\mu = 2\pi n_\mu / L_\mu
+\tag{2}
+$$
+
+If `radius == np.inf`, the kernel is a delta function at
+
+$$
+k = 0
+\tag{3}
+$$
 
 Results are cached (up to 128 entries).
 
@@ -153,7 +166,10 @@ mk_field_smear_mom_kernel_spatial(total_site: tuple, radius: float) -> FieldReal
 
 Build the spatial-only Gaussian smearing kernel:
 
-$$G(k) = \exp\!\Bigl(-\frac{2r^2}{3}\sum_{i=0}^{2}\sin^2\!\frac{k_i}{2}\Bigr)$$
+$$
+G(k) = \exp\!\Bigl(-\frac{2r^2}{3}\sum_{i=0}^{2}\sin^2\!\frac{k_i}{2}\Bigr)
+\tag{4}
+$$
 
 The temporal direction is not smeared. If `radius == np.inf`, the
 kernel selects the spatial zero mode.
@@ -196,7 +212,10 @@ sphere_sum_field(
 
 Approximate sphere summation of a field via FFT convolution:
 
-$$f_{\text{sphere-summed}}(x) \approx \sum_y \theta(|x-y| < r)\, f(y)$$
+$$
+f_{\text{sphere-summed}}(x) \approx \sum_y \theta(|x-y| < r)\, f(y)
+\tag{5}
+$$
 
 The field must be at least complex type. The result is normalised so
 that the sum approximates a spherical average.
@@ -215,9 +234,10 @@ field_smear(
 
 Gaussian-smear a field in momentum space and return the result.
 
-$$f_{\text{smear}}(x) \approx
-\frac{\sum_y f(y)\,\exp\!\bigl(-(x-y)^2/(2r^2)\bigr)}
-     {\sum_y \exp\!\bigl(-y^2/(2r^2)\bigr)}$$
+$$
+f_{\text{smear}}(x) \approx \frac{\sum_y f(y)\,\exp\!\bigl(-(x-y)^2/(2r^2)\bigr)} {\sum_y \exp\!\bigl(-y^2/(2r^2)\bigr)}
+\tag{6}
+$$
 
 The field must be at least complex type. If `spatial_only` is
 `True`, only the three spatial directions are smeared.
@@ -249,7 +269,10 @@ field_convolution(
 
 Compute the cross-correlation of two complex fields via FFT:
 
-$$\text{ff}[x_g] = \sum_{x} f_2(x + x_g,\, \text{idx2}) \cdot f_1(x,\, \text{idx1})$$
+$$
+\text{ff}[x_g] = \sum_{x} f_2(x + x_g,\, \text{idx2}) \cdot f_1(x,\, \text{idx1})
+\tag{7}
+$$
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|

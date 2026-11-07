@@ -31,11 +31,12 @@ Source: `qlat/qlat/muon_line.pyx`
 
 $$
 \mathcal{M}_{i,\rho,\sigma,\lambda}(x,y,z)
+\tag{1}
 $$
 
 that appears in the hadronic light-by-light (HLbL) scattering contribution
 to the muon anomalous magnetic moment $(g-2)_\mu$.  The computation
-follows the method described in [arXiv:2304.04423](https://arxiv.org/abs/2304.04423), Eq.~(9).
+follows the method described in [arXiv:2304.04423](https://arxiv.org/abs/2304.04423), equation (9).
 
 The module provides:
 

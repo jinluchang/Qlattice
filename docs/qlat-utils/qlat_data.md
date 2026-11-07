@@ -194,7 +194,10 @@ blocks overlap by `block_size - 1` entries.
 
 Compute `(avg, err)` of `data_list` using blocking. The error estimate is:
 
-$$\text{err} = |\text{eps}| \sqrt{\frac{\text{block\_size}}{N - \text{block\_size}}} \cdot \text{fsqrt}\big(\text{avg}\big[(d_i - \text{avg})^2\big]\big)$$
+$$
+\text{err} = |\text{eps}| \sqrt{\frac{\text{block\_size}}{N - \text{block\_size}}} \cdot \text{fsqrt}\big(\text{avg}\big[(d_i - \text{avg})^2\big]\big)
+\tag{1}
+$$
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|

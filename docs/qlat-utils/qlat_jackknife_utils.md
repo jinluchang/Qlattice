@@ -66,7 +66,10 @@ Return the average (first element) of a jackknife array.
 
 Return the jackknife error estimate:
 
-$$\frac{1}{\text{eps}} \sqrt{ \frac{N}{N - \text{block\_size}} \sum_{i=1}^{N} (jk[i] - \text{jk\_avg})^2 }$$
+$$
+\frac{1}{\text{eps}} \sqrt{ \frac{N}{N - \text{block\_size}} \sum_{i=1}^{N} (jk[i] - \text{jk\_avg})^2 }
+\tag{1}
+$$
 
 The `eps` and `block_size` must match those used in the corresponding
 `jackknife` call. Note: `len(jk_arr) = N + 1`.
@@ -157,9 +160,19 @@ distribution of the average.
 
 The formula is:
 
-$$jk\_arr[i] = \text{avg} + \sum_{j=1}^{N} \frac{-\text{eps}}{\sqrt{N(N - b(i,j))}} r_{i,j} (d_j - \text{avg})$$
+$$
+jk\_arr[i] = \text{avg} + \sum_{j=1}^{N} \frac{-\text{eps}}{\sqrt{N(N - b(i,j))}} r_{i,j} (d_j - \text{avg})
+\tag{2}
+$$
 
-where $r_{i,j} \sim \mathcal{N}(0, 1)$ and $b(i,j)$ is the block size.
+where
+
+$$
+r_{i,j} \sim \mathcal{N}(0, 1)
+\tag{3}
+$$
+
+and $b(i,j)$ is the block size.
 
 If `is_sync_node` is `True`, the operation is assumed to be a collective
 operation in a MPI program where every node has the same input. It is then

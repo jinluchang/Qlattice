@@ -37,14 +37,17 @@ The module defines three flow observables:
 
 $$
 W_0(t) = t^2 \langle E(t) \rangle
+\tag{1}
 $$
 
 $$
 W_1(t) = W(t) = t \frac{d}{dt} (t^2 \langle E(t) \rangle)
+\tag{2}
 $$
 
 $$
 W_2(t) = -t^3 \frac{d}{dt} \langle E(t) \rangle
+\tag{3}
 $$
 
 Key references:
