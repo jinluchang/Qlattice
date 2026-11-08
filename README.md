@@ -74,7 +74,13 @@ q.end_with_mpi()
 
 Build variants (`--variant cuda`, `--cudasupport`, `--cu`, `--clang`,
 `--pypi`, or `--all-variants`) and all options are listed by
-`./nixpkgs/install-py-local-kernel-with-nix.py --help`.
+`./nixpkgs/install-py-local-kernel-with-nix.py --help`. The nixpkgs itself can
+be picked with `--version 26.05` (or `unstable`, fetched from
+channels.nixos.org) or `--nixpkgs /path/to/nixpkgs` for a pinned local tree; the
+default is the `<nixpkgs>` of `NIX_PATH`, and `--version ""` selects that same
+default explicitly. 26.05 is the tested release — 24.11 and 25.11 currently
+fail to evaluate `qlat-jhub-env`, so use `--nixpkgs` with a patched tree for
+those.
 
 ## Installation without Nix
 

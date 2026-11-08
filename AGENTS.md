@@ -42,6 +42,7 @@ documents both.
 ### Build qlat with nix
 
 Use `nixpkgs/install-py-local-kernel-with-nix.py` to build qlat via nix. It creates a `./result-py-local` symlink to the nix store path. Build variants: `--variant cuda`, `--variant cudasupport`, `--variant cu`, `--variant clang`, `--variant pypi`, or `--all-variants` for every variant. See `--help` for details.
+The nixpkgs can be chosen with `--version 26.05` (or `nixos-26.05` / `unstable`, fetched from channels.nixos.org) or with `--nixpkgs /path/to/nixpkgs` for a local or rev-pinned tree; the default is the `<nixpkgs>` of `NIX_PATH`; `--version ""` selects that same default explicitly. 26.05 is the tested release for the kernel environment: 24.11 and 25.11 currently fail to evaluate `qlat-jhub-env` (`nixfmt-tree`/`xvfb` are gone), so use `--nixpkgs` with a patched tree for those.
 
 ```bash
 ./nixpkgs/install-py-local-kernel-with-nix.py

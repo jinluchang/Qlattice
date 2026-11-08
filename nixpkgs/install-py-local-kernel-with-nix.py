@@ -22,11 +22,19 @@ repo link './result-py-local<variant>' points at the nix store path directly
 instead of going through that out link.  Files that the subprocesses would put
 in a temporary directory ('$TMPDIR', by default '/tmp') then go to
 '<repo>/tmp/tmp', and the IPython config directory of the kernel install goes to
-'<repo>/tmp/jupyter/ipython', because some runners discard '/tmp'.
+'<repo>/tmp/jupyter/ipython', because some runners discard '/tmp'.\n
+The nixpkgs used for the build can be selected with '--version' (a
+NixOS release or channel such as '26.05' or 'unstable', fetched from
+channels.nixos.org) or with '--nixpkgs' (a local checkout or a rev-pinned
+tarball URL).  The default is the '<nixpkgs>' of NIX_PATH, and '--version ""'
+selects that same default explicitly.  26.05 is the tested release for the
+kernel environment; 24.11 and 25.11 currently fail to evaluate 'qlat-jhub-env'
+(nixfmt-tree / xvfb are gone), so use '--nixpkgs' with a patched tree for those.
 """
 
 import argparse
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -62,6 +70,10 @@ examples:
   ./nixpkgs/install-py-local-kernel-with-nix.py --variant clang --variant pypi
   ./nixpkgs/install-py-local-kernel-with-nix.py --all-variants
   ./nixpkgs/install-py-local-kernel-with-nix.py --no-nom -j 4 --cores 15
+  ./nixpkgs/install-py-local-kernel-with-nix.py --version 26.05
+  ./nixpkgs/install-py-local-kernel-with-nix.py --variant clang --version nixos-26.05
+  ./nixpkgs/install-py-local-kernel-with-nix.py --version ""
+  ./nixpkgs/install-py-local-kernel-with-nix.py --nixpkgs /path/to/nixpkgs
 
 variants (exact names, without a leading '-'):
   default       Qlattice and Grid/GPT.  This is the default when '--variant' is omitted.
@@ -76,7 +88,23 @@ link './result-py-local<suffix>' and installs the kernel 'py-local<suffix>', whe
 the suffix is '' for 'default' and '-<name>' otherwise: '--variant cuda' builds
 'pkgs-cuda.qlat-jhub-env' and installs the kernel 'py-local-cuda'.
 
-arguments that are not recognised here are passed on to nix-build.
+nixpkgs:
+  --version VERSION          build with the nixpkgs of the NixOS release or
+                             channel VERSION ('26.05', 'nixos-25.11',
+                             'unstable', ...), fetched from
+                             https://channels.nixos.org/nixos-<VERSION>/nixexprs.tar.xz
+  --nixpkgs PATH-OR-URL      build with a local nixpkgs checkout or a
+                             rev-pinned tarball such as
+                             https://github.com/NixOS/nixpkgs/archive/<rev>.tar.gz
+  Without either option the '<nixpkgs>' of NIX_PATH is used; '--version ""'
+  selects that same default explicitly.  26.05 is the tested release for the
+  kernel environment; 24.11 and 25.11 currently fail to evaluate 'qlat-jhub-env'
+  (nixfmt-tree / xvfb are gone), so use '--nixpkgs' with a patched tree for
+  those.
+
+arguments that are not recognised here are passed on to nix-build, after the
+'--version' / '--nixpkgs' arguments; an explicit '--argstr version ...'
+or '--arg nixpkgs ...' therefore still wins (nix uses the last value).
 
 outputs:
   $JUPYTER_DATA_DIR/kernels/nix-build-py-local<variant>/result
@@ -114,6 +142,60 @@ def parse_variant(value):
             f"unknown variant '{value}' (valid: {VARIANT_NAMES})"
         )
     return VARIANT_SUFFIX[name]
+
+NIXPKGS_VERSION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+def parse_nixpkgs_version(value):
+    """Validate a NixOS release or channel; it is substituted into the channel URL.\n
+    The literal empty string is valid and selects the default '<nixpkgs>' of NIX_PATH.
+    """
+    if value == "":
+        return ""
+    version = value.strip()
+    if version.startswith("nixos-"):
+        version = version[len("nixos-") :]
+    if not NIXPKGS_VERSION_RE.match(version):
+        raise argparse.ArgumentTypeError(
+            f"expected a nixpkgs release or channel such as '26.05', "
+            f"'nixos-25.11' or 'unstable', got '{value}'"
+        )
+    return version
+
+def parse_nixpkgs_target(value):
+    """Return ('dir', absolute path) or ('url', url) for a nixpkgs source."""
+    target = value.strip()
+    if target.startswith(("http://", "https://")):
+        return ("url", target)
+    path = Path(target).expanduser()
+    if path.is_dir():
+        return ("dir", str(path.resolve()))
+    raise argparse.ArgumentTypeError(
+        f"expected an existing nixpkgs directory or an http(s) tarball URL, "
+        f"got '{value}'"
+    )
+
+def nix_str(value):
+    """Quote 'value' as a nix string literal."""
+    escaped = (
+        value.replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("$", "\\$")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+    )
+    return f'"{escaped}"'
+
+def build_nixpkgs_args(version, target):
+    """nix-build arguments for '--version' / '--nixpkgs' (empty by default)."""
+    if version is not None:
+        return ["--argstr", "version", version]
+    if target is None:
+        return []
+    kind, value = target
+    if kind == "dir":
+        return ["--argstr", "nixpkgs", value]
+    return ["--arg", "nixpkgs", f"(builtins.fetchTarball {nix_str(value)})"]
 
 def check_variant_args(argv):
     """Reject the old '-cu' style names before argparse sees them.\n
@@ -165,6 +247,25 @@ def parse_args(argv):
         "cannot be installed for the current user",
     )
     parser.add_argument(
+        "--version",
+        type=parse_nixpkgs_version,
+        metavar="VERSION",
+        help="nixpkgs NixOS release or channel to build with, e.g. '26.05' or "
+        "'nixos-unstable'; fetches "
+        "https://channels.nixos.org/nixos-<VERSION>/nixexprs.tar.xz "
+        "(default: the '<nixpkgs>' of NIX_PATH; an empty value selects that "
+        "same default)",
+    )
+    parser.add_argument(
+        "--nixpkgs",
+        type=parse_nixpkgs_target,
+        metavar="PATH-OR-URL",
+        help="nixpkgs source to build with: a local checkout directory or a "
+        "rev-pinned tarball URL such as "
+        "https://github.com/NixOS/nixpkgs/archive/<rev>.tar.gz "
+        "(default: the '<nixpkgs>' of NIX_PATH)",
+    )
+    parser.add_argument(
         "--no-nom",
         action="store_true",
         help="do not monitor nix-build with nom",
@@ -184,6 +285,10 @@ def parse_args(argv):
     )
     args, nix_build_args = parser.parse_known_args(argv)
     args.nix_build_args = nix_build_args
+    #
+    if args.version is not None and args.nixpkgs is not None:
+        parser.error("--nixpkgs cannot be combined with --version")
+    args.nixpkgs_args = build_nixpkgs_args(args.version, args.nixpkgs)
     #
     if args.all_variants and args.variant:
         parser.error("--all-variants cannot be combined with --variant")
@@ -353,6 +458,7 @@ def nix_build(attrs, out_link, args, env, use_nom):
     if use_nom:
         cmd += ["--log-format", "internal-json", "-v"]
     cmd += ["-j", str(args.jobs), "--cores", str(args.cores)]
+    cmd += args.nixpkgs_args
     cmd += args.nix_build_args
     #
     if use_nom:
