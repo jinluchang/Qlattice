@@ -6,6 +6,8 @@
 , numpy
 , torch
 , pytest
+, pytestCheckHook
+, pytest-benchmark
 , use-gitee ? null
 }:
 
@@ -34,8 +36,10 @@ in buildPythonPackage rec {
     torch
   ];
 
-  test-dependencies = [
+  nativeCheckInputs = [
     pytest
+    pytestCheckHook
+    pytest-benchmark
   ];
 
   meta = {

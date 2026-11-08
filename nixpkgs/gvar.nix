@@ -11,6 +11,8 @@
 , scipy
 , mpmath
 # tests
+, pytest
+, pytestCheckHook
 #
 , use-gitee ? null
 }:
@@ -46,6 +48,11 @@ in buildPythonPackage rec {
     numpy
     scipy
     mpmath
+  ];
+
+  nativeCheckInputs = [
+    pytest
+    pytestCheckHook
   ];
 
   meta = {

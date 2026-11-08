@@ -11,6 +11,8 @@
 , gvar
 , vegas
 # tests
+, pytest
+, pytestCheckHook
 , hypothesis
 #
 , use-gitee ? null
@@ -48,6 +50,11 @@ in buildPythonPackage rec {
     numpy
     gvar
     vegas
+  ];
+
+  nativeCheckInputs = [
+    pytest
+    pytestCheckHook
   ];
 
   meta = {

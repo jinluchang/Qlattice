@@ -10,6 +10,8 @@
 # dependencies
 , gvar
 # tests
+, pytest
+, pytestCheckHook
 , hypothesis
 #
 , use-gitee ? null
@@ -38,6 +40,11 @@ in buildPythonPackage rec {
   dependencies = [
     numpy
     gvar
+  ];
+
+  nativeCheckInputs = [
+    pytest
+    pytestCheckHook
   ];
 
   meta = {
