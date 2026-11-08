@@ -1,9 +1,7 @@
 {
   # Path or fetchTarball result to nixpkgs. Auto-detected from `version` if null.
-  # E.g. (fetchTarball "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz")
   nixpkgs ? null,
   # NixOS release version string. Used to fetch matching nixpkgs when `nixpkgs` is null.
-  # E.g. "26.05"
   version ? null,
   # Number of NVIDIA GPUs as a string. Auto-detected from /dev/nvidia* if null.
   # E.g. "2"
@@ -170,13 +168,6 @@ in let
         else prev.accelerate.overridePythonAttrs (py-prev: {
           doCheck = false;
         });
-        # The pinned python packages keep their upstream checks enabled: the
-        # nixos-26.05 channel used here (26.05.13627+) already deselects the
-        # tests that Pillow 13 breaks upstream ('imageio' disabledTestPaths,
-        # 'fpdf2' disabledTests), so the old doCheck workarounds are gone.
-        # Older 26.05 snapshots (e.g. 26.05.13164.6f06d204d8f2) predate those
-        # fixes and fail their check phase, so build 'qlat-jhub-env' with
-        # '--version 26.05' (or a newer nixpkgs).
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
