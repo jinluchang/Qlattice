@@ -134,7 +134,6 @@ in let
         mpi4py = if ! opts.use-cuda-software
         then prev.mpi4py
         else prev.mpi4py.overridePythonAttrs (py-prev: {
-          doCheck = false;
           nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             qlat-nixgl
             pkgs.which
@@ -153,11 +152,16 @@ in let
             echo $LD_LIBRARY_PATH
           '';
         });
+        # jax checks stay off in the cudasupport variant: two upstream "no
+        # warning" tests fail on machines with a visible NVIDIA GPU, and the
+        # suite takes about 27 min.
         jax = if ! opts.use-cudasupport
         then prev.jax
         else prev.jax.overridePythonAttrs (py-prev: {
           doCheck = false;
         });
+        # keras check inputs include jax, so it cannot be enabled while jax's
+        # checks are off.
         keras = if ! opts.use-cudasupport
         then prev.keras
         else prev.keras.overridePythonAttrs (py-prev: {
@@ -165,8 +169,16 @@ in let
         });
         accelerate = if ! opts.use-cudasupport
         then prev.accelerate
-        else prev.accelerate.overridePythonAttrs (py-prev: {
-          doCheck = false;
+        else prev.accelerate.overridePythonAttrs (py-prev: { });
+        # manim 0.20.1 fails two of its ImageMobject tests against Pillow 13
+        # ("Invalid mode for data type"), so nixpkgs has no cached binary for
+        # it; skip the ImageMobject image tests and keep the rest of the suite
+        # enabled, until nixpkgs carries a manim with the Pillow 13 fix.
+        manim = prev.manim.overridePythonAttrs (py-prev: {
+          disabledTests = (py-prev.disabledTests or []) ++ [
+            "test_ImageMobject"
+            "test_ImageInterpolation"
+          ];
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
@@ -504,8 +516,10 @@ in let
       #
       # Merged from the host NixOS configuration's 'qlat-jhub-py-extended'
       # overlay: browser automation plus audio/video helpers on top of the base
-      # list.  That overlay also keeps scikit-image, moviepy and manim out, for
-      # the same Pillow 13 / imageio reason as the package overrides above.
+      # list.  scikit-image and moviepy come from the binary cache with their
+      # nixpkgs checks enabled; manim has no cached binary because two
+      # image-mode tests fail against Pillow 13, so it is built locally with
+      # those image tests skipped (see the override above).
       # The Playwright browser binaries are not part of it: point
       # 'PLAYWRIGHT_BROWSERS_PATH' at 'playwright-driver.browsers' (as the host
       # configuration does) or run 'playwright install' once.
@@ -518,6 +532,9 @@ in let
       librosa
       pydub
       python-pptx
+      scikit-image
+      moviepy
+      manim
       ;
     }
     // (if is-linux then {
