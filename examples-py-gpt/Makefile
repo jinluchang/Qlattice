@@ -55,6 +55,8 @@ tests_gpt = \
 			gpt-qlat-data-gen-eta-c.log \
 			gpt-qlat-data-gen-prop.log \
 			gpt-qlat-data-gen-truncated-wsrc-prop.log \
+			gpt-qlat-data-gen-demo.log \
+			gpt-qlat-data-gen-psel-topo-sqr.log \
 			gq-auto-checker.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \

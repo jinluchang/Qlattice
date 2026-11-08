@@ -26,9 +26,9 @@ def verify_local_sp(sp_orig, sp_local):
     The l_from_g shuffle sorts points by gindex, so the ordering changes,
     but the total norm (sum of squared values across all points) is invariant.
     """
-    local_norm_sq = sp_local.qnorm() ** 2
+    local_norm_sq = sp_local.qnorm()
     total_norm_sq = q.glb_sum(local_norm_sq)
-    orig_norm_sq = sp_orig.qnorm() ** 2
+    orig_norm_sq = sp_orig.qnorm()
     assert abs(total_norm_sq - orig_norm_sq) < 1e-10, (
         f"qnorm mismatch: total_norm_sq={total_norm_sq} orig_norm_sq={orig_norm_sq}"
     )

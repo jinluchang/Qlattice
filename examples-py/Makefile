@@ -103,6 +103,7 @@ tests = \
 		selected-convert-io.log \
 		selected-field.log \
 		selected-shuffle.log \
+		selected-points-io.log \
 		convert-selected-points-dist-type.log \
 		test-qar.log \
 		hmc-pure-gauge.log \
