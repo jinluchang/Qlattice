@@ -170,48 +170,13 @@ in let
         else prev.accelerate.overridePythonAttrs (py-prev: {
           doCheck = false;
         });
-        # TODO: Remove the Pillow 13 workarounds below ('optuna', 'plotly',
-        # 'imageio' and 'fpdf2') once they are fixed upstream, i.e. once their
-        # test suites pass again with the Pillow of '<nixpkgs>'.  The nixpkgs
-        # used here (26.05.13164.6f06d204d8f2) ships Pillow 13.0.0, whose
-        # removed API and changed image encoding break those test suites in the
-        # pytestCheckPhase, which aborts the build of 'qlat-jhub-env'.  All the
-        # failures are in check phases; the packages themselves build and run
-        # fine, so only the checks are dropped.
-        #
-        # optuna and plotly: 'qlat-jhub-py' lists both, optuna lists plotly in
-        # its nativeCheckInputs and plotly lists scikit-image there, and
-        # scikit-image depends on the failing imageio below, so with tests on
-        # the environment cannot be built.  'doCheck = false' removes those
-        # check-only inputs from the build closure, so scikit-image and imageio
-        # are normally not built at all.
-        optuna = prev.optuna.overridePythonAttrs (py-prev: {
-          doCheck = false;
-        });
-        plotly = prev.plotly.overridePythonAttrs (py-prev: {
-          doCheck = false;
-        });
-        # imageio 2.37.2: Pillow 13 removed 'Image.fromarray(obj, mode=...)',
-        # but imageio still passes 'mode', so 'test_png_16bit'
-        # (tests/test_pillow.py) and 'test_png' (tests/test_pillow_legacy.py)
-        # fail with 'ValueError: Invalid mode for data type'.  This one is only
-        # a safety net now that the optuna/plotly checks above are dropped (it
-        # is not in the build closure); keep it so that restoring those checks
-        # does not immediately break the build again.
-        imageio = prev.imageio.overridePythonAttrs (py-prev: {
-          doCheck = false;
-        });
-        # fpdf2 2.8.9: Pillow 13 encodes the image embedded by
-        # 'test/image/test_full_page_image.py::test_image_with_explicit_dimensions'
-        # differently, so the md5 of the generated PDF no longer matches the
-        # reference PDF committed in fpdf2 and its check phase fails; the other
-        # 1780 tests pass.  The whole check is dropped, matching the host
-        # configuration's patch; a narrower
-        # 'disabledTests = [ "test_image_with_explicit_dimensions" ]' would keep
-        # the other tests running but would deviate from that patch.
-        fpdf2 = prev.fpdf2.overridePythonAttrs (py-prev: {
-          doCheck = false;
-        });
+        # The pinned python packages keep their upstream checks enabled: the
+        # nixos-26.05 channel used here (26.05.13627+) already deselects the
+        # tests that Pillow 13 breaks upstream ('imageio' disabledTestPaths,
+        # 'fpdf2' disabledTests), so the old doCheck workarounds are gone.
+        # Older 26.05 snapshots (e.g. 26.05.13164.6f06d204d8f2) predate those
+        # fixes and fail their check phase, so build 'qlat-jhub-env' with
+        # '--version 26.05' (or a newer nixpkgs).
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
@@ -664,7 +629,7 @@ in let
       poppler-utils
       ghostscript
       ;
-      pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
+      pipx = pkgs.pipx;
     } // (if is-linux
     then {
       util-linux = lib.meta.hiPrio pkgs.util-linux;
