@@ -3,132 +3,152 @@
   "test_single: Coordinate([4, 4, 4, 4]) 1 0"
  ],
  [
-  "sp.qnorm()=4.897494728212508"
+  "sp.qnorm()",
+  4.897494728212508
  ],
  [
-  "sp_local.n_points=9"
+  "sp_local.n_points=16"
  ],
  [
-  "sp_local.qnorm()=3.970631687456925"
+  "sp_local.qnorm()",
+  4.897494728212508
  ],
  [
   "test_batch: Coordinate([4, 4, 4, 4]) 1 0"
  ],
  [
-  "sp_local[0].n_points=7"
+  "sp_local[0].n_points=16"
  ],
  [
-  "sp_local[0].qnorm()=2.7486379679728974"
+  "sp_local[0].qnorm()",
+  5.998298298998163
  ],
  [
-  "sp_local[1].n_points=5"
+  "sp_local[1].n_points=8"
  ],
  [
-  "sp_local[1].qnorm()=2.1393766534227456"
+  "sp_local[1].qnorm()",
+  3.224081770260038
  ],
  [
-  "sp_local[2].n_points=2"
+  "sp_local[2].n_points=5"
  ],
  [
-  "sp_local[2].qnorm()=0.2919274897812744"
+  "sp_local[2].qnorm()",
+  1.5102614223667985
  ],
  [
   "test_single: Coordinate([4, 4, 4, 4]) 3 0"
  ],
  [
-  "sp.qnorm()=17.20371441347091"
+  "sp.qnorm()",
+  17.20371441347091
  ],
  [
-  "sp_local.n_points=9"
+  "sp_local.n_points=16"
  ],
  [
-  "sp_local.qnorm()=12.611491247194156"
+  "sp_local.qnorm()",
+  17.20371441347091
  ],
  [
   "test_batch: Coordinate([4, 4, 4, 4]) 3 0"
  ],
  [
-  "sp_local[0].n_points=7"
+  "sp_local[0].n_points=16"
  ],
  [
-  "sp_local[0].qnorm()=8.48999325210582"
+  "sp_local[0].qnorm()",
+  17.72201515428096
  ],
  [
-  "sp_local[1].n_points=5"
+  "sp_local[1].n_points=8"
  ],
  [
-  "sp_local[1].qnorm()=6.16797256917528"
+  "sp_local[1].qnorm()",
+  9.319566714745248
  ],
  [
-  "sp_local[2].n_points=2"
+  "sp_local[2].n_points=5"
  ],
  [
-  "sp_local[2].qnorm()=1.7969455932530451"
+  "sp_local[2].qnorm()",
+  5.965765166970909
  ],
  [
   "test_single: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
-  "sp.qnorm()=26.732699983459785"
+  "sp.qnorm()",
+  26.732699983459785
  ],
  [
-  "sp_local.n_points=48"
+  "sp_local.n_points=81"
  ],
  [
-  "sp_local.qnorm()=17.107090781669847"
+  "sp_local.qnorm()",
+  26.73269998345979
  ],
  [
   "test_batch: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
-  "sp_local[0].n_points=46"
+  "sp_local[0].n_points=81"
  ],
  [
-  "sp_local[0].qnorm()=12.44320503029638"
+  "sp_local[0].qnorm()",
+  22.50409514447892
  ],
  [
-  "sp_local[1].n_points=17"
+  "sp_local[1].n_points=40"
  ],
  [
-  "sp_local[1].qnorm()=6.564568096010321"
+  "sp_local[1].qnorm()",
+  13.139425258792475
  ],
  [
-  "sp_local[2].n_points=15"
+  "sp_local[2].n_points=27"
  ],
  [
-  "sp_local[2].qnorm()=5.11044502100601"
+  "sp_local[2].qnorm()",
+  8.436368424120538
  ],
  [
   "test_single: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
-  "sp.qnorm()=79.84945079123209"
+  "sp.qnorm()",
+  79.84945079123209
  ],
  [
-  "sp_local.n_points=48"
+  "sp_local.n_points=81"
  ],
  [
-  "sp_local.qnorm()=48.18847158653009"
+  "sp_local.qnorm()",
+  79.84945079123209
  ],
  [
   "test_batch: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
-  "sp_local[0].n_points=46"
+  "sp_local[0].n_points=81"
  ],
  [
-  "sp_local[0].qnorm()=40.571621261791776"
+  "sp_local[0].qnorm()",
+  76.17569155394949
  ],
  [
-  "sp_local[1].n_points=17"
+  "sp_local[1].n_points=40"
  ],
  [
-  "sp_local[1].qnorm()=18.539741088642252"
+  "sp_local[1].qnorm()",
+  44.58813476658881
  ],
  [
-  "sp_local[2].n_points=15"
+  "sp_local[2].n_points=27"
  ],
  [
-  "sp_local[2].qnorm()=15.636917016618861"
+  "sp_local[2].qnorm()",
+  27.08491465644942
  ]
 ]
