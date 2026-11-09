@@ -513,16 +513,6 @@ in let
       pyyaml
       click
       tiktoken
-      #
-      # Merged from the host NixOS configuration's 'qlat-jhub-py-extended'
-      # overlay: browser automation plus audio/video helpers on top of the base
-      # list.  scikit-image and moviepy come from the binary cache with their
-      # nixpkgs checks enabled; manim has no cached binary because two
-      # image-mode tests fail against Pillow 13, so it is built locally with
-      # those image tests skipped (see the override above).
-      # The Playwright browser binaries are not part of it: point
-      # 'PLAYWRIGHT_BROWSERS_PATH' at 'playwright-driver.browsers' (as the host
-      # configuration does) or run 'playwright install' once.
       playwright
       pycairo
       moderngl
