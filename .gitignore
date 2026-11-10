@@ -1,4 +1,5 @@
-/distfiles
+/distfiles/*
+!/distfiles/sha256sums.txt
 /projects
 /.path
 /.clangd
