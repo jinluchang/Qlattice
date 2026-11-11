@@ -10,14 +10,18 @@ namespace qlat
 void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
                   const Long num_step = 1);
 
-// APE smearing without the SU(3) projection, using the convex kernel
-// `U' = (1 - alpha) U + (alpha / 6) * S` and multiplying the whole field by
-// the real scalar `s = sqrt(3 / <N^2>)` after every step, where `<N^2>` is
-// the global (MPI-reduced) average of `Tr(U_mu(x)^dag U_mu(x))` over all
-// links, so that `<N^2> = 3` (the value for a unitary link) after every step.
-// The rescale is skipped if the average is not positive.
-// `alpha = 0` removes the staple mixing, but the rescale still applies.
-// `num_step = 0` (or negative) returns an unchanged copy of `gf0`.
+// APE smearing without the SU(3) projection, using the additive kernel
+// `U' = U + (alpha / 6) * S` (the same step kernel as `gf_ape_smear_no_proj`,
+// which additionally pre-scales `alpha` by `3 / M`, with `M` the global
+// maximum of `Tr(U_mu(x)^dag U_mu(x))`, and does not rescale the field; this
+// function uses the kernel directly and rescales after every step).
+// After every step the whole field is multiplied by the real scalar
+// `s = sqrt(3 / <N^2>)`, where `<N^2>` is the global (MPI-reduced) average of
+// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` (the value
+// for a unitary link) after every step. The rescale is skipped if the
+// average is not positive. `alpha = 0` removes the staple mixing, but the
+// rescale still applies. `num_step = 0` (or negative) returns an unchanged
+// copy of `gf0`.
 void gf_ape_smear_no_proj_rescaling(GaugeField& gf, const GaugeField& gf0,
                                     const RealD alpha, const Long num_step = 1);
 

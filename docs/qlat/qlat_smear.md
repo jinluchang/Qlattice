@@ -209,24 +209,31 @@ gf_ape_smear_no_proj_rescaling(
 ) -> GaugeField
 ```
 
-Perform APE smearing with the SU(3) projection step omitted, while keeping
-the field amplitude under control by rescaling it after every step.
+Perform APE smearing with the SU(3) projection step omitted and the additive
+kernel, while keeping the field amplitude under control by rescaling it after
+every step.
 
-Each step replaces each link with the convex combination of the current link
-and its staples, without projecting the result back to SU(3):
+Each step replaces each link by the current link plus the staple term, without
+projecting the result back to SU(3):
 
 ```
-U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * S_mu(x)
+U'_mu(x) = U_mu(x) + (alpha / 6) * S_mu(x)
 ```
 
 `S_mu(x)` is the sum of the six staples around the link, built from the
-current field. This is the kernel of `gf_ape_smear` without its SU(3)
-projection: it is a true interpolation, so the link term keeps its weight
-`1 - alpha`. That is what distinguishes it from `gf_ape_smear_no_proj`, whose
-additive kernel leaves the link term untouched and lets the amplitude grow.
-Here the combined links are not unitary, so their norm drifts; after every
-step -- including the last -- the whole field is multiplied by the real
-scalar
+current field. This is the same additive step kernel as
+`gf_ape_smear_no_proj`: the link term keeps its full weight, so the amplitude
+grows with every step (unlike `gf_ape_smear`, whose kernel is the convex
+`(1 - alpha) * U + (alpha / 6) * S` followed by an SU(3) projection). The
+difference from `gf_ape_smear_no_proj` is the weight and the normalisation:
+`gf_ape_smear_no_proj` pre-scales `alpha` by `3 / M`, with `M` the global
+maximum of `Tr(U^dag U)`, and never rescales the field, while this function
+applies the kernel directly and then renormalises the whole field after every
+step.
+
+The combined links are not unitary, so their norm grows under the additive
+update; after every step -- including the last -- the whole field is
+multiplied by the real scalar
 
 ```
 mean_sq = qnorm(gf) / (total_volume * DIMN)
@@ -243,11 +250,12 @@ normalisation. After every step the field therefore satisfies
 only if `mean_sq` is not positive; otherwise it always acts, including on the
 last step.
 
-Because the rescale is unconditional, `alpha = 0` removes only the staple
-term: the kernel returns the current links unchanged, but the field is still
-scaled to `<N^2> = 3`, so a non-unitary input is not returned unchanged. Only
-an exactly unitary input makes `alpha = 0` a no-op. `num_step = 0` (or a
-negative value) skips the loop and returns an unchanged copy of `gf`.
+Because the rescale is unconditional, `alpha = 0` reduces the additive kernel
+to `U' = U`, so only the staple term is switched off: the links come out
+unchanged, but the field is still scaled to `<N^2> = 3`, so a non-unitary
+input is not returned unchanged. Only an exactly unitary input makes
+`alpha = 0` a no-op. `num_step = 0` (or a negative value) skips the loop and
+returns an unchanged copy of `gf`.
 
 The input `gf` is not modified; the result is returned as a new object.
 
@@ -441,8 +449,8 @@ print(f"APE-smeared field: {gf_ape.crc32()}")
 gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, 1.5)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 
-# APE-like smearing without the SU(3) projection, with the convex kernel and
-# the per-step rescale that restores <N^2> = 3. Use num_step = 1..3.
+# APE-like smearing without the SU(3) projection, with the additive kernel
+# and the per-step rescale that restores <N^2> = 3. Use num_step = 1..3.
 for num_step in range(1, 4):
     gf_rescaled = q.gf_ape_smear_no_proj_rescaling(gf, 0.5, num_step=num_step)
     print(f"Rescaled no-proj APE ({num_step} steps): {gf_rescaled.crc32()}")

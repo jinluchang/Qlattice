@@ -51,12 +51,16 @@ def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.RealD accumulated_alp
 
 def gf_ape_smear_no_proj_rescaling(GaugeField gf, double alpha, cc.Long num_step=1):
     """
-    Similar to `gf_ape_smear` but with the SU(3) projection step omitted.
-    Each step uses the convex kernel `U' = (1 - alpha) U + (alpha / 6) * S`,
-    then multiplies the whole field by the real scalar
-    `s = sqrt(3 / <N^2>)`, where `<N^2>` is the global (MPI-reduced) average
-    of `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` (the
-    value for a unitary link) after every step, including the last.
+    Similar to `gf_ape_smear` but with the SU(3) projection step omitted and
+    with the additive step kernel `U' = U + (alpha / 6) * S` of
+    `gf_ape_smear_no_proj` (which additionally pre-scales `alpha` by `3 / M`,
+    with `M` the global maximum of `Tr(U_mu(x)^dag U_mu(x))`, and does not
+    rescale the field); it is not the projected convex update of
+    `gf_ape_smear`. After every step the whole field is multiplied by the
+    real scalar `s = sqrt(3 / <N^2>)`, where `<N^2>` is the global
+    (MPI-reduced) average of `Tr(U_mu(x)^dag U_mu(x))` over all links, so
+    that `<N^2> = 3` (the value for a unitary link) after every step,
+    including the last.
     Because the whole field is rescaled, `alpha = 0` only removes the staple
     mixing; the rescale still applies, so it is not the identity for a
     non-unitary field. `num_step = 0` returns an unchanged copy.

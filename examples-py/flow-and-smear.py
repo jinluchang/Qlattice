@@ -369,9 +369,10 @@ q.json_results_append(
 )
 assert is_additive_kernel, kernel_dev
 
-# ---- gf_ape_smear_no_proj_rescaling (convex kernel + per-step rescale) ----
-# No SU(3) projection: each step is the convex kernel
-# `U' = (1 - alpha) U + (alpha / 6) S`, followed by the global scalar rescale
+# ---- gf_ape_smear_no_proj_rescaling (additive kernel + per-step rescale) ----
+# No SU(3) projection: each step is the additive kernel `U' = U + (alpha / 6) S`
+# (the same step kernel as `gf_ape_smear_no_proj`, without its `3 / M`
+# pre-scaling), followed by the global scalar rescale
 # `U -> sqrt(3 / <N^2>) U` with
 # `<N^2> = qnorm(gf) / (V * DIMN)` (MPI-reduced), so that `<N^2> = 3` (the
 # unitary value) after every step.  Unlike `gf_ape_smear`, the field is
@@ -414,7 +415,7 @@ assert is_not_unitary, (max_ut_dev_1, max_det_dev_1)
 q.json_results_append(
     "gf_ape_smear_no_proj_rescaling 1 step plaq", gf_rescale_1.plaq(), 1e-10
 )
-assert abs(gf_rescale_1.plaq() - 0.4859441837145792) <= 1e-10
+assert abs(gf_rescale_1.plaq() - 0.30241595774022034) <= 1e-10
 max_ut_dev_ape = get_glb_max_unitarity_dev(q.gf_ape_smear(gf, rescale_alpha, 1))
 is_ape_unitary = bool(max_ut_dev_ape < 1e-13)
 q.json_results_append(
@@ -529,7 +530,7 @@ assert is_rescale_loop_equal, rescale_loop_dev
 q.json_results_append(
     "gf_ape_smear_no_proj_rescaling 3 steps plaq", gf_rescale_3.plaq(), 1e-10
 )
-assert abs(gf_rescale_3.plaq() - 0.9164489844104106) <= 1e-10
+assert abs(gf_rescale_3.plaq() - 0.6407780936466481) <= 1e-10
 is_rescale_input_kept = bool(np.array_equal(np.asarray(gf), gf_rescale_sig))
 q.json_results_append(
     "gf_ape_smear_no_proj_rescaling input field never modified"

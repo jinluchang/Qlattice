@@ -310,12 +310,12 @@
  ],
  [
   "gf_ape_smear_no_proj_rescaling 1 step global max |U^dag U - 1|",
-  1.1925644929338963,
+  0.5727440591409179,
   1e-10
  ],
  [
   "gf_ape_smear_no_proj_rescaling 1 step global max |det U - 1|",
-  0.9794681253349307,
+  0.5740037914263877,
   1e-10
  ],
  [
@@ -323,7 +323,7 @@
  ],
  [
   "gf_ape_smear_no_proj_rescaling 1 step plaq",
-  0.4859441837145795,
+  0.30241595774022034,
   1e-10
  ],
  [
@@ -334,9 +334,9 @@
   {
    "value": [
     3.000000000000001,
-    2.9999999999999996,
-    3.0000000000000018,
-    3.0
+    3.0,
+    3.0,
+    3.000000000000001
    ],
    "__extended_json_type__": "ndarray"
   },
@@ -370,7 +370,7 @@
  ],
  [
   "gf_ape_smear_no_proj_rescaling 3 steps plaq",
-  0.9164489844104116,
+  0.6407780936466481,
   1e-10
  ],
  [

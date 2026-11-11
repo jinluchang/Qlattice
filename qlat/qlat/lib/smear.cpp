@@ -248,12 +248,13 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
 
 static qacc ColorMatrix gf_link_ape_smear_no_proj_rescaling_no_comm(
     const GaugeField& gf, const Coordinate& xl, const Int mu, const RealD alpha)
-// Convex APE kernel without the SU(3) projection:
-// `U' = (1 - alpha) U + (alpha / 6) * S`.
-// The amplitude shrinks under this kernel; the whole field is rescaled to
-// `Tr(U^dag U) = 3` after every step by the caller.
+// Additive APE kernel without the SU(3) projection:
+// `U' = U + (alpha / 6) * S`, the same step kernel as
+// `gf_ape_smear_no_proj` (which pre-scales `alpha` by `3 / M` and does not
+// rescale the field). The amplitude grows under this kernel; the whole field
+// is rescaled to `Tr(U^dag U) = 3` after every step by the caller.
 {
-  return (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
+  return gf.get_elem(xl, mu) +
          (ComplexD)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu);
 }
 
@@ -288,15 +289,18 @@ static RealD gf_avg_link_norm_sq(const GaugeField& gf)
 
 void gf_ape_smear_no_proj_rescaling(GaugeField& gf, const GaugeField& gf0,
                                     const RealD alpha, const Long num_step)
-// APE smearing without the SU(3) projection, using the convex kernel
-// `U' = (1 - alpha) U + (alpha / 6) * S`. After every step the whole field
-// is multiplied by the real scalar `s = sqrt(NUM_COLOR / mean_sq)`, where
-// `mean_sq` is the global average of `Tr(U_mu(x)^dag U_mu(x))` over all
-// links, so that `<N^2> = 3` (the value for a unitary link) after every step.
-// The rescale is skipped if `mean_sq` is not positive.
-// `alpha = 0` removes the staple mixing, but the rescale still applies.
-// `num_step = 0` (or negative) returns an unchanged copy of `gf0`.
-// `gf` and `gf0` may alias; `gf` is the output.
+// APE smearing without the SU(3) projection, using the additive kernel
+// `U' = U + (alpha / 6) * S` (the same step kernel as `gf_ape_smear_no_proj`,
+// which additionally pre-scales `alpha` by `3 / M`, with `M` the global
+// maximum of `Tr(U_mu(x)^dag U_mu(x))`, and does not rescale the field; this
+// function uses the kernel directly and rescales after every step).
+// After every step the whole field is multiplied by the real scalar
+// `s = sqrt(NUM_COLOR / mean_sq)`, where `mean_sq` is the global average of
+// `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` (the value
+// for a unitary link) after every step. The rescale is skipped if `mean_sq`
+// is not positive. `alpha = 0` removes the staple mixing, but the rescale
+// still applies. `num_step = 0` (or negative) returns an unchanged copy of
+// `gf0`. `gf` and `gf0` may alias; `gf` is the output.
 {
   TIMER_VERBOSE("gf_ape_smear_no_proj_rescaling");
   gf = gf0;
