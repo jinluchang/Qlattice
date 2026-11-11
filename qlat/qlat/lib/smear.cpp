@@ -179,10 +179,10 @@ static RealD gf_ape_smear_no_proj_max_norm_sq(const GaugeField& gf)
 }
 
 void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
-                          const RealD alpha, const RealD& accumulated_alpha)
+                          const RealD alpha, const Long num_step,
+                          const RealD& accumulated_alpha)
 // Same as `gf_ape_smear` but without the SU(3) projection step and with the
 // step kernel `U' = U + (a / 6) * S` (no `(1 - a)` factor).
-// `accumulated_alpha` is the target total effective smearing (input only).
 // Each step uses the scaled step size `a = alpha * (3 / M)`, with `M` (the
 // code's `max_sq`) the global maximum of `Tr(U_mu(x)^dag U_mu(x))` over all
 // links, so that `alpha` is the effective smearing step of the largest link.
@@ -190,14 +190,19 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
 // near-unitary links), `M > 3` for the initial near-unitary field, hence
 // `factor = 3 / M` is smaller than one and `a <= alpha`. The weight decays
 // geometrically as the amplitude grows, so the accumulated smearing
-// converges; a target above that limit is never reached and the loop stops
-// on the no-progress guard, leaving a very large, non-unitary field. The
-// field itself is never rescaled. The last step is truncated so that the
-// accumulated smearing `sum(a)` does not exceed `accumulated_alpha`.
-// The loop also stops when `M` is degenerate (zero or not finite) or when
-// `a` or the accumulated smearing makes no progress in floating point.
-// Progress is printed at verbose level 0 every 4 steps and on the last step;
-// the shortfall is reported at level -1, so it is always printed.
+// converges. The field itself is never rescaled.
+// The loop is capped by both `num_step` (iteration count) and
+// `accumulated_alpha` (target total effective smearing), whichever is
+// reached first; the last step is truncated so that `sum(a)` does not
+// exceed `accumulated_alpha`.  `num_step <= 0` or
+// `accumulated_alpha <= 0` leaves the field unchanged.  With the defaults
+// (`num_step = 1`, `accumulated_alpha = 0.5`) the result is a single step
+// truncated to `min(alpha * 3 / M, 0.5)`.
+// The loop also stops when `M` is degenerate (zero or not finite), when `a`
+// is not positive, or when the accumulated smearing makes no progress in
+// floating point; when it stops before the target with steps left, the
+// shortfall is reported at level -1.  Progress is printed at verbose level 0
+// every 4 steps and on the last step.
 // `alpha = 0` or `accumulated_alpha = 0` leaves the field unchanged.
 // gf can be the same object as gf0.
 {
@@ -207,7 +212,8 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
   gf1.init(geo_resize(gf0.geo(), 1));
   const RealD target = accumulated_alpha;
   RealD acc = 0.0;
-  for (Long k = 0;; ++k) {
+  Long k = 0;
+  for (; k < num_step; ++k) {
     const RealD remaining = target - acc;
     if (!(remaining > 0.0)) {
       break;
@@ -227,7 +233,7 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
     gf_ape_smear_no_proj_no_comm(gf, gf1, a);
     const RealD acc_prev = acc;
     acc += a;
-    if ((k % 4 == 0) || (acc >= target)) {
+    if ((k % 4 == 0) || (acc >= target) || (k + 1 >= num_step)) {
       displayln_info(
           0, ssprintf("gf_ape_smear_no_proj: k = %ld a = %.9f acc = %.9f / "
                       "%.9f max_sq = %.9f factor = %.9f",
@@ -237,12 +243,12 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
       break;
     }
   }
-  if (acc < target) {
+  if (acc < target && k < num_step) {
     displayln_info(-1, ssprintf("gf_ape_smear_no_proj: reached only %0.9f of "
-                                "accumulated_alpha = %0.9f (stopped early: "
-                                "alpha <= 0, degenerate field, or no further "
-                                "representable progress)",
-                                acc, target));
+                                "accumulated_alpha = %0.9f after %ld of %ld "
+                                "steps (stopped early: alpha <= 0, degenerate "
+                                "field, or no further representable progress)",
+                                acc, target, k, num_step));
   }
 }
 

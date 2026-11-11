@@ -36,7 +36,7 @@
   "signature field_smear_step_local: `num_step` iteration parameter, default 1"
  ],
  [
-  "signature gf_ape_smear_no_proj: `accumulated_alpha` target, no `num_step`"
+  "signature gf_ape_smear_no_proj: num_step cap (1) + accumulated_alpha target (0.5)"
  ],
  [
   "signature prop_smear: mode default = 'qlat'"

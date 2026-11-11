@@ -301,6 +301,14 @@
   "gf_ape_smear_no_proj unit field one step is 1.75 U (special exact alpha = 0.75, additive kernel) = True"
  ],
  [
+  "gf_ape_smear_no_proj num_step=2 vs two num_step=1 (1e9 target) rel dev",
+  0.0,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj num_step=0 with 1e9 target bitwise copy = True"
+ ],
+ [
   "gf_ape_smear_no_proj_rescaling 1 step global avg <N^2>",
   3.000000000000001,
   1e-10

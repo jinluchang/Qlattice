@@ -66,7 +66,9 @@ def replicate_no_proj_target_loop(gf, alpha, target):
         a_k = min(alpha * (3.0 / m_sq), remaining)
         if not (a_k > 0.0):
             break
-        gf_rep = q.gf_ape_smear_no_proj(gf_rep, alpha, a_k)
+        gf_rep = q.gf_ape_smear_no_proj(
+            gf_rep, alpha, num_step=1000000, accumulated_alpha=a_k
+        )
         acc_prev = acc
         acc += a_k
         a_list.append(a_k)
@@ -208,7 +210,9 @@ for a1, a2, a3 in alpha_sets:
 # below 1, as every `accumulated_alpha` in the tests must; both values are
 # reachable at alpha = 0.1 within a handful of steps.
 for target in [0.1, 0.3]:
-    gf_test = q.gf_ape_smear_no_proj(gf, 0.1, target)
+    gf_test = q.gf_ape_smear_no_proj(
+        gf, 0.1, num_step=1000000, accumulated_alpha=target
+    )
     q.json_results_append(
         f"gf_ape_smear_no_proj target={target} plaq", gf_test.plaq(), 1e-10
     )
@@ -222,7 +226,12 @@ no_proj_alpha = 0.1
 no_proj_target = 0.9
 gf_no_proj = gf.copy()
 arr_no_proj_before = np.asarray(gf_no_proj).copy()
-gf_target = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, no_proj_target)
+gf_target = q.gf_ape_smear_no_proj(
+    gf_no_proj,
+    no_proj_alpha,
+    num_step=1000000,
+    accumulated_alpha=no_proj_target,
+)
 
 # (a) target reached (the last step is truncated to the remaining target, so
 # only the final rounding can leave a residue): replicate the loop in Python,
@@ -279,7 +288,9 @@ q.json_results_append(
     f" of weight alpha = {is_one_plain_step}"
 )
 assert is_one_plain_step, a_list_uni
-gf_uni_one = q.gf_ape_smear_no_proj(gf_uni, no_proj_alpha, no_proj_alpha)
+gf_uni_one = q.gf_ape_smear_no_proj(
+    gf_uni, no_proj_alpha, num_step=1000000, accumulated_alpha=no_proj_alpha
+)
 uni_dev = get_max_rel_dev(np.asarray(gf_uni_rep).copy(), np.asarray(gf_uni_one).copy())
 is_uni_match = bool(uni_dev < 1e-13)
 q.json_results_append(
@@ -300,7 +311,9 @@ q.json_results_append(
 
 # (d) `target = 0` and `alpha = 0` are bit-exact identities, and the input
 # field is never modified.
-gf_target_zero = q.gf_ape_smear_no_proj(gf_no_proj, no_proj_alpha, 0.0)
+gf_target_zero = q.gf_ape_smear_no_proj(
+    gf_no_proj, no_proj_alpha, num_step=1000000, accumulated_alpha=0.0
+)
 is_target_zero_identity = bool(
     np.array_equal(np.asarray(gf_target_zero), arr_no_proj_before)
 )
@@ -308,7 +321,9 @@ q.json_results_append(
     f"gf_ape_smear_no_proj target=0 bitwise identity = {is_target_zero_identity}"
 )
 assert is_target_zero_identity
-gf_alpha_zero = q.gf_ape_smear_no_proj(gf_no_proj, 0.0, no_proj_target)
+gf_alpha_zero = q.gf_ape_smear_no_proj(
+    gf_no_proj, 0.0, num_step=1000000, accumulated_alpha=no_proj_target
+)
 is_alpha_zero_identity = bool(
     np.array_equal(np.asarray(gf_alpha_zero), arr_no_proj_before)
 )
@@ -356,7 +371,9 @@ gf_unit.set_unit()
 m_unit = get_glb_max_link_norm_sqr(gf_unit)
 q.json_results_append("gf_ape_smear_no_proj unit field max Tr(U^dag U)", m_unit, 1e-13)
 assert abs(m_unit - 3.0) <= 1e-13, m_unit
-gf_unit_step = q.gf_ape_smear_no_proj(gf_unit, 0.75, 0.75)
+gf_unit_step = q.gf_ape_smear_no_proj(
+    gf_unit, 0.75, num_step=1000000, accumulated_alpha=0.75
+)
 arr_unit_step = np.asarray(gf_unit_step)
 expected_unit_step = np.zeros_like(arr_unit_step)
 for mu in range(4):
@@ -368,6 +385,39 @@ q.json_results_append(
     f" (special exact alpha = 0.75, additive kernel) = {is_additive_kernel}"
 )
 assert is_additive_kernel, kernel_dev
+
+# (h) iteration cap: `num_step` bounds the loop as well, so two one-step calls
+# with an unreachable target reproduce the single two-step call, and
+# `num_step = 0` is a bit-exact copy even when the target is unreachable (the
+# shortfall print is suppressed for an iteration-cap stop).
+cap_alpha = 0.1
+cap_target = 1e9
+gf_cap2 = q.gf_ape_smear_no_proj(
+    gf, cap_alpha, num_step=2, accumulated_alpha=cap_target
+)
+gf_cap_step1 = q.gf_ape_smear_no_proj(
+    gf, cap_alpha, num_step=1, accumulated_alpha=cap_target
+)
+gf_cap_step2 = q.gf_ape_smear_no_proj(
+    gf_cap_step1, cap_alpha, num_step=1, accumulated_alpha=cap_target
+)
+cap_rel_dev = get_max_rel_dev(
+    np.asarray(gf_cap2).copy(), np.asarray(gf_cap_step2).copy()
+)
+q.json_results_append(
+    "gf_ape_smear_no_proj num_step=2 vs two num_step=1 (1e9 target) rel dev",
+    cap_rel_dev,
+    1e-10,
+)
+assert cap_rel_dev < 1e-10, cap_rel_dev
+gf_cap_zero = q.gf_ape_smear_no_proj(
+    gf, cap_alpha, num_step=0, accumulated_alpha=cap_target
+)
+is_cap_zero_copy = bool(np.array_equal(np.asarray(gf_cap_zero), np.asarray(gf)))
+q.json_results_append(
+    f"gf_ape_smear_no_proj num_step=0 with 1e9 target bitwise copy = {is_cap_zero_copy}"
+)
+assert is_cap_zero_copy
 
 # ---- gf_ape_smear_no_proj_rescaling (additive kernel + per-step rescale) ----
 # No SU(3) projection: each step is the additive kernel `U' = U + (alpha / 6) S`

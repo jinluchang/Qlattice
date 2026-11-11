@@ -85,8 +85,9 @@ void simple_tests()
                  "qnorm(diff) = %.2E",
                  qnorm(gfs_stout_zero)));
     GaugeField gfs_no_proj, gfs_no_proj_alias;
-    // The last argument is the TARGET total effective smearing, not a step
-    // count.  A target below `alpha * factor_0 = alpha * 3 / max Tr(U^dag U)`
+    // The fourth argument is the iteration cap (1,000,000, which never binds
+    // here); the fifth (last) argument is the TARGET total effective smearing,
+    // not a step count.  A target below `alpha * 3 / max Tr(U^dag U)`
     // is applied verbatim, so the call is one plain unprojected step
     // `U + (a / 6) S` with `a` equal to the requested target: two such
     // targets `T` and `2 T` must satisfy `F(2 T) - gf = 2 (F(T) - gf)`.
@@ -97,10 +98,10 @@ void simple_tests()
     // reproduce one call with the summed target.)
     const RealD t_small = 0.02;
     const RealD t_double = 2.0 * t_small;
-    gf_ape_smear_no_proj(gfs_no_proj, gf, 0.1, 0.1);
+    gf_ape_smear_no_proj(gfs_no_proj, gf, 0.1, 1000000, 0.1);
     GaugeField gfs_t1, gfs_t2, gfs_d1, gfs_d2;
-    gf_ape_smear_no_proj(gfs_t1, gf, 0.1, t_small);
-    gf_ape_smear_no_proj(gfs_t2, gf, 0.1, t_double);
+    gf_ape_smear_no_proj(gfs_t1, gf, 0.1, 1000000, t_small);
+    gf_ape_smear_no_proj(gfs_t2, gf, 0.1, 1000000, t_double);
     gfs_d1 = gfs_t1;
     gfs_d1 -= gf;
     gfs_d2 = gfs_t2;
@@ -130,7 +131,7 @@ void simple_tests()
     });
     GaugeField gfs_no_proj_zero, gfs_no_proj_alpha_zero;
     gfs_no_proj_zero = gf_scaled;
-    gf_ape_smear_no_proj(gfs_no_proj_zero, gfs_no_proj_zero, 0.1, 0.0);
+    gf_ape_smear_no_proj(gfs_no_proj_zero, gfs_no_proj_zero, 0.1, 1000000, 0.0);
     gfs_no_proj_zero -= gf_scaled;
     displayln_info(
         ssprintf("CHECK: gf_ape_smear_no_proj with accumulated_alpha = 0: "
@@ -138,14 +139,15 @@ void simple_tests()
                  qnorm(gfs_no_proj_zero)));
     gfs_no_proj_alpha_zero = gf_scaled;
     gf_ape_smear_no_proj(gfs_no_proj_alpha_zero, gfs_no_proj_alpha_zero, 0.0,
-                         0.5);
+                         1000000, 0.5);
     gfs_no_proj_alpha_zero -= gf_scaled;
     displayln_info(
         ssprintf("CHECK: gf_ape_smear_no_proj with alpha = 0: "
                  "qnorm(diff) = %.2E",
                  qnorm(gfs_no_proj_alpha_zero)));
     gfs_no_proj_alias = gf;
-    gf_ape_smear_no_proj(gfs_no_proj_alias, gfs_no_proj_alias, 0.1, 0.1);
+    gf_ape_smear_no_proj(gfs_no_proj_alias, gfs_no_proj_alias, 0.1, 1000000,
+                         0.1);
     gfs_no_proj_alias -= gfs_no_proj;
     displayln_info(
         ssprintf("CHECK: gf_ape_smear_no_proj with gf == gf0: "

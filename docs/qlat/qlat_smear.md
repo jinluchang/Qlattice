@@ -48,8 +48,9 @@ unchanged. `prop_smear` also returns a new object, while
   smearings, for the unprojected `gf_ape_smear_no_proj_rescaling` (it has no
   projection but a per-step rescale), and for the propagator smearings. It is
   the last positional parameter and defaults to `1`; `num_step == 0` returns
-  an unchanged copy (negative values behave as `0`). `gf_ape_smear_no_proj` is
-  the exception: it takes a target accumulated alpha instead (see
+  an unchanged copy (negative values behave as `0`). `gf_ape_smear_no_proj`
+  takes `num_step` third (default `1`) and a **target** total smearing
+  `accumulated_alpha` fourth (default `0.5`); both cap its loop (see
   [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)).
 - Every public smearing function returns a new object and does not modify its
   input. The single exception is the internal low-level kernel
@@ -90,15 +91,20 @@ field is returned.
 
 ```python
 gf_ape_smear_no_proj(
-    gf: GaugeField, alpha: float, accumulated_alpha: float
+    gf: GaugeField,
+    alpha: float,
+    num_step: int = 1,
+    accumulated_alpha: float = 0.5,
 ) -> GaugeField
 ```
 
-Perform an APE-like smearing that omits the SU(3) projection step. Unlike the
-other gauge-field smearings this one is not driven by an iteration count:
-`accumulated_alpha` is a **target** total effective smearing, and the function
-performs as many steps as needed to accumulate that total (or until it can
-make no further progress, see below).
+Perform an APE-like smearing that omits the SU(3) projection step. The loop is
+capped by two limits, whichever is reached first: `num_step` is the maximum
+number of iteration steps, and `accumulated_alpha` is a **target** total
+effective smearing. The last step is truncated so that `sum(a_k)` does not
+exceed the target, and with the defaults (`num_step = 1`,
+`accumulated_alpha = 0.5`) the result is a single step truncated to
+`min(alpha * 3 / M, 0.5)`.
 
 Each step adds the staple term to the current link, without damping the link
 term and without projecting the result back to SU(3), using a step-dependent
@@ -117,9 +123,10 @@ step.
 The staple `staple_{k, mu}(x)` is built from the current field `U_k`, and
 
 ```
-M_k      = max_{x, mu} Tr( U_{k, mu}(x)^dag U_{k, mu}(x) )
-factor_k = 3 / M_k = 1 / max( Tr / 3 )
-a_k      = min( alpha * factor_k, accumulated_alpha - sum_{j < k} a_j )
+for k = 0, 1, ..., num_step - 1:
+    M_k      = max_{x, mu} Tr( U_{k, mu}(x)^dag U_{k, mu}(x) )
+    factor_k = 3 / M_k = 1 / max( Tr / 3 )
+    a_k      = min( alpha * factor_k, accumulated_alpha - sum_{j < k} a_j )
 ```
 
 `M_k` is a **global** (MPI-reduced) maximum over all links, so every node
@@ -138,37 +145,42 @@ cannot reach or exceed `1`.
 and the last step is truncated to the remaining
 `accumulated_alpha - sum_{j < k} a_j`; the loop therefore never overshoots the
 target, and it stops as soon as the sum has reached it (up to floating-point
-rounding, handled by the progress guard below). `accumulated_alpha` thus
-measures the total weight applied, not the number of updates:
-`accumulated_alpha = alpha * n` asks for the same total as `n` nominal steps,
-but it is not reached in `n` updates. Because the field grows, `a_k` falls as
-the amplitude rises and the accumulated total increases by much less than
-`alpha` per step, so a given target can need far more steps than
-`accumulated_alpha / alpha`: with `alpha = 0.5`, a target of `2.5` is
-approached with on the order of a hundred small steps rather than five. Since
-nothing renormalises the field, its growth can also make the sum of the `a_k`
-converge, capping the accumulated weight below the target; the loop then stops
-through the progress guard below, with the amplitude already grown by many
-orders of magnitude.
+rounding, handled by the progress guard below) or `num_step` steps have been
+applied. `accumulated_alpha` thus measures the total weight applied, not the
+number of updates: `accumulated_alpha = alpha * n` asks for the same total as
+`n` nominal steps, but it is not reached in `n` updates. Because the field
+grows, `a_k` falls as the amplitude rises and the accumulated total increases
+by much less than `alpha` per step, so a given target can need far more steps
+than `accumulated_alpha / alpha`: with `alpha = 0.5`, a target of `2.5` is
+approached with on the order of a hundred small steps rather than five (give
+`num_step` enough headroom). Since nothing renormalises the field, its growth
+can also make the sum of the `a_k` converge, capping the accumulated weight
+below the target; the loop then stops through the progress guard below, with
+the amplitude already grown by many orders of magnitude.
 
 The input `gf` is not modified; the result is returned as a new object. If
-`alpha <= 0` or `accumulated_alpha <= 0` the loop exits before the first
-update, so the returned copy is bit-exactly the input (in particular
-`alpha = 0` and `accumulated_alpha = 0` are identities).
+`num_step <= 0`, `alpha <= 0` or `accumulated_alpha <= 0` the loop exits
+before the first update, so the returned copy is bit-exactly the input (in
+particular `num_step = 0`, `alpha = 0` and `accumulated_alpha = 0` are
+identities).
 
-The loop also stops early when the field degenerates (`M_k <= 0` or not
-finite, so `factor_k` cannot be formed) or when floating-point arithmetic can
-no longer make progress towards the target -- the accumulated sum stops
-increasing, which is what happens when the field growth caps the accumulated
-weight below the target. At verbose level 0 and above (`q_verbose >= 0`), the
-progress of the iteration -- the step index, `a_k`, the accumulated total and
-`M_k` -- is printed every fourth step and on the final step. When the loop ends
-below the target, the shortfall is always printed on screen, because it is a
-level `-1` message: it appears even at the library default verbosity
-(`q_verbose` unset, i.e. `-1`). The message reads
-`gf_ape_smear_no_proj: reached only <acc> of accumulated_alpha = <target>`.
-Neither message carries a `CHECK:`, `INFO:` or `WARNING` marker, so neither
-reaches the harvested `<name>.log` / `.check.txt` reference files.
+The loop also stops early, before `num_step` steps have been used, when the
+field degenerates (`M_k <= 0` or not finite, so `factor_k` cannot be formed)
+or when floating-point arithmetic can no longer make progress towards the
+target -- the accumulated sum stops increasing, which is what happens when the
+field growth caps the accumulated weight below the target. At verbose level 0
+and above (`q_verbose >= 0`), the progress of the iteration -- the step index
+`k`, `a_k`, the accumulated total against the target, `M_k` and `factor_k` --
+is printed every fourth step and on the final step. When a guard stops the
+loop before `num_step` steps are used and the accumulated total is still below
+the target, the shortfall is always printed on screen, because it is a level
+`-1` message: it appears even at the library default verbosity (`q_verbose`
+unset, i.e. `-1`). The message reads
+`gf_ape_smear_no_proj: reached only <acc> of accumulated_alpha = <target>`
+followed by `after <k> of <num_step> steps (stopped early: alpha <= 0,
+degenerate field, or no further representable progress)`. Neither message
+carries a `CHECK:`, `INFO:` or `WARNING` marker, so neither reaches the
+harvested `<name>.log` / `.check.txt` reference files.
 
 > **Warning:** the update is additive, so the field amplitude is not
 > conserved: for near-unitary links `staple_k ~ 6 U_k`, and one step is
@@ -192,12 +204,14 @@ reaches the harvested `<name>.log` / `.check.txt` reference files.
 |---|---|---|---|
 | `gf` | `GaugeField` | — | Input gauge field (not modified) |
 | `alpha` | `float` | — | Nominal smearing weight per step, scaled by `factor_k = 3 / M_k`; since the field grows, `M_k > 3` and `a_k <= alpha` |
-| `accumulated_alpha` | `float` | — | **Target** total effective smearing (not a step count); the applied `a_k` are summed until it is reached (last step truncated), or until the progress guard stops the loop |
+| `num_step` | `int` | `1` | Maximum number of iteration steps (loop cap) |
+| `accumulated_alpha` | `float` | `0.5` | **Target** total effective smearing (loop cap, not a step count); the applied `a_k` are summed until it is reached (last step truncated), or until the progress guard stops the loop |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
 
 In C++ the same operation writes its result into `gf` (starting from
-`gf = gf0`, with `gf == gf0` aliasing allowed) and returns nothing; the target
-is the fourth argument `accumulated_alpha`.
+`gf = gf0`, with `gf == gf0` aliasing allowed) and returns nothing; the fourth
+argument `num_step` is the iteration cap and the fifth argument
+`accumulated_alpha` is the target, defaulting to `1` and `0.5`.
 
 ---
 
@@ -441,12 +455,12 @@ gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
 
 # APE-like smearing without the SU(3) projection, driven by a target total
-# smearing instead of a step count. The step is additive, U' = U + (a/6) *
+# smearing and a generous step cap. The step is additive, U' = U + (a/6) *
 # staple, so the field amplitude grows and the weight per step decreases;
 # alpha = 0.5 with accumulated_alpha = 1.5 targets the same total weight as
 # three nominal steps of 0.5, approached through many small steps (the growth
 # can cap the accumulated weight below the target).
-gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, 1.5)
+gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, num_step=1000000, accumulated_alpha=1.5)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
 
 # APE-like smearing without the SU(3) projection, with the additive kernel
