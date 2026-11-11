@@ -49,6 +49,23 @@ def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.RealD accumulated_alp
     cc.gf_ape_smear_no_proj(gf1.xxx().val(), gf.xxx().val(), alpha, accumulated_alpha)
     return gf1
 
+def gf_ape_smear_no_proj_rescaling(GaugeField gf, double alpha, cc.Long num_step=1):
+    """
+    Similar to `gf_ape_smear` but with the SU(3) projection step omitted.
+    Each step uses the convex kernel `U' = (1 - alpha) U + (alpha / 6) * S`,
+    then multiplies the whole field by the real scalar
+    `s = sqrt(3 / <N^2>)`, where `<N^2>` is the global (MPI-reduced) average
+    of `Tr(U_mu(x)^dag U_mu(x))` over all links, so that `<N^2> = 3` (the
+    value for a unitary link) after every step, including the last.
+    Because the whole field is rescaled, `alpha = 0` only removes the staple
+    mixing; the rescale still applies, so it is not the identity for a
+    non-unitary field. `num_step = 0` returns an unchanged copy.
+    Returns a new gauge field; `gf` is not modified.
+    """
+    cdef GaugeField gf1 = gf.copy()
+    cc.gf_ape_smear_no_proj_rescaling(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
+    return gf1
+
 def gf_ape_smear_spatial(GaugeField gf, double alpha, cc.Long num_step=1):
     """
     used value: alpha = 0.5, num_step = 30

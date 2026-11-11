@@ -3,6 +3,9 @@
   "signature gf_ape_smear: `num_step` iteration parameter, default 1"
  ],
  [
+  "signature gf_ape_smear_no_proj_rescaling: `num_step` iteration parameter, default 1"
+ ],
+ [
   "signature gf_ape_smear_spatial: `num_step` iteration parameter, default 1"
  ],
  [
@@ -64,6 +67,12 @@
  ],
  [
   "gf_ape_smear_no_proj: input field left unchanged = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling: returns a new object = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling: input field left unchanged = True"
  ],
  [
   "gf_hyp_smear: returns a new object = True"

@@ -11,6 +11,7 @@ Source: `qlat/qlat/smear.pyx`
    - [`gf_ape_smear`](#gf_ape_smear)
    - [`gf_ape_smear_spatial`](#gf_ape_smear_spatial)
    - [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)
+   - [`gf_ape_smear_no_proj_rescaling`](#gf_ape_smear_no_proj_rescaling)
    - [`gf_hyp_smear`](#gf_hyp_smear)
 3. [Propagator and Fermion-Field Smearing](#propagator-and-fermion-field-smearing)
    - [`prop_smear`](#prop_smear)
@@ -44,10 +45,11 @@ unchanged. `prop_smear` also returns a new object, while
 - Names are object-first: `<object>_<method>_smear[_<variant>]`, e.g.
   `gf_ape_smear_spatial`, `prop_smear`, `field_smear_step`.
 - The iteration count is `num_step` for the projection-based gauge-field
-  smearings and for the propagator smearings. It is the last positional
-  parameter and defaults to `1`; `num_step == 0` returns an unchanged copy
-  (negative values behave as `0`). `gf_ape_smear_no_proj` is the exception:
-  it takes a target accumulated alpha instead (see
+  smearings, for the unprojected `gf_ape_smear_no_proj_rescaling` (it has no
+  projection but a per-step rescale), and for the propagator smearings. It is
+  the last positional parameter and defaults to `1`; `num_step == 0` returns
+  an unchanged copy (negative values behave as `0`). `gf_ape_smear_no_proj` is
+  the exception: it takes a target accumulated alpha instead (see
   [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)).
 - Every public smearing function returns a new object and does not modify its
   input. The single exception is the internal low-level kernel
@@ -196,6 +198,69 @@ reaches the harvested `<name>.log` / `.check.txt` reference files.
 In C++ the same operation writes its result into `gf` (starting from
 `gf = gf0`, with `gf == gf0` aliasing allowed) and returns nothing; the target
 is the fourth argument `accumulated_alpha`.
+
+---
+
+### `gf_ape_smear_no_proj_rescaling`
+
+```python
+gf_ape_smear_no_proj_rescaling(
+    gf: GaugeField, alpha: float, num_step: int = 1
+) -> GaugeField
+```
+
+Perform APE smearing with the SU(3) projection step omitted, while keeping
+the field amplitude under control by rescaling it after every step.
+
+Each step replaces each link with the convex combination of the current link
+and its staples, without projecting the result back to SU(3):
+
+```
+U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * S_mu(x)
+```
+
+`S_mu(x)` is the sum of the six staples around the link, built from the
+current field. This is the kernel of `gf_ape_smear` without its SU(3)
+projection: it is a true interpolation, so the link term keeps its weight
+`1 - alpha`. That is what distinguishes it from `gf_ape_smear_no_proj`, whose
+additive kernel leaves the link term untouched and lets the amplitude grow.
+Here the combined links are not unitary, so their norm drifts; after every
+step -- including the last -- the whole field is multiplied by the real
+scalar
+
+```
+mean_sq = qnorm(gf) / (total_volume * DIMN)
+s       = sqrt(NUM_COLOR / mean_sq)
+```
+
+`qnorm(gf)` sums `Tr(U_mu(x)^dag U_mu(x))` over all links, `total_volume` is
+the full lattice volume and `DIMN = 4`, so `mean_sq` is the average of
+`Tr(U^dag U)` per link, i.e. `<N^2>`. The `qnorm` reduction is global
+(MPI-reduced), so every node obtains the same value and applies the same `s`;
+the rescale is one common scalar for the whole field, not a per-site
+normalisation. After every step the field therefore satisfies
+`<N^2> = NUM_COLOR = 3`, the value for a unitary link. The rescale is skipped
+only if `mean_sq` is not positive; otherwise it always acts, including on the
+last step.
+
+Because the rescale is unconditional, `alpha = 0` removes only the staple
+term: the kernel returns the current links unchanged, but the field is still
+scaled to `<N^2> = 3`, so a non-unitary input is not returned unchanged. Only
+an exactly unitary input makes `alpha = 0` a no-op. `num_step = 0` (or a
+negative value) skips the loop and returns an unchanged copy of `gf`.
+
+The input `gf` is not modified; the result is returned as a new object.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field (not modified) |
+| `alpha` | `float` | — | Smearing weight; `0` removes only the staple term (the rescale still applies) |
+| `num_step` | `int` | `1` | Number of smearing iterations; `0` or a negative value returns an unchanged copy |
+| **Returns** | `GaugeField` | | Smeared gauge field (new object) |
+
+In C++ the same operation writes its result into `gf` (starting from
+`gf = gf0`; `gf` and `gf0` may alias) and returns nothing; the step count is
+the fourth argument `num_step`.
 
 ---
 
@@ -375,6 +440,12 @@ print(f"APE-smeared field: {gf_ape.crc32()}")
 # can cap the accumulated weight below the target).
 gf_no_proj = q.gf_ape_smear_no_proj(gf, 0.5, 1.5)
 print(f"Unprojected APE-like field: {gf_no_proj.crc32()}")
+
+# APE-like smearing without the SU(3) projection, with the convex kernel and
+# the per-step rescale that restores <N^2> = 3. Use num_step = 1..3.
+for num_step in range(1, 4):
+    gf_rescaled = q.gf_ape_smear_no_proj_rescaling(gf, 0.5, num_step=num_step)
+    print(f"Rescaled no-proj APE ({num_step} steps): {gf_rescaled.crc32()}")
 
 # HYP smearing with paper parameters
 gf_hyp = q.gf_hyp_smear(gf, 0.75, 0.6, 0.3)

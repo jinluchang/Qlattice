@@ -503,6 +503,7 @@ cdef extern from *:
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
     void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
+    void gf_ape_smear_no_proj_rescaling(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
     void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const RealD& accumulated_alpha) except +
     void gf_ape_smear_spatial(GaugeField& gf, const GaugeField& gf0, const RealD alpha, const Long num_step) except +
     void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha1, const RealD alpha2, const RealD alpha3, const Long num_step) except +

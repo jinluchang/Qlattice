@@ -24,6 +24,20 @@ def get_glb_max_link_norm_sqr(gf):
     comm = q.get_comm()
     return float(comm.allreduce(local_max, op=MPI.MAX))
 
+def get_glb_max_unitarity_dev(gf):
+    # Global max_{x,mu} |U_mu(x)^dag U_mu(x) - 1|, MPI-reduced with MPI.MAX
+    arr = np.asarray(gf)
+    udag_u = np.einsum("...ki,...kj->...ij", arr.conj(), arr)
+    local_max = float(np.max(np.abs(udag_u - np.eye(3))))
+    comm = q.get_comm()
+    return float(comm.allreduce(local_max, op=MPI.MAX))
+
+def get_glb_max_det_dev(gf):
+    # Global max_{x,mu} |det U_mu(x) - 1|, MPI-reduced with MPI.MAX
+    local_max = float(np.max(np.abs(np.linalg.det(np.asarray(gf)) - 1.0)))
+    comm = q.get_comm()
+    return float(comm.allreduce(local_max, op=MPI.MAX))
+
 def get_max_rel_dev(arr, arr_ref):
     # max |arr - arr_ref| normalized by max |arr_ref|
     return float(np.max(np.abs(arr - arr_ref)) / np.max(np.abs(arr_ref)))
@@ -354,6 +368,174 @@ q.json_results_append(
     f" (special exact alpha = 0.75, additive kernel) = {is_additive_kernel}"
 )
 assert is_additive_kernel, kernel_dev
+
+# ---- gf_ape_smear_no_proj_rescaling (convex kernel + per-step rescale) ----
+# No SU(3) projection: each step is the convex kernel
+# `U' = (1 - alpha) U + (alpha / 6) S`, followed by the global scalar rescale
+# `U -> sqrt(3 / <N^2>) U` with
+# `<N^2> = qnorm(gf) / (V * DIMN)` (MPI-reduced), so that `<N^2> = 3` (the
+# unitary value) after every step.  Unlike `gf_ape_smear`, the field is
+# therefore not unitary after a step.
+
+rescale_alpha = 0.5
+gf_rescale_sig = np.asarray(gf).copy()
+
+# (a) one unprojected step: `<N^2>` is restored to 3, but the field is far
+# from SU(3) (`|U^dag U - 1|` and `|det U - 1|` are O(1)); `gf_ape_smear`
+# instead projects back to SU(3) after every step.
+gf_rescale_1 = q.gf_ape_smear_no_proj_rescaling(gf, rescale_alpha, 1)
+avg_rescale_1 = get_glb_avg_link_norm_sqr(gf_rescale_1)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 1 step global avg <N^2>", avg_rescale_1, 1e-10
+)
+is_avg_3 = bool(abs(avg_rescale_1 - 3.0) <= 1e-13)
+q.json_results_append(
+    f"gf_ape_smear_no_proj_rescaling 1 step avg <N^2> = 3 to 1e-13 = {is_avg_3}"
+)
+assert is_avg_3, avg_rescale_1
+max_ut_dev_1 = get_glb_max_unitarity_dev(gf_rescale_1)
+max_det_dev_1 = get_glb_max_det_dev(gf_rescale_1)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 1 step global max |U^dag U - 1|",
+    max_ut_dev_1,
+    1e-10,
+)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 1 step global max |det U - 1|",
+    max_det_dev_1,
+    1e-10,
+)
+is_not_unitary = bool(max_ut_dev_1 > 0.5 and max_det_dev_1 > 0.5)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 1 step max |U^dag U - 1| > 0.5"
+    f" and max |det U - 1| > 0.5 = {is_not_unitary}"
+)
+assert is_not_unitary, (max_ut_dev_1, max_det_dev_1)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 1 step plaq", gf_rescale_1.plaq(), 1e-10
+)
+assert abs(gf_rescale_1.plaq() - 0.4859441837145792) <= 1e-10
+max_ut_dev_ape = get_glb_max_unitarity_dev(q.gf_ape_smear(gf, rescale_alpha, 1))
+is_ape_unitary = bool(max_ut_dev_ape < 1e-13)
+q.json_results_append(
+    f"gf_ape_smear 1 step is unitary (max |U^dag U - 1| < 1e-13) = {is_ape_unitary}"
+)
+assert is_ape_unitary, max_ut_dev_ape
+
+# (b) the rescale is applied after every step: four `num_step = 1` iterations
+# keep the global `<N^2>` at 3, and a pure scalar rescale of a low field
+# (`alpha = 0`, `num_step = 1`) multiplies it by `sqrt(3 / <N^2>)`.
+gf_rescale_walk = gf.copy()
+rescale_avg_list = []
+for _ in range(4):
+    gf_rescale_walk = q.gf_ape_smear_no_proj_rescaling(
+        gf_rescale_walk, rescale_alpha, 1
+    )
+    rescale_avg_list.append(get_glb_avg_link_norm_sqr(gf_rescale_walk))
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 4 x num_step=1 global avg <N^2>",
+    np.array(rescale_avg_list),
+    1e-10,
+)
+is_avg_kept = bool(max(abs(v - 3.0) for v in rescale_avg_list) < 1e-13)
+q.json_results_append(
+    f"gf_ape_smear_no_proj_rescaling per-step avg <N^2> = 3 to 1e-13 = {is_avg_kept}"
+)
+assert is_avg_kept, rescale_avg_list
+gf_rescale_low = gf.copy()
+gf_rescale_low.unitarize()
+gf_rescale_low *= 0.5
+arr_rescale_low = np.asarray(gf_rescale_low).copy()
+gf_rescale_restore = q.gf_ape_smear_no_proj_rescaling(gf_rescale_low, 0.0, 1)
+restore_dev = get_max_rel_dev(
+    np.asarray(gf_rescale_restore).copy(), 2.0 * arr_rescale_low
+)
+is_restore_scaled = bool(restore_dev < 1e-12)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling alpha=0 on low field is 2 x field"
+    f" (max rel dev < 1e-12) = {is_restore_scaled}"
+)
+assert is_restore_scaled, restore_dev
+avg_restore = get_glb_avg_link_norm_sqr(gf_rescale_restore)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling low field restored global avg <N^2>",
+    avg_restore,
+    1e-10,
+)
+assert abs(avg_restore - 3.0) <= 1e-13, avg_restore
+
+# (c) agreement and edges: `num_step = 0` / `-1` return bit-identical copies,
+# `alpha = 0` on a unit field is exactly the identity (for both this function
+# and `gf_ape_smear`), `num_step = 3` is three `num_step = 1` calls, and the
+# input field is never modified.
+is_zero_copy = bool(
+    np.array_equal(
+        np.asarray(q.gf_ape_smear_no_proj_rescaling(gf, rescale_alpha, 0)),
+        gf_rescale_sig,
+    )
+)
+q.json_results_append(
+    f"gf_ape_smear_no_proj_rescaling num_step=0 bitwise copy = {is_zero_copy}"
+)
+assert is_zero_copy
+is_neg_copy = bool(
+    np.array_equal(
+        np.asarray(q.gf_ape_smear_no_proj_rescaling(gf, rescale_alpha, -1)),
+        gf_rescale_sig,
+    )
+)
+q.json_results_append(
+    f"gf_ape_smear_no_proj_rescaling num_step=-1 bitwise copy = {is_neg_copy}"
+)
+assert is_neg_copy
+gf_rescale_unit = q.GaugeField(geo)
+gf_rescale_unit.set_unit()
+arr_rescale_unit = np.asarray(gf_rescale_unit).copy()
+is_rescale_unit_identity = bool(
+    np.array_equal(
+        np.asarray(q.gf_ape_smear_no_proj_rescaling(gf_rescale_unit, 0.0, 1)),
+        arr_rescale_unit,
+    )
+)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling alpha=0 on unit field bitwise identity"
+    f" = {is_rescale_unit_identity}"
+)
+assert is_rescale_unit_identity
+is_ape_unit_identity = bool(
+    np.array_equal(
+        np.asarray(q.gf_ape_smear(gf_rescale_unit, 0.0, 1)), arr_rescale_unit
+    )
+)
+q.json_results_append(
+    f"gf_ape_smear alpha=0 on unit field bitwise identity = {is_ape_unit_identity}"
+)
+assert is_ape_unit_identity
+gf_rescale_3 = q.gf_ape_smear_no_proj_rescaling(gf, rescale_alpha, 3)
+gf_rescale_loop = gf.copy()
+for _ in range(3):
+    gf_rescale_loop = q.gf_ape_smear_no_proj_rescaling(
+        gf_rescale_loop, rescale_alpha, 1
+    )
+rescale_loop_dev = get_max_rel_dev(
+    np.asarray(gf_rescale_3).copy(), np.asarray(gf_rescale_loop).copy()
+)
+is_rescale_loop_equal = bool(rescale_loop_dev < 1e-10)
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling num_step=3 vs three num_step=1 calls"
+    f" rel dev < 1e-10 = {is_rescale_loop_equal}"
+)
+assert is_rescale_loop_equal, rescale_loop_dev
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling 3 steps plaq", gf_rescale_3.plaq(), 1e-10
+)
+assert abs(gf_rescale_3.plaq() - 0.9164489844104106) <= 1e-10
+is_rescale_input_kept = bool(np.array_equal(np.asarray(gf), gf_rescale_sig))
+q.json_results_append(
+    "gf_ape_smear_no_proj_rescaling input field never modified"
+    f" = {is_rescale_input_kept}"
+)
+assert is_rescale_input_kept
 
 # ---- gf_stout_smear ----
 

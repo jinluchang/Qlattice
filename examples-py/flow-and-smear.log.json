@@ -301,6 +301,82 @@
   "gf_ape_smear_no_proj unit field one step is 1.75 U (special exact alpha = 0.75, additive kernel) = True"
  ],
  [
+  "gf_ape_smear_no_proj_rescaling 1 step global avg <N^2>",
+  3.000000000000001,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 1 step avg <N^2> = 3 to 1e-13 = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 1 step global max |U^dag U - 1|",
+  1.1925644929338963,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 1 step global max |det U - 1|",
+  0.9794681253349307,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 1 step max |U^dag U - 1| > 0.5 and max |det U - 1| > 0.5 = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 1 step plaq",
+  0.4859441837145795,
+  1e-10
+ ],
+ [
+  "gf_ape_smear 1 step is unitary (max |U^dag U - 1| < 1e-13) = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 4 x num_step=1 global avg <N^2>",
+  {
+   "value": [
+    3.000000000000001,
+    2.9999999999999996,
+    3.0000000000000018,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling per-step avg <N^2> = 3 to 1e-13 = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling alpha=0 on low field is 2 x field (max rel dev < 1e-12) = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling low field restored global avg <N^2>",
+  3.0,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling num_step=0 bitwise copy = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling num_step=-1 bitwise copy = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling alpha=0 on unit field bitwise identity = True"
+ ],
+ [
+  "gf_ape_smear alpha=0 on unit field bitwise identity = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling num_step=3 vs three num_step=1 calls rel dev < 1e-10 = True"
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling 3 steps plaq",
+  0.9164489844104116,
+  1e-10
+ ],
+ [
+  "gf_ape_smear_no_proj_rescaling input field never modified = True"
+ ],
+ [
   "gf_stout_smear steps=1 plaq",
   0.17479230404701862,
   1e-10

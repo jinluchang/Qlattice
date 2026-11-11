@@ -246,6 +246,73 @@ void gf_ape_smear_no_proj(GaugeField& gf, const GaugeField& gf0,
   }
 }
 
+static qacc ColorMatrix gf_link_ape_smear_no_proj_rescaling_no_comm(
+    const GaugeField& gf, const Coordinate& xl, const Int mu, const RealD alpha)
+// Convex APE kernel without the SU(3) projection:
+// `U' = (1 - alpha) U + (alpha / 6) * S`.
+// The amplitude shrinks under this kernel; the whole field is rescaled to
+// `Tr(U^dag U) = 3` after every step by the caller.
+{
+  return (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
+         (ComplexD)(alpha / 6.0) * gf_staple_no_comm(gf, xl, mu);
+}
+
+static void gf_ape_smear_no_proj_rescaling_no_comm(GaugeField& gf,
+                                                   const GaugeField& gf0,
+                                                   const RealD alpha)
+{
+  TIMER_VERBOSE("gf_ape_smear_no_proj_rescaling_no_comm");
+  Qassert(&gf != &gf0);
+  const Geometry geo0 = gf0.get_geo();
+  const Geometry geo = geo_resize(geo0);
+  gf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = gf.get_elems(xl);
+    for (Int mu = 0; mu < DIMN; ++mu) {
+      v[mu] = gf_link_ape_smear_no_proj_rescaling_no_comm(gf0, xl, mu, alpha);
+    }
+  });
+}
+
+static RealD gf_avg_link_norm_sq(const GaugeField& gf)
+// Return the global average of `Tr(U_mu(x)^dag U_mu(x))` over all links.
+// `qnorm` already performs the MPI reduction with `glb_sum`, so every rank
+// obtains the same value.
+{
+  TIMER("gf_avg_link_norm_sq");
+  const Geometry geo = geo_resize(gf.geo());
+  return qnorm(gf) / ((RealD)geo.total_volume() * (RealD)DIMN);
+}
+
+void gf_ape_smear_no_proj_rescaling(GaugeField& gf, const GaugeField& gf0,
+                                    const RealD alpha, const Long num_step)
+// APE smearing without the SU(3) projection, using the convex kernel
+// `U' = (1 - alpha) U + (alpha / 6) * S`. After every step the whole field
+// is multiplied by the real scalar `s = sqrt(NUM_COLOR / mean_sq)`, where
+// `mean_sq` is the global average of `Tr(U_mu(x)^dag U_mu(x))` over all
+// links, so that `<N^2> = 3` (the value for a unitary link) after every step.
+// The rescale is skipped if `mean_sq` is not positive.
+// `alpha = 0` removes the staple mixing, but the rescale still applies.
+// `num_step = 0` (or negative) returns an unchanged copy of `gf0`.
+// `gf` and `gf0` may alias; `gf` is the output.
+{
+  TIMER_VERBOSE("gf_ape_smear_no_proj_rescaling");
+  gf = gf0;
+  GaugeField gf1;
+  gf1.init(geo_resize(gf0.geo(), 1));
+  for (Long i = 0; i < num_step; ++i) {
+    gf1 = gf;
+    refresh_expanded(gf1);
+    gf_ape_smear_no_proj_rescaling_no_comm(gf, gf1, alpha);
+    const RealD mean_sq = gf_avg_link_norm_sq(gf);
+    if (mean_sq > 0.0) {
+      gf *= std::sqrt((RealD)NUM_COLOR / mean_sq);
+    }
+  }
+}
+
 static qacc ColorMatrix gf_link_ape_smear_spatial_no_comm(const GaugeField& gf,
                                                           const Coordinate& xl,
                                                           const Int mu,

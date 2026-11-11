@@ -41,6 +41,7 @@ OLD_NAMES = [
 # `accumulated_alpha` instead) and is checked separately below.
 NUM_STEP_NAMES = [
     "gf_ape_smear",
+    "gf_ape_smear_no_proj_rescaling",
     "gf_ape_smear_spatial",
     "gf_hyp_smear",
     "gf_stout_smear",
@@ -199,6 +200,12 @@ check_returns_new_object(
     "gf_ape_smear_no_proj",
     # alpha = 0.1, target = 0.1: the target must stay below 1 in the tests.
     lambda: q.gf_ape_smear_no_proj(gf, 0.1, 0.1),
+    gf,
+    get_arr_sig,
+)
+check_returns_new_object(
+    "gf_ape_smear_no_proj_rescaling",
+    lambda: q.gf_ape_smear_no_proj_rescaling(gf, 0.5, num_step=1),
     gf,
     get_arr_sig,
 )
