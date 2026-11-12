@@ -42,6 +42,12 @@ def get_max_rel_dev(arr, arr_ref):
     # max |arr - arr_ref| normalized by max |arr_ref|
     return float(np.max(np.abs(arr - arr_ref)) / np.max(np.abs(arr_ref)))
 
+def get_glb_max_abs_dev(arr, arr_ref):
+    # Global max |arr - arr_ref| (absolute, not normalized), MPI-reduced
+    local_max = float(np.max(np.abs(arr - arr_ref)))
+    comm = q.get_comm()
+    return float(comm.allreduce(local_max, op=MPI.MAX))
+
 def replicate_no_proj_target_loop(gf, alpha, target):
     # Hand-rolled replication of the target-driven loop of
     # `gf_ape_smear_no_proj(gf, alpha, accumulated_alpha=target)`: per step
@@ -587,6 +593,106 @@ q.json_results_append(
     f" = {is_rescale_input_kept}"
 )
 assert is_rescale_input_kept
+
+# ---- gf_su_projection (APE trace-maximizing SU(3) projection) ----
+# `gf_su_projection(gf)` applies, per link, the same trace-maximizing SU(3)
+# projection that the projected APE step `gf_ape_smear(gf, 0.0, 1)` applies.
+# It is not the Gram-Schmidt `unitarize` projection, and the two differ
+# substantially on a genuinely non-normal field.
+
+gf_proj_sig = np.asarray(gf).copy()
+
+# (a) the same per-link projection as the projected APE step, and the output
+# is SU(3); the input field is left untouched.
+gf_proj = q.gf_su_projection(gf)
+gf_proj_ape = q.gf_ape_smear(gf, 0.0, 1)
+is_proj_ape_equal = bool(
+    get_glb_max_abs_dev(np.asarray(gf_proj), np.asarray(gf_proj_ape)) < 1e-14
+)
+q.json_results_append(
+    "gf_su_projection equals gf_ape_smear(gf, 0.0, 1)"
+    f" (max abs dev < 1e-14) = {is_proj_ape_equal}"
+)
+assert is_proj_ape_equal
+max_ut_dev_proj = get_glb_max_unitarity_dev(gf_proj)
+max_det_dev_proj = get_glb_max_det_dev(gf_proj)
+is_proj_su3 = bool(max_ut_dev_proj < 1e-12 and max_det_dev_proj < 1e-12)
+q.json_results_append(
+    "gf_su_projection output is SU(3)"
+    f" (max |U^dag U - 1| < 1e-12 and max |det U - 1| < 1e-12) = {is_proj_su3}"
+)
+assert is_proj_su3, (max_ut_dev_proj, max_det_dev_proj)
+is_proj_input_kept = bool(np.array_equal(np.asarray(gf), gf_proj_sig))
+q.json_results_append(
+    f"gf_su_projection input field never modified = {is_proj_input_kept}"
+)
+assert is_proj_input_kept
+
+# (b) the in-place method `GaugeField.su_projection()` is the same projection
+# as the returning function.
+gf_proj_inplace = gf.copy()
+gf_proj_inplace.su_projection()
+is_proj_method_equal = bool(
+    get_glb_max_abs_dev(np.asarray(gf_proj_inplace), np.asarray(gf_proj)) < 1e-14
+)
+q.json_results_append(
+    "gf_su_projection GaugeField.su_projection() equals gf_su_projection()"
+    f" (max abs dev < 1e-14) = {is_proj_method_equal}"
+)
+assert is_proj_method_equal
+
+# (c) the `tolerance` parameter is the trace-gain threshold of the SU(2)
+# sweeps: a much tighter tolerance changes the projected links.
+gf_proj_tol = q.gf_su_projection(gf, tolerance=1e-15)
+proj_tol_dev = get_glb_max_abs_dev(np.asarray(gf_proj_tol), np.asarray(gf_proj))
+q.json_results_append(
+    "gf_su_projection tolerance=1e-15 vs default 1e-8 max abs dev",
+    proj_tol_dev,
+    1e-10,
+)
+is_proj_tol_effect = bool(proj_tol_dev > 1e-6)
+q.json_results_append(
+    "gf_su_projection tolerance=1e-15 vs default max abs dev > 1e-6"
+    f" = {is_proj_tol_effect}"
+)
+assert is_proj_tol_effect, proj_tol_dev
+
+# (d) contrast with `unitarize` on a genuinely non-normal field (one additive
+# `gf_ape_smear_no_proj` step).  A scaled-unitary field is not suitable here:
+# both projections only differ by about 1e-5 on it.
+gf_proj_nn = q.gf_ape_smear_no_proj(gf, 1.0, num_step=1, accumulated_alpha=1e9)
+max_ut_dev_nn = get_glb_max_unitarity_dev(gf_proj_nn)
+q.json_results_append(
+    "gf_su_projection non-normal field max |U^dag U - 1|", max_ut_dev_nn, 1e-10
+)
+is_proj_nn_non_normal = bool(max_ut_dev_nn > 1.0)
+q.json_results_append(
+    f"gf_su_projection non-normal field max |U^dag U - 1| > 1 = {is_proj_nn_non_normal}"
+)
+assert is_proj_nn_non_normal, max_ut_dev_nn
+gf_proj_nn_uni = gf_proj_nn.copy()
+gf_proj_nn_uni.unitarize()
+gf_proj_nn_su = q.gf_su_projection(gf_proj_nn)
+proj_nn_dev = get_glb_max_abs_dev(np.asarray(gf_proj_nn_su), np.asarray(gf_proj_nn_uni))
+q.json_results_append(
+    "gf_su_projection vs unitarize on non-normal field max abs dev",
+    proj_nn_dev,
+    1e-10,
+)
+is_proj_nn_contrast = bool(proj_nn_dev > 0.1)
+q.json_results_append(
+    "gf_su_projection vs unitarize on non-normal field max abs dev > 0.1"
+    f" = {is_proj_nn_contrast}"
+)
+assert is_proj_nn_contrast, proj_nn_dev
+max_ut_dev_nn_su = get_glb_max_unitarity_dev(gf_proj_nn_su)
+max_det_dev_nn_su = get_glb_max_det_dev(gf_proj_nn_su)
+is_proj_nn_su3 = bool(max_ut_dev_nn_su < 1e-12 and max_det_dev_nn_su < 1e-12)
+q.json_results_append(
+    "gf_su_projection non-normal field output is SU(3)"
+    f" (max |U^dag U - 1| < 1e-12) = {is_proj_nn_su3}"
+)
+assert is_proj_nn_su3, (max_ut_dev_nn_su, max_det_dev_nn_su)
 
 # ---- gf_stout_smear ----
 

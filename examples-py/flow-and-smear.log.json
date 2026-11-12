@@ -385,6 +385,45 @@
   "gf_ape_smear_no_proj_rescaling input field never modified = True"
  ],
  [
+  "gf_su_projection equals gf_ape_smear(gf, 0.0, 1) (max abs dev < 1e-14) = True"
+ ],
+ [
+  "gf_su_projection output is SU(3) (max |U^dag U - 1| < 1e-12 and max |det U - 1| < 1e-12) = True"
+ ],
+ [
+  "gf_su_projection input field never modified = True"
+ ],
+ [
+  "gf_su_projection GaugeField.su_projection() equals gf_su_projection() (max abs dev < 1e-14) = True"
+ ],
+ [
+  "gf_su_projection tolerance=1e-15 vs default 1e-8 max abs dev",
+  1.5498905935908715e-05,
+  1e-10
+ ],
+ [
+  "gf_su_projection tolerance=1e-15 vs default max abs dev > 1e-6 = True"
+ ],
+ [
+  "gf_su_projection non-normal field max |U^dag U - 1|",
+  1.538242987955146,
+  1e-10
+ ],
+ [
+  "gf_su_projection non-normal field max |U^dag U - 1| > 1 = True"
+ ],
+ [
+  "gf_su_projection vs unitarize on non-normal field max abs dev",
+  0.814811647558578,
+  1e-10
+ ],
+ [
+  "gf_su_projection vs unitarize on non-normal field max abs dev > 0.1 = True"
+ ],
+ [
+  "gf_su_projection non-normal field output is SU(3) (max |U^dag U - 1| < 1e-12) = True"
+ ],
+ [
   "gf_stout_smear steps=1 plaq",
   0.17479230404701862,
   1e-10

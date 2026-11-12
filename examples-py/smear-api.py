@@ -3,12 +3,15 @@
 # Conformance test for the unified smear API.
 #
 # Asserts the public contract:
-#   * every smear except `gf_ape_smear_no_proj` takes the iteration parameter
-#     `num_step` (last positional, default 1) and returns a NEW object without
-#     touching its input,
+#   * every smear except `gf_ape_smear_no_proj` and `gf_su_projection` takes
+#     the iteration parameter `num_step` (last positional, default 1) and
+#     returns a NEW object without touching its input,
 #   * `gf_ape_smear_no_proj` takes `num_step` (iteration cap, default 1) and
 #     the TARGET total effective smearing `accumulated_alpha` (default 0.5,
 #     last positional), and also returns a NEW object,
+#   * `gf_su_projection` is a one-shot SU(3) projection that takes the SU(2)
+#     sweep trace-gain threshold `tolerance` (default 1e-8, last positional)
+#     and also returns a NEW object,
 #   * `prop_smear` / `prop_spatial_smear` keep `mom` (and the mode options)
 #     after `num_step` so the historical positional order stays valid,
 #   * `field_smear` spells the spatial switch `spatial_only` (keyword only),
@@ -167,6 +170,19 @@ q.json_results_append(
     "signature gf_ape_smear_no_proj: num_step cap (1) + accumulated_alpha target (0.5)"
 )
 
+# `gf_su_projection` is a one-shot projection: it takes the SU(2) sweep
+# trace-gain threshold `tolerance` instead of an iteration count.
+su_proj_params = list(inspect.signature(q.gf_su_projection).parameters.values())
+su_proj_names = [param.name for param in su_proj_params]
+assert su_proj_names == ["gf", "tolerance"], (
+    f"gf_su_projection: unexpected signature (got {su_proj_names})"
+)
+assert su_proj_params[1].default == 1e-8, (
+    f"gf_su_projection: tolerance default is {su_proj_params[1].default!r},"
+    " expected 1e-08"
+)
+q.json_results_append("signature gf_su_projection: `tolerance` default 1e-08")
+
 prop_sig = inspect.signature(q.prop_smear)
 q.json_results_append(
     f"signature prop_smear: mode default = {prop_sig.parameters['mode'].default!r}"
@@ -213,6 +229,9 @@ check_returns_new_object(
     lambda: q.gf_ape_smear_no_proj_rescaling(gf, 0.5, num_step=1),
     gf,
     get_arr_sig,
+)
+check_returns_new_object(
+    "gf_su_projection", lambda: q.gf_su_projection(gf), gf, get_arr_sig
 )
 check_returns_new_object(
     "gf_hyp_smear",

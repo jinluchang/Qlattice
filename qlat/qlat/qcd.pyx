@@ -69,6 +69,15 @@ cdef class GaugeField(FieldColorMatrix):
     def unitarize(self):
         cc.unitarize(self.xx)
 
+    def su_projection(self, cc.RealD tolerance=1.0e-8):
+        """
+        Project each link onto SU(3) with the APE trace-maximizing algorithm
+        (in place).  Per link this is the projection of
+        `gf_ape_smear(gf, 0.0, 1)`; `tolerance` is the trace-gain threshold of
+        the SU(2) subgroup sweep.
+        """
+        cc.gf_su_projection(self.xxx().val(), tolerance)
+
     def plaq(self):
         return gf_avg_plaq(self)
 

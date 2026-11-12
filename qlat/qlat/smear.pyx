@@ -28,6 +28,22 @@ def gf_ape_smear(GaugeField gf, double alpha, cc.Long num_step=1):
     cc.gf_ape_smear(gf1.xxx().val(), gf.xxx().val(), alpha, num_step)
     return gf1
 
+def gf_su_projection(GaugeField gf, cc.RealD tolerance=1.0e-8):
+    """
+    Project every gauge link onto SU(3) with the APE trace-maximizing
+    algorithm: iteratively sweep the three SU(2) subgroups, taking the SU(2)
+    inverse that maximizes the trace of `U'^dag U` (`tolerance` is the trace
+    gain threshold of the sweep, default 1e-8), then unitarize the result.
+    Per link this is the projection applied by the projected APE step
+    `gf_ape_smear(gf, 0.0, 1)`, so `gf_su_projection(gf)` and
+    `gf_ape_smear(gf, 0.0, 1)` agree up to rounding.  `unitarize` is a
+    different (Gram-Schmidt) projection and can differ on a non-unitary
+    field.  Returns a new gauge field; `gf` is not modified.
+    """
+    cdef GaugeField gf1 = gf.copy()
+    cc.gf_su_projection(gf1.xxx().val(), tolerance)
+    return gf1
+
 def gf_ape_smear_no_proj(GaugeField gf, cc.RealD alpha, cc.Long num_step=1, cc.RealD accumulated_alpha=0.5):
     """
     Similar to `gf_ape_smear` but with the SU(3) projection step omitted.

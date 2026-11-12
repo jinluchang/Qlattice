@@ -9,6 +9,7 @@ Source: `qlat/qlat/smear.pyx`
 1. [Overview](#overview)
 2. [Gauge-Field Smearing](#gauge-field-smearing)
    - [`gf_ape_smear`](#gf_ape_smear)
+   - [`gf_su_projection`](#gf_su_projection)
    - [`gf_ape_smear_spatial`](#gf_ape_smear_spatial)
    - [`gf_ape_smear_no_proj`](#gf_ape_smear_no_proj)
    - [`gf_ape_smear_no_proj_rescaling`](#gf_ape_smear_no_proj_rescaling)
@@ -75,8 +76,9 @@ original link and the staples surrounding it:
 U'_mu(x) = (1 - alpha) * U_mu(x) + (alpha / 6) * sum_of_staples
 ```
 
-The result is re-projected to SU(3). After `num_step` iterations the smeared
-field is returned.
+The result is re-projected to SU(3) with
+[`gf_su_projection`](#gf_su_projection). After `num_step` iterations the
+smeared field is returned.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
@@ -84,6 +86,57 @@ field is returned.
 | `alpha` | `float` | — | Smearing weight (0 = no smearing, 1 = full staple) |
 | `num_step` | `int` | `1` | Number of smearing iterations |
 | **Returns** | `GaugeField` | | Smeared gauge field (new object) |
+
+---
+
+### `gf_su_projection`
+
+```python
+gf_su_projection(gf: GaugeField, tolerance: float = 1e-8) -> GaugeField
+```
+
+Re-project every link of a gauge field to SU(3). This is the projection that
+`gf_ape_smear` applies after every APE step: each link `M` is replaced by the
+SU(3) matrix `Y` that maximizes the real part of `Tr(Y^dag M)`, i.e. the
+closest SU(3) matrix in the trace sense rather than in a matrix norm.
+
+The maximization is iterative. Starting from `Y = 1`, it sweeps the three
+SU(2) subgroups of SU(3): each SU(2) inversion is applied to `Y`, the trace
+gain of the sweep is measured, and the loop stops as soon as no subgroup
+improves the trace by more than `tolerance`. A final Gram-Schmidt
+unitarization turns `Y` into an exact SU(3) matrix, and a `max_iter` guard
+(10000 sweeps) aborts the projection with an assertion if an input never
+converges.
+
+Because the `alpha = 0` APE kernel is the identity (`U' = (1 - 0) * U +
+0 = U`), the function is the projection applied by a single projection-only
+APE step, and the two agree up to rounding:
+
+```
+gf_su_projection(gf)  ~  gf_ape_smear(gf, 0.0, 1)
+```
+
+`tolerance` bounds the trace gain of a sweep, not the distance between the
+result and the input, so with the default `tolerance = 1e-8` an exactly-SU(3)
+input comes back about `1e-5` away from where it started. Pass a smaller value
+(such as `1e-12`) when a closer projection is required; the sweep then needs
+more iterations.
+
+This is a different projection from `gf.unitarize()` (also `q.unitarize`),
+which is a single-pass Gram-Schmidt (QR Q-factor) factorization and does not
+try to maximize the trace. Both return SU(3) matrices: `unitarize` is exact
+for an exactly-SU(3) input but does not optimize the link, while this function
+follows the trace-maximizing iteration used by APE.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Input gauge field (not modified) |
+| `tolerance` | `float` | `1e-8` | Trace-gain threshold that stops the SU(2) sweeps; a smaller value gives a closer projection and costs more sweeps |
+| **Returns** | `GaugeField` | | Projected gauge field (new object) |
+
+The module function returns a new object and leaves `gf` unchanged. The method
+`gf.su_projection(tolerance=1e-8)`, mirroring `gf.unitarize()`, and the C++
+`gf_su_projection(gf, tolerance)` both work in place.
 
 ---
 
@@ -453,6 +506,14 @@ gf.set_unit()  # placeholder
 # APE smearing: alpha=0.5, 30 iterations
 gf_ape = q.gf_ape_smear_spatial(gf, 0.5, num_step=30)
 print(f"APE-smeared field: {gf_ape.crc32()}")
+
+# Re-project the links to SU(3) with the APE trace-maximizing projection,
+# the same routine gf_ape_smear applies (gf_ape_smear(gf, 0.0, 1) is
+# equivalent). A smaller tolerance gives a tighter projection.
+gf_proj = q.gf_su_projection(gf)
+print(f"SU(3)-projected field: {gf_proj.crc32()}")
+gf_proj_tight = q.gf_su_projection(gf, tolerance=1e-12)
+print(f"SU(3)-projected field (tolerance=1e-12): {gf_proj_tight.crc32()}")
 
 # APE-like smearing without the SU(3) projection, driven by a target total
 # smearing and a generous step cap. The step is additive, U' = U + (a/6) *

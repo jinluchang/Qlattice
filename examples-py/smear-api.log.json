@@ -39,6 +39,9 @@
   "signature gf_ape_smear_no_proj: num_step cap (1) + accumulated_alpha target (0.5)"
  ],
  [
+  "signature gf_su_projection: `tolerance` default 1e-08"
+ ],
+ [
   "signature prop_smear: mode default = 'qlat'"
  ],
  [
@@ -73,6 +76,12 @@
  ],
  [
   "gf_ape_smear_no_proj_rescaling: input field left unchanged = True"
+ ],
+ [
+  "gf_su_projection: returns a new object = True"
+ ],
+ [
+  "gf_su_projection: input field left unchanged = True"
  ],
  [
   "gf_hyp_smear: returns a new object = True"
