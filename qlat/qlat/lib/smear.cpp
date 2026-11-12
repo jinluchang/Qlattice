@@ -8,6 +8,79 @@
 namespace qlat
 {  //
 
+static qacc ColorMatrix color_matrix_sub_invert(const ColorMatrix& x,
+                                                const Int ind)
+// get su2 submatrix of x and return the su3 matrix that
+// has the inverse of this matrix in the relevant row and column
+{
+  const Int su2_index[][3] = {{0, 1, 2}, {0, 2, 1}, {1, 2, 0}};
+  const Int i1 = su2_index[ind][0];
+  const Int i2 = su2_index[ind][1];
+  // const Int zero_rc = su2_index[ind][2];
+  // project onto SU(2)
+  double p0 = x(i1, i1).real() + x(i2, i2).real();
+  double p1 = x(i1, i2).imag() + x(i2, i1).imag();
+  double p2 = x(i1, i2).real() - x(i2, i1).real();
+  double p3 = x(i1, i1).imag() - x(i2, i2).imag();
+  const double psqr = sqrt(p0 * p0 + p1 * p1 + p2 * p2 + p3 * p3);
+  ColorMatrix y;
+  set_unit(y);
+  if (psqr == 0.0) {
+    return y;
+  } else {
+    double ipsqr = 1.0 / psqr;
+    p0 *= ipsqr;
+    p1 *= ipsqr;
+    p2 *= ipsqr;
+    p3 *= ipsqr;
+    // fill with inverse
+    y(i1, i1) = ComplexD(p0, -p3);
+    y(i2, i2) = ComplexD(p0, p3);
+    y(i1, i2) = ComplexD(-p2, -p1);
+    y(i2, i1) = ComplexD(p2, -p1);
+    return y;
+  }
+}
+
+static qacc ColorMatrix color_matrix_su_projection(
+    const ColorMatrix& x, const double tolerance = 1.0e-8)
+{
+  // usually takes ~5 hits, so just exit
+  // if hits the max, as something is
+  // probably very wrong.
+  const Int max_iter = 10000;
+  const ColorMatrix xdag = matrix_adjoint(x);
+  ColorMatrix tmp = xdag;
+  ColorMatrix y;
+  set_unit(y);
+  double old_tr = matrix_trace(xdag).real();
+  for (Int i = 0; i < max_iter; i++) {
+    // loop over su2 subgroups
+    double diff = 0.0;
+    for (Int j = 0; j < 3; j++) {
+      const ColorMatrix inv = color_matrix_sub_invert(tmp, j);
+      // y  .DotMEqual( inv, ycopy );
+      y = inv * y;
+      // tmp.DotMEqual( y, xdag );
+      tmp = y * xdag;
+      const double tr = matrix_trace(tmp).real();
+      const double dtr = tr - old_tr;
+      if (dtr > diff) {
+        diff = dtr;
+      }
+      old_tr = tr;
+    }
+    // for single precision the difference seems
+    // to never get below 1e-7 (not too suprising)
+    if (diff < tolerance) {
+      break;
+    }
+    qassert(i < max_iter - 1);
+  }
+  unitarize(y);
+  return y;
+}
+
 void gf_su_projection(GaugeField& gf, const RealD tolerance)
 // Project every gauge link onto SU(3) with the APE trace-maximizing
 // algorithm (the projection used by `gf_ape_smear`).  In place.
