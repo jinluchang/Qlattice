@@ -5,8 +5,10 @@ Build and install a local Qlattice Jupyter kernel with nix.\n
 This replaces the former 'install-py-local-kernel-with-nix.sh' and
 'install-py-local-kernel-with-nix-cuda.sh'.  Everything that used to be
 configured through environment variables ('name', 'use_nom', 'kernel_prefix')
-is a command line option now, and '--all-variants' builds every variant in a
-single nix-build call, like the old '-cuda' script did.\n
+is a command line option now, and '--all-variants' builds every variant
+available on this machine in a single nix-build call, like the old '-cuda'
+script did: the GPU variants ('cu', 'cuda', 'cudasupport') are skipped when
+there is no usable NVIDIA GPU.\n
 The nix-build out link is installed into the current user's kernel directory,
 '$JUPYTER_DATA_DIR/kernels/nix-build-py-local<variant>/result' (by default
 '$HOME/.local/share/jupyter/kernels/...'), when that directory is writable.
@@ -59,6 +61,15 @@ VARIANT_SUFFIX = {
 }
 VARIANT_NAMES = ", ".join(VARIANT_SUFFIX)
 SUFFIX_VARIANT = {suffix: name for name, suffix in VARIANT_SUFFIX.items()}
+# Variants that need a usable NVIDIA GPU.  The nix side derives 'ngpu' from
+# '/dev/nvidia*' and, when it is "0", the cuda options collapse to the plain CPU
+# build (see 'nixpkgs/options.nix'), so the 'pkgs-cu', 'pkgs-cuda' and
+# 'pkgs-cudasupport' attributes do not exist at all on a CPU only machine.
+GPU_VARIANT_NAMES = ("cu", "cuda", "cudasupport")
+# Variants that are always buildable (CPU only, no GPU needed).
+CPU_VARIANT_NAMES = tuple(
+    name for name in VARIANT_SUFFIX if name not in GPU_VARIANT_NAMES
+)
 
 DEFAULT_JOBS = 6
 DEFAULT_CORES = 15
@@ -87,6 +98,15 @@ a variant builds the nix attribute 'pkgs<suffix>.qlat-jhub-env', creates the out
 link './result-py-local<suffix>' and installs the kernel 'py-local<suffix>', where
 the suffix is '' for 'default' and '-<name>' otherwise: '--variant cuda' builds
 'pkgs-cuda.qlat-jhub-env' and installs the kernel 'py-local-cuda'.
+
+'--all-variants' builds every variant available on this machine: all six on a
+machine with a usable NVIDIA GPU, and only 'default', 'clang' and 'pypi' when
+there is none, because the nix side collapses the cuda options to the plain CPU
+build when 'ngpu' is "0" (so 'pkgs-cu', 'pkgs-cuda' and 'pkgs-cudasupport' do
+not exist).  The GPU check counts '/dev/nvidia<index>' like 'nixpkgs/options.nix'
+does; 'QLAT_NGPU=<int>' overrides it and is forwarded to nix-build as
+'--argstr ngpu <int>', so the two sides always agree.  An explicit '--variant'
+is never filtered.
 
 nixpkgs:
   --version VERSION          build with the nixpkgs of the NixOS release or
@@ -235,7 +255,9 @@ def parse_args(argv):
     parser.add_argument(
         "--all-variants",
         action="store_true",
-        help="build and install every variant",
+        help="build and install every variant available on this machine "
+        "(the GPU variants are skipped without a usable NVIDIA GPU; "
+        "'QLAT_NGPU' overrides the detection)",
     )
     parser.add_argument(
         "--kernel-prefix",
@@ -290,14 +312,27 @@ def parse_args(argv):
         parser.error("--nixpkgs cannot be combined with --version")
     args.nixpkgs_args = build_nixpkgs_args(args.version, args.nixpkgs)
     #
+    ngpu = detect_ngpu()
+    if os.environ.get("QLAT_NGPU") is not None:
+        # nix must agree with the detection; a later explicit '--argstr ngpu ...'
+        # still wins, because nix uses the last value.
+        args.nix_build_args = ["--argstr", "ngpu", str(ngpu)] + args.nix_build_args
+    #
     if args.all_variants and args.variant:
         parser.error("--all-variants cannot be combined with --variant")
     if args.all_variants:
-        args.variants = list(VARIANT_SUFFIX.values())
+        if ngpu > 0:
+            args.variants = list(VARIANT_SUFFIX.values())
+            args.skipped_variants = []
+        else:
+            args.skipped_variants = [VARIANT_SUFFIX[name] for name in GPU_VARIANT_NAMES]
+            args.variants = [VARIANT_SUFFIX[name] for name in CPU_VARIANT_NAMES]
     elif args.variant:
         args.variants = list(dict.fromkeys(args.variant))
+        args.skipped_variants = []
     else:
         args.variants = [""]
+        args.skipped_variants = []
     #
     if args.kernel_prefix is None:
         args.kernel_prefix = REPO_PATH / "tmp" / "jupyter"
@@ -333,6 +368,27 @@ def run_with_nom(cmd, env):
         )
     if nom_returncode != 0:
         die(f"'nom' failed with exit code {nom_returncode}", nom_returncode)
+
+def detect_ngpu():
+    """Number of NVIDIA GPUs, using the same check as 'nixpkgs/options.nix'.\n
+    '/dev/nvidia<index>' is what the nix side counts, and it is also what decides
+    whether the '-cu', '-cuda' and '-cudasupport' attributes exist at all, so the
+    script and nix can never disagree about which variants are available.\n
+    'QLAT_NGPU' overrides the detection (mainly to test the CPU only path on a
+    machine that has a GPU); it is forwarded to nix-build as '--argstr ngpu' so
+    that the two stay in agreement.
+    """
+    override = os.environ.get("QLAT_NGPU")
+    if override is not None:
+        value = override.strip()
+        if not value.isdigit():
+            die(f"QLAT_NGPU must be a non-negative integer, got '{override}'")
+        return int(value)
+    try:
+        names = os.listdir("/dev")
+    except OSError:
+        return 0
+    return len([name for name in names if re.fullmatch(r"nvidia\d{1,2}", name)])
 
 def can_write_dir(path):
     """Return True when a file can be created in 'path', creating it if needed.\n
@@ -596,6 +652,13 @@ def main(argv=None):
     kernels_dir, use_user_install = setup_kernel_install(args.kernel_prefix)
     if used_repo_cache or not use_user_install:
         setup_tmpdir(env)
+    #
+    if args.skipped_variants:
+        names = ", ".join(SUFFIX_VARIANT[variant] for variant in args.skipped_variants)
+        print(
+            f"No usable NVIDIA GPU (nix ngpu=0, from '/dev/nvidia*' or "
+            f"'QLAT_NGPU').  Skipping GPU variants: {names}."
+        )
     #
     bulk_build = len(args.variants) > 1
     if bulk_build:
