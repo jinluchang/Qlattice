@@ -5,10 +5,13 @@ Build and install a local Qlattice Jupyter kernel with nix.\n
 This replaces the former 'install-py-local-kernel-with-nix.sh' and
 'install-py-local-kernel-with-nix-cuda.sh'.  Everything that used to be
 configured through environment variables ('name', 'use_nom', 'kernel_prefix')
-is a command line option now, and '--all-variants' builds every variant
-available on this machine in a single nix-build call, like the old '-cuda'
-script did: the GPU variants ('cu', 'cuda', 'cudasupport') are skipped when
-there is no usable NVIDIA GPU.\n
+is a command line option now, and '--all-variants' builds every variant that
+nix lists for this machine in a single nix-build call, like the old '-cuda'
+script did.  The list comes from 'nixpkgs/q-pkgs.nix' (the 'qlat-name-list'
+attribute, queried with 'nix-instantiate --eval'), so it agrees with the
+attributes that actually exist: without a usable NVIDIA GPU the '-cu', '-cuda'
+and '-cudasupport' names are not listed at all.  The query needs the nix cache,
+so it fails with an actionable error instead of guessing.\n
 The nix-build out link is installed into the current user's kernel directory,
 '$JUPYTER_DATA_DIR/kernels/nix-build-py-local<variant>/result' (by default
 '$HOME/.local/share/jupyter/kernels/...'), when that directory is writable.
@@ -35,6 +38,7 @@ kernel environment; 24.11 and 25.11 currently fail to evaluate 'qlat-jhub-env'
 """
 
 import argparse
+import json
 import os
 import re
 import shlex
@@ -61,15 +65,6 @@ VARIANT_SUFFIX = {
 }
 VARIANT_NAMES = ", ".join(VARIANT_SUFFIX)
 SUFFIX_VARIANT = {suffix: name for name, suffix in VARIANT_SUFFIX.items()}
-# Variants that need a usable NVIDIA GPU.  The nix side derives 'ngpu' from
-# '/dev/nvidia*' and, when it is "0", the cuda options collapse to the plain CPU
-# build (see 'nixpkgs/options.nix'), so the 'pkgs-cu', 'pkgs-cuda' and
-# 'pkgs-cudasupport' attributes do not exist at all on a CPU only machine.
-GPU_VARIANT_NAMES = ("cu", "cuda", "cudasupport")
-# Variants that are always buildable (CPU only, no GPU needed).
-CPU_VARIANT_NAMES = tuple(
-    name for name in VARIANT_SUFFIX if name not in GPU_VARIANT_NAMES
-)
 
 DEFAULT_JOBS = 6
 DEFAULT_CORES = 15
@@ -99,14 +94,23 @@ link './result-py-local<suffix>' and installs the kernel 'py-local<suffix>', whe
 the suffix is '' for 'default' and '-<name>' otherwise: '--variant cuda' builds
 'pkgs-cuda.qlat-jhub-env' and installs the kernel 'py-local-cuda'.
 
-'--all-variants' builds every variant available on this machine: all six on a
-machine with a usable NVIDIA GPU, and only 'default', 'clang' and 'pypi' when
-there is none, because the nix side collapses the cuda options to the plain CPU
-build when 'ngpu' is "0" (so 'pkgs-cu', 'pkgs-cuda' and 'pkgs-cudasupport' do
-not exist).  The GPU check counts '/dev/nvidia<index>' like 'nixpkgs/options.nix'
-does; 'QLAT_NGPU=<int>' overrides it and is forwarded to nix-build as
-'--argstr ngpu <int>', so the two sides always agree.  An explicit '--variant'
-is never filtered.
+'--all-variants' builds the variants that 'nixpkgs/q-pkgs.nix' lists, queried
+from nix with
+
+  nix-instantiate --read-write-mode --eval --strict --json q-pkgs.nix \
+      -A qlat-name-list <the same --version/--nixpkgs/--arg/--argstr arguments>
+
+'qlat-name-list' holds exactly the suffixes of the 'pkgs<suffix>' attributes, so
+the cuda variants are simply not listed when there is no usable NVIDIA GPU (the
+nix side collapses them to the plain CPU build when 'ngpu' is "0") and the build
+can never ask for an attribute that does not exist.  The query needs a writable
+nix cache; if it cannot run (no 'nix-instantiate', a non-zero exit, invalid
+output, or a nixpkgs that cannot be fetched) the script stops with an error that
+shows the command, the exit code and the last stderr lines, and suggests passing
+explicit '--variant' options -- it never guesses the variant set from '/dev'.
+'QLAT_NGPU=<int>' is forwarded to nix as '--argstr ngpu <int>' (an explicit
+'--argstr ngpu ...' still wins), which both the name list and the build see.  An
+explicit '--variant' is never filtered.
 
 nixpkgs:
   --version VERSION          build with the nixpkgs of the NixOS release or
@@ -255,9 +259,9 @@ def parse_args(argv):
     parser.add_argument(
         "--all-variants",
         action="store_true",
-        help="build and install every variant available on this machine "
-        "(the GPU variants are skipped without a usable NVIDIA GPU; "
-        "'QLAT_NGPU' overrides the detection)",
+        help="build and install every variant that 'nix qlat-name-list' lists "
+        "for this machine (the cuda variants are missing without a usable GPU; "
+        "'QLAT_NGPU' is forwarded to nix as '--argstr ngpu')",
     )
     parser.add_argument(
         "--kernel-prefix",
@@ -312,21 +316,19 @@ def parse_args(argv):
         parser.error("--nixpkgs cannot be combined with --version")
     args.nixpkgs_args = build_nixpkgs_args(args.version, args.nixpkgs)
     #
-    ngpu = detect_ngpu()
-    if os.environ.get("QLAT_NGPU") is not None:
-        # nix must agree with the detection; a later explicit '--argstr ngpu ...'
+    ngpu = ngpu_from_env()
+    if ngpu is not None:
+        # 'QLAT_NGPU' is only an input to nix; a later explicit '--argstr ngpu ...'
         # still wins, because nix uses the last value.
         args.nix_build_args = ["--argstr", "ngpu", str(ngpu)] + args.nix_build_args
     #
     if args.all_variants and args.variant:
         parser.error("--all-variants cannot be combined with --variant")
     if args.all_variants:
-        if ngpu > 0:
-            args.variants = list(VARIANT_SUFFIX.values())
-            args.skipped_variants = []
-        else:
-            args.skipped_variants = [VARIANT_SUFFIX[name] for name in GPU_VARIANT_NAMES]
-            args.variants = [VARIANT_SUFFIX[name] for name in CPU_VARIANT_NAMES]
+        # Resolved in 'main()' from nix's 'qlat-name-list', which needs a writable
+        # nix cache (set up there, after 'parse_args()' has run).
+        args.variants = []
+        args.skipped_variants = []
     elif args.variant:
         args.variants = list(dict.fromkeys(args.variant))
         args.skipped_variants = []
@@ -369,26 +371,132 @@ def run_with_nom(cmd, env):
     if nom_returncode != 0:
         die(f"'nom' failed with exit code {nom_returncode}", nom_returncode)
 
-def detect_ngpu():
-    """Number of NVIDIA GPUs, using the same check as 'nixpkgs/options.nix'.\n
-    '/dev/nvidia<index>' is what the nix side counts, and it is also what decides
-    whether the '-cu', '-cuda' and '-cudasupport' attributes exist at all, so the
-    script and nix can never disagree about which variants are available.\n
-    'QLAT_NGPU' overrides the detection (mainly to test the CPU only path on a
-    machine that has a GPU); it is forwarded to nix-build as '--argstr ngpu' so
-    that the two stay in agreement.
+def ngpu_from_env():
+    """Return the 'QLAT_NGPU' override as an int, or None when it is not set.\n
+    It is only an INPUT to nix: 'nixpkgs/options.nix' turns 'ngpu' into the
+    'use-cuda*' options, and with 'ngpu' equal to "0" the '-cu', '-cuda' and
+    '-cudasupport' names disappear from 'qlat-name-list' altogether.  The value is
+    therefore forwarded to nix as '--argstr ngpu <int>' (and both the name list and
+    the build see it), instead of being interpreted by this script.
     """
     override = os.environ.get("QLAT_NGPU")
-    if override is not None:
-        value = override.strip()
-        if not value.isdigit():
-            die(f"QLAT_NGPU must be a non-negative integer, got '{override}'")
-        return int(value)
+    if override is None:
+        return None
+    value = override.strip()
+    if not value.isdigit():
+        die(f"QLAT_NGPU must be a non-negative integer, got '{override}'")
+    return int(value)
+
+def arg_pairs(argv):
+    """Keep only the arguments that 'nix-instantiate --eval' accepts.\n
+    Arguments that are not recognised by the script are passed on to nix-build, so
+    they can also contain nix-build only flags ('--no-out-link', '-o',
+    '--keep-going', '-j', '--cores'), which 'nix-instantiate' rejects.  Only the
+    ones that can change the evaluated attributes are kept: the '--arg',
+    '--argstr' and '--option' triples and the '-I' / '--include' pairs.
+    """
+    result = []
+    index = 0
+    while index < len(argv):
+        arg = argv[index]
+        if arg in ("--arg", "--argstr", "--option") and index + 2 < len(argv):
+            result.extend(argv[index : index + 3])
+            index += 3
+        elif arg in ("-I", "--include") and index + 1 < len(argv):
+            result.extend(argv[index : index + 2])
+            index += 2
+        elif arg.startswith("-I") and len(arg) > 2:
+            result.append(arg)
+            index += 1
+        elif arg.startswith("--include=") or arg.startswith("--argstr="):
+            result.append(arg)
+            index += 1
+        else:
+            index += 1
+    return result
+
+def nix_query_error(reason, cmd, result=None):
+    """Report why the 'qlat-name-list' query failed and exit.\n
+    There is no fallback to a '/dev/nvidia*' count: a guess can select variants
+    whose nix attributes do not exist, which is exactly the failure this query
+    exists to avoid.
+    """
+    lines = [
+        f"cannot query nix for the available variants: {reason}.",
+        f"command: {shlex.join(str(c) for c in cmd)}",
+    ]
+    if result is not None:
+        lines.append(f"exit code: {result.returncode}")
+        stderr = (result.stderr or "").strip()
+        if stderr:
+            # nix's own 'error: ...' lines say what went wrong; the end of the
+            # stderr can be the tail of an HTML error page from a failed fetch.
+            stderr_lines = stderr.splitlines()
+            error_indexes = [
+                index
+                for index, line in enumerate(stderr_lines)
+                if line.startswith("error:")
+            ]
+            if error_indexes:
+                # nix wraps its message, so keep the continuation lines too.
+                tail = stderr_lines[error_indexes[-1] :][:6]
+            else:
+                tail = stderr_lines[-5:]
+            lines.append("stderr (last lines):")
+            lines.extend(f"  {line}" for line in tail)
+    lines.append(
+        "Pass explicit '--variant' options instead of '--all-variants' "
+        f"(valid: {VARIANT_NAMES}) to build without the query."
+    )
+    die("\n".join(lines))
+
+def nix_listed_variant_suffixes(args, env):
+    """Suffixes of the variants that 'nixpkgs/q-pkgs.nix' actually lists.\n
+    'qlat-name-list' is computed by nix itself and holds exactly the suffixes of
+    the 'pkgs<suffix>' attributes, because it applies the same rules that decide
+    whether an attribute exists at all: without a usable GPU the '-cu', '-cuda'
+    and '-cudasupport' names are simply not emitted, so 'pkgs-cu' and friends do
+    not exist.  Asking nix is therefore authoritative and can never disagree with
+    the build.\n
+    The query needs a writable nix cache, so it is called from 'main()' after the
+    cache fallbacks are set up, not from 'parse_args()'.  A failure is fatal: see
+    'nix_query_error()'.
+    """
+    cmd = [
+        "nix-instantiate",
+        "--read-write-mode",
+        "--eval",
+        "--strict",
+        "--json",
+        str(NIXPKGS_FILE),
+        "-A",
+        "qlat-name-list",
+    ]
+    cmd += list(args.nixpkgs_args) + arg_pairs(args.nix_build_args)
+    print(f"+ {shlex.join(str(c) for c in cmd)}", flush=True)
     try:
-        names = os.listdir("/dev")
-    except OSError:
-        return 0
-    return len([name for name in names if re.fullmatch(r"nvidia\d{1,2}", name)])
+        result = subprocess.run(
+            cmd, env=env, capture_output=True, text=True, timeout=300
+        )
+    except FileNotFoundError as e:
+        nix_query_error(f"command not found: '{e.filename}'", cmd)
+    except subprocess.TimeoutExpired:
+        nix_query_error("the query timed out after 300 s", cmd)
+    if result.returncode != 0:
+        nix_query_error("'nix-instantiate' failed", cmd, result)
+    try:
+        names = json.loads(result.stdout)
+    except json.JSONDecodeError as e:
+        nix_query_error(f"the output is not valid JSON ({e})", cmd, result)
+    if not isinstance(names, list):
+        nix_query_error("the output is not a JSON list", cmd, result)
+    listed = [name for name in names if isinstance(name, str)]
+    suffixes = [suffix for suffix in VARIANT_SUFFIX.values() if suffix in listed]
+    if not suffixes:
+        nix_query_error(
+            "'qlat-name-list' contains none of the known variant names", cmd, result
+        )
+    return suffixes
 
 def can_write_dir(path):
     """Return True when a file can be created in 'path', creating it if needed.\n
@@ -653,12 +761,16 @@ def main(argv=None):
     if used_repo_cache or not use_user_install:
         setup_tmpdir(env)
     #
+    if args.all_variants:
+        listed = nix_listed_variant_suffixes(args, env)
+        args.variants = listed
+        args.skipped_variants = [
+            suffix for suffix in VARIANT_SUFFIX.values() if suffix not in listed
+        ]
+    #
     if args.skipped_variants:
         names = ", ".join(SUFFIX_VARIANT[variant] for variant in args.skipped_variants)
-        print(
-            f"No usable NVIDIA GPU (nix ngpu=0, from '/dev/nvidia*' or "
-            f"'QLAT_NGPU').  Skipping GPU variants: {names}."
-        )
+        print(f"Skipping variants not listed by 'nix qlat-name-list': {names}.")
     #
     bulk_build = len(args.variants) > 1
     if bulk_build:

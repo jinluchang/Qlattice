@@ -75,9 +75,11 @@ q.end_with_mpi()
 Build variants (`--variant cuda`, `--cudasupport`, `--cu`, `--clang`,
 `--pypi`, or `--all-variants`) and all options are listed by
 `./nixpkgs/install-py-local-kernel-with-nix.py --help`. `--all-variants` builds
-only the variants available on the machine: all six with a usable NVIDIA GPU,
-and just `default`, `clang` and `pypi` without one (`QLAT_NGPU` overrides the
-`/dev/nvidia*` detection). The nixpkgs itself can
+exactly the variants that nix lists for the machine (`qlat-name-list`, queried
+with `nix-instantiate --eval`), so the cuda variants are missing without a usable
+NVIDIA GPU and the build can never ask for a nonexistent attribute
+(`QLAT_NGPU=<n>` is forwarded to nix as `--argstr ngpu`; an explicit `--variant`
+is never filtered). The nixpkgs itself can
 be picked with `--version 26.05` (or `unstable`, fetched from
 channels.nixos.org) or `--nixpkgs /path/to/nixpkgs` for a pinned local tree; the
 default is the `<nixpkgs>` of `NIX_PATH`, and `--version ""` selects that same
