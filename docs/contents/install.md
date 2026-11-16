@@ -69,6 +69,19 @@ source DEST_DIRECTORY/setenv.sh
 source DEST_DIRECTORY/setenv.sh
 ```
 
+### Pinned dependency versions
+
+The git dependencies downloaded into `distfiles` (Grid, Grid-clehner, Grid-ljin,
+gpt, gpt-ljin, Hadrons, Hadrons-tblum, Hadrons-vaishakhiN and CPS) are checked
+out by `./scripts/download-core.sh` at the exact commits pinned in
+`scripts/core-versions.sh`. To advance the pins to the current upstream branch
+tips, run `./scripts/update-core-versions.sh --update` (without `--update` it
+is a dry run that only prints the table), then re-run
+`./scripts/download-core.sh` to fetch the new commits and re-bootstrap.
+
+The Nix packages pin the same sources separately; `./nixpkgs/upgrade.py
+--update gpt grid cps` advances the Nix revisions.
+
 ## Install on Google Colab
 
 ```
@@ -184,7 +197,9 @@ The major dependencies can be downloaded with
 ./scripts/download.sh
 ```
 
-These dependencies will be downloaded to the `distfiles` directory.
+These dependencies will be downloaded to the `distfiles` directory. The git
+repositories among them are pinned to exact commits by
+`scripts/core-versions.sh` (see above).
 
 There are scripts in the `scripts` directory used to install the dependencies.
 
