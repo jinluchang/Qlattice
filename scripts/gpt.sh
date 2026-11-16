@@ -16,17 +16,10 @@ source qcore/set-prefix.sh $name
 
     sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env bash/' clean update
 
-    echo "BASIS_SIZE(4)" > lib/basis_size.h
-    echo "BASIS_SIZE(10)" >> lib/basis_size.h
-    echo "BASIS_SIZE(25)" >> lib/basis_size.h
-
-    echo "SPIN(4)" > lib/spin_color.h
-    echo "COLOR(3)" >> lib/spin_color.h
-    echo "COLOR(2)" >> lib/spin_color.h
-    echo "COLOR(1)" >> lib/spin_color.h
-    echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
-    echo "SPIN_COLOR(4,2)" >> lib/spin_color.h
-    echo "SPIN_COLOR(4,1)" >> lib/spin_color.h
+    echo "--- lib/basis_size.h ---"
+    cat lib/basis_size.h
+    echo "--- lib/spin_color.h ---"
+    cat lib/spin_color.h
 
     time-run bash ./clean
 

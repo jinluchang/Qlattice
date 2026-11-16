@@ -56,9 +56,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 PKGS = [
     dict(name="grid-lehner", file="grid-lehner.nix", kind="rev",
-         repo="jinluchang/Grid-clehner", branch="feature/gpt", field="version"),
+         repo="lehner/Grid", branch="feature/gpt", field="version"),
     dict(name="gpt-lehner", file="gpt-lehner.nix", kind="rev",
-         repo="jinluchang/gpt", branch="master", field="version"),
+         repo="lehner/gpt", branch="master", field="version"),
     dict(name="cps", file="cps.nix", kind="rev",
          repo="RBC-UKQCD/CPS_public", branch="master", field="version"),
     dict(name="gvar", file="gvar.nix", kind="tag",
