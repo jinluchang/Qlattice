@@ -48,7 +48,7 @@ in let
   nixgl-src = builtins.fetchGit {
     url = if use-gitee then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
     ref = "main";
-    rev = "28366884d82a3f471b471eea70baa2e6668d6b4e";
+    rev = "50e253aeb9c21fbbcdb40ed96783768037c2d20d";
   };
 
   import-nixgl = import nixgl-src;

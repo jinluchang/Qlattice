@@ -1,0 +1,23 @@
+--- a/src/vegas/_vegas.pyx
++++ b/src/vegas/_vegas.pyx
+@@ -1750,12 +1750,16 @@
+                     if yield_hcube:
+                         hcube_array[i] = hcube_base + ihcube
+                 i_start += neval_hcube[ihcube]
+-            answer = (x[:neval_batch, :],)
++            # Use zero-copy views of the owning numpy arrays instead of slicing
++            # the memoryviews here: Cython 3.3 caches a memoryview slice in a
++            # struct, which a generator frame cannot hold ("C struct/union
++            # member cannot be a memory view").  .base[..] is the same buffer.
++            answer = (x.base[0:neval_batch, :],)
+             if yield_y:
+-                answer += (y[:neval_batch, :],)
+-            answer += (jac[:neval_batch],)
++                answer += (y.base[0:neval_batch, :],)
++            answer += (jac.base[0:neval_batch],)
+             if yield_hcube:
+-                answer += (hcube_array[:neval_batch],)
++                answer += (hcube_array.base[0:neval_batch],)
+             yield answer
+ 
+             # reset parameters for main loop

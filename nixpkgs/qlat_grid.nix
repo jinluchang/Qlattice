@@ -18,12 +18,16 @@
 
 let
 
-  pname = "qlat_grid${qlat-name}";
+  pname = "qlat_grid";
 
 in buildPythonPackage.override { stdenv = stdenv; } {
 
   pname = pname;
   version = version;
+  # The variant suffix must not live in pname: pythonMetadataCheckPhase
+  # resolves the installed dist-info by pname, and only the project name
+  # matches it.
+  name = "qlat_grid${qlat-name}-${version}";
 
   pyproject = true;
 
@@ -91,7 +95,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
 
   postFixup = ''
     mkdir -pv "$out"/share/version
-    echo ${version} >"$out"/share/version/${pname}
+    echo ${version} >"$out"/share/version/${pname}${qlat-name}
   '';
 
 }

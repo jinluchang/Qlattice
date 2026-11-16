@@ -24,12 +24,16 @@
 
 let
 
-  pname = "qlat${qlat-name}";
+  pname = "qlat";
 
 in buildPythonPackage.override { stdenv = stdenv; } {
 
   pname = pname;
   version = version;
+  # The variant suffix must not live in pname: pythonMetadataCheckPhase
+  # resolves the installed dist-info by pname, and only the project name
+  # matches it.
+  name = "qlat${qlat-name}-${version}";
 
   pyproject = true;
 
@@ -146,7 +150,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     # patchShebangs --build "$out"/bin/bind-gpu-qlat.sh
     #
     mkdir -pv "$out"/share/version
-    echo ${version} >"$out"/share/version/${pname}
+    echo ${version} >"$out"/share/version/${pname}${qlat-name}
   '';
 
 }

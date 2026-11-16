@@ -181,7 +181,16 @@ in let
           ];
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
-        vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
+        # vegas 6.4.1's _random_batch generator is rejected by Cython 3.3
+        # ("C struct/union member cannot be a memory view": a memoryview slice
+        # cannot live in the generator frame).  patches/vegas-cython-3.3.patch
+        # yields zero-copy views of the owning numpy arrays instead of slicing
+        # the memoryviews, so it builds with Cython 3.2 and 3.3 alike.
+        vegas = (pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; }).overrideAttrs (o: {
+          postPatch = (o.postPatch or "") + ''
+            patch -p1 <${./patches/vegas-cython-3.3.patch}
+          '';
+        });
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
         corrfitter = pkgs.python3.pkgs.callPackage ./corrfitter.nix { lsqfit = lsqfit; gvar = gvar; };
         qcd_ml = pkgs.python3.pkgs.callPackage ./qcd_ml.nix {};
@@ -219,7 +228,7 @@ in let
     #
     qlat-version = if opts.use-pypi != null
     then version-pypi
-    else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
+    else lib.removePrefix "v" (builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION));
     #
     version-pypi-git = let
       parts = builtins.split "\\." version-pypi;
@@ -534,7 +543,6 @@ in let
       numba
       torch
       flax
-      keras
       matplotlib
       ipywidgets
       scikit-learn
