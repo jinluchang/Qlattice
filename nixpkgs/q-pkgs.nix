@@ -170,15 +170,31 @@ in let
         accelerate = if ! opts.use-cudasupport
         then prev.accelerate
         else prev.accelerate.overridePythonAttrs (py-prev: { });
-        # manim 0.20.1 fails two of its ImageMobject tests against Pillow 13
-        # ("Invalid mode for data type"), so nixpkgs has no cached binary for
-        # it; skip the ImageMobject image tests and keep the rest of the suite
-        # enabled, until nixpkgs carries a manim with the Pillow 13 fix.
+        # manim 0.20.1 (the version nixos-26.05 ships) is not Pillow-13 clean.
+        #
+        # Camera.display_image_mobject() allocates the overlay it pastes an
+        # ImageMobject into with
+        #   Image.fromarray(np.zeros((self.pixel_height, self.pixel_width)),
+        #                   mode="RGBA")
+        # -- a 2-D float array labelled RGBA. Pillow 13.0.0 rejects that
+        # mismatch with ValueError("Invalid mode for data type"), so every
+        # ImageMobject scene breaks at runtime, not just the two checkPhase
+        # tests that are currently disabled instead of fixed. manim 0.22.1
+        # fixed it by allocating the same transparent overlay with
+        # Image.new("RGBA", (width, height), (0, 0, 0, 0)); backport that
+        # allocation here so the full test suite keeps running.
+        # Revisit (drop this override) once nixos-26.05 carries manim >= 0.22.
         manim = prev.manim.overridePythonAttrs (py-prev: {
-          disabledTests = (py-prev.disabledTests or []) ++ [
-            "test_ImageMobject"
-            "test_ImageInterpolation"
-          ];
+          postPatch = (py-prev.postPatch or "") + ''
+            substituteInPlace manim/camera/camera.py \
+              --replace-fail 'full_image = Image.fromarray(' 'full_image = Image.new(' \
+              --replace-fail \
+                'np.zeros((self.pixel_height, self.pixel_width)),' \
+                $'"RGBA",\n            (self.pixel_width, self.pixel_height),' \
+              --replace-fail \
+                '            mode="RGBA",' \
+                '            (0, 0, 0, 0),'
+          '';
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         # vegas 6.4.1's _random_batch generator is rejected by Cython 3.3
