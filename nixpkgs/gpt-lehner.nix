@@ -31,7 +31,8 @@ let
   # version = "c53fa4b8a3783d455fe9f2d35a23a9f28e7d2440"; # 2026/08/08
   # version = "851072d7be9d199b6e7adc04ff30d0f1cb6dbb95"; # 2026/08/13
   # version = "27a6765444c2597aefe16b78c4c7c03b9d191248"; # 2026/09/13
-  version = "1c72a093608440ebf384c6ecf53c79e6e6633c2d"; # 2026/11/11
+  # version = "1c72a093608440ebf384c6ecf53c79e6e6633c2d"; # 2026/11/11
+  version = "f0c024342e6440d62e6d258876a2e981a2c50072"; # 2026/11/16
   #
   src-remote = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/gpt" else "https://github.com/lehner/gpt";

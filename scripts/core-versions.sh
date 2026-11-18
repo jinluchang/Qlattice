@@ -34,8 +34,8 @@ CORE_REPOS=(
     "Grid-ljin|https://github.com/lehner/Grid.git|feature/gpt|0d0774789f50eb3c453f23299de39eb81ceefce1|2026/10/25"
     "Grid-tblum|https://github.com/tblum2/Grid.git|develop|f6917aeba3f56954329f6140cedcb24e4c51dfc1|2026/08/26"
     # GPT family (built by ./scripts/gpt.sh).
-    "gpt|https://github.com/lehner/gpt.git|master|1c72a093608440ebf384c6ecf53c79e6e6633c2d|2026/11/11"
-    "gpt-ljin|https://github.com/lehner/gpt.git|master|1c72a093608440ebf384c6ecf53c79e6e6633c2d|2026/11/11"
+    "gpt|https://github.com/lehner/gpt.git|master|f0c024342e6440d62e6d258876a2e981a2c50072|2026/11/16"
+    "gpt-ljin|https://github.com/lehner/gpt.git|master|f0c024342e6440d62e6d258876a2e981a2c50072|2026/11/16"
     # Hadrons family (built by ./scripts/hadrons*.sh).
     "Hadrons|https://github.com/aportelli/Hadrons.git|develop|1d64626aaa84052d33880bb028ef28de1d8f3047|2026/10/15"
     "Hadrons-tblum|https://github.com/tblum2/Hadrons.git|develop|9dc558bdfa3fa0bf970ded4a52b9053798444d39|2026/08/24"
