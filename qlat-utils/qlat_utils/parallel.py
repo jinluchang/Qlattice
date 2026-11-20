@@ -27,6 +27,21 @@ class q:
 import multiprocessing as mp
 import gc
 
+# Use the legacy ``fork`` start method for the worker pools.
+#
+# The workers must inherit the parent's Python state and its C++/MPI state:
+# ``parallel_map`` deliberately does not pickle ``func`` (it stashes it in the
+# module global ``pool_function`` below), so ``spawn`` and ``forkserver``
+# workers cannot see it and the qlat C++ library/MPI communicator would not be
+# inherited either.  Python 3.14 changed the POSIX default from ``fork`` to
+# ``forkserver`` (CPython gh-84559), so the default context can no longer be
+# used.  ``fork`` is unsupported on Windows, where ``get_context("fork")``
+# raises ``ValueError``; fall back to the platform default there.
+try:
+    mp_pool_context = mp.get_context("fork")
+except ValueError:
+    mp_pool_context = mp.get_context()
+
 pool_function = None
 
 def call_pool_function(*args, **kwargs):
@@ -122,7 +137,7 @@ def parallel_map(
         pool_function = func
         gc_collect()
         gc_freeze()
-        with mp.Pool(n_proc, process_initialization, []) as p:
+        with mp_pool_context.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
                 p.apply(q.show_memory_usage)
             timer = q.Timer("parallel_map.p.imap")
@@ -190,7 +205,7 @@ def parallel_map_sum(
         pool_function = func
         gc_collect()
         gc_freeze()
-        with mp.Pool(n_proc, process_initialization, []) as p:
+        with mp_pool_context.Pool(n_proc, process_initialization, []) as p:
             if verbose > 0:
                 p.apply(q.show_memory_usage)
             timer = q.Timer("parallel_map_sum.p.imap")

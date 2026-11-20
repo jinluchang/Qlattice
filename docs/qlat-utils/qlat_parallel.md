@@ -7,10 +7,11 @@ Source: `qlat-utils/qlat_utils/parallel.py`
 ## Outline
 
 1. [Overview](#overview)
-2. [Core Functions](#core-functions)
-3. [Configuration](#configuration)
-4. [Utility Functions](#utility-functions)
-5. [Examples](#examples)
+2. [Process start method](#process-start-method)
+3. [Core Functions](#core-functions)
+4. [Configuration](#configuration)
+5. [Utility Functions](#utility-functions)
+6. [Examples](#examples)
 
 ---
 
@@ -20,6 +21,8 @@ Source: `qlat-utils/qlat_utils/parallel.py`
 workloads in lattice-QCD computations.  It wraps Python's
 `multiprocessing.Pool` with:
 
+- A fixed `fork` start method (see [Process start method](#process-start-method)),
+  so that workers inherit the parent process.
 - Automatic garbage-collection management (freeze/unfreeze) to reduce
   memory overhead in worker processes.
 - Process-local initialisation that resets timers and suppresses verbose
@@ -31,6 +34,26 @@ The number of worker processes is controlled by the `q_num_mp_processes`
 environment variable (falling back to `q_num_threads` or `OMP_NUM_THREADS`,
 default `2`).  Setting it to `0` disables multiprocessing and runs
 sequentially.
+
+### Process start method
+
+The worker pool always uses the `fork` start method, even where the
+interpreter default is something else (Python 3.14 on POSIX changed the default
+from `fork` to `forkserver`, CPython gh-84559).  This is required because the
+workers inherit the parent process instead of being re-imported:
+
+- `func` is **not** pickled.  Before the pool is created it is stored in the
+  module-level global `qlat_utils.parallel.pool_function`, and `fork`ed workers
+  inherit it.  A local function, a closure, or a lambda therefore works, as long
+  as it is safe to run in a forked child.
+- The qlat C++ library state and the MPI communicator are inherited the same
+  way; a `spawn`/`forkserver` worker would start without them.
+
+On platforms that do not support `fork` (Windows) the platform default context
+is used; `parallel_map` relies on fork semantics and is not supported there
+(set `q_num_mp_processes=0`).  On macOS this means the pool uses `fork`
+although the interpreter default is `spawn`; this is intentional for the same
+inheritance reason.
 
 ---
 
@@ -48,7 +71,7 @@ worker processes.
 
 | Parameter | Description |
 |---|---|
-| `func` | Callable applied to each element (must be picklable) |
+| `func` | Callable applied to each element (not pickled; see [Process start method](#process-start-method)) |
 | `iterable` | Input iterable |
 | `n_proc` | Number of workers (`None` = use env config, `0` = sequential) |
 | `chunksize` | Chunk size for `Pool.imap` |
