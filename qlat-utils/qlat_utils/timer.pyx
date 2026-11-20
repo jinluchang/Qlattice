@@ -283,20 +283,24 @@ class TimerFork:
             set_verbose_level(self.verbose_level)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        assert exc_type is None
-        assert exc_value is None
-        assert traceback is None
-        set_verbose_level(self.orig_verbose_level)
-        assert isinstance(self.display_tag, str)
-        if isinstance(self.show_display, bool):
-            if self.show_display:
-                timer_display(self.display_tag)
-        elif isinstance(self.show_display, (int, float,)):
-            if get_total_time() >= self.show_display:
-                timer_display(self.display_tag + "(auto)")
-        else:
-            raise Exception(f"TimerFork: show_display='{self.show_display}'.")
-        timer_merge()
+        # Never mask an exception raised inside the ``with TimerFork():`` block.
+        # The verbose level must be restored and the timer fork must be merged
+        # on every exit path, then ``return False`` lets the pending exception
+        # propagate unchanged.
+        try:
+            set_verbose_level(self.orig_verbose_level)
+            assert isinstance(self.display_tag, str)
+            if isinstance(self.show_display, bool):
+                if self.show_display:
+                    timer_display(self.display_tag)
+            elif isinstance(self.show_display, (int, float,)):
+                if get_total_time() >= self.show_display:
+                    timer_display(self.display_tag + "(auto)")
+            else:
+                raise Exception(f"TimerFork: show_display='{self.show_display}'.")
+        finally:
+            timer_merge()
+        return False
 
 ### -------------------------------------------------------------------
 
