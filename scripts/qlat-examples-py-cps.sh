@@ -7,7 +7,12 @@ source qcore/set-prefix.sh $name
 # If the CPS build/installation was skipped (marker written by
 # scripts/qlat-packages.sh), skip the CPS tests explicitly instead of letting
 # every test fail at `import qlat_cps`.
-base_prefix="$(readlink -m "$prefix/..")"
+# Portable equivalent of `readlink -m "$prefix/.."`: this check runs before
+# `source qcore/conf.sh ..` sets up the (GNU coreutils) PATH used on macOS,
+# where the system `readlink` has no `-m` and would leave base_prefix empty
+# (which made the mac pip flow run the CPS tests without qlat_cps and empty
+# the tracked example logs).
+base_prefix="$(cd "$prefix/.." && pwd -P)"
 if [ -f "$base_prefix"/cps-unavailable.txt ] ; then
     echo "WARNING: CPS is not installed for prefix '$base_prefix'; skipping CPS tests."
     cat "$base_prefix"/cps-unavailable.txt
