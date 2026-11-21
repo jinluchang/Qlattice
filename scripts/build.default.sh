@@ -26,7 +26,15 @@ source ./scripts/cps-optional-functions.sh
 
     ./scripts/qlat-utils.sh
     ./scripts/qlat.sh
-    ./scripts/qlat-grid.sh
+    # The plain `default` flow does not build Grid (only `default-gpt` does), so
+    # `grid-config` is legitimately absent here.  qlat-grid.sh fails loudly now
+    # that it has `set -o pipefail`, so skip it explicitly instead of failing
+    # the whole build (this is the same behaviour the old masked `| tee` gave).
+    if which grid-config >/dev/null 2>&1 ; then
+        ./scripts/qlat-grid.sh
+    else
+        echo "WARNING: Grid is not built in the 'default' configuration; skipping qlat-grid."
+    fi
     cps_python_package_optional
 
     date
