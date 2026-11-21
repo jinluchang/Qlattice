@@ -101,7 +101,7 @@ cdef class WilsonMatrix:
     def __mul__(self, cc.PyComplexD v1):
         cdef WilsonMatrix x = WilsonMatrix()
         x.xx = cc.ccpy_d(v1) * self.xx
-        return self
+        return x
 
     def conjugate(self):
         cdef WilsonMatrix x = WilsonMatrix()
@@ -203,7 +203,7 @@ cdef class SpinMatrix:
     def __mul__(self, cc.PyComplexD v1):
         cdef SpinMatrix x = SpinMatrix()
         x.xx = cc.ccpy_d(v1) * self.xx
-        return self
+        return x
 
     def conjugate(self):
         cdef SpinMatrix x = SpinMatrix()
@@ -305,7 +305,7 @@ cdef class ColorMatrix:
     def __mul__(self, cc.PyComplexD v1):
         cdef ColorMatrix x = ColorMatrix()
         x.xx = cc.ccpy_d(v1) * self.xx
-        return self
+        return x
 
     def conjugate(self):
         cdef ColorMatrix x = ColorMatrix()

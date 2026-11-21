@@ -172,8 +172,8 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
   {
-   "real": -6.128122384868151,
-   "imag": 1.773401086225253,
+   "real": 20.344552189164787,
+   "imag": 16.34713842909698,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -212,8 +212,8 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
   {
-   "real": -6.128122384868151,
-   "imag": 1.773401086225253,
+   "real": 20.344552189164787,
+   "imag": 16.34713842909698,
    "__extended_json_type__": "complex128"
   }
  ],
