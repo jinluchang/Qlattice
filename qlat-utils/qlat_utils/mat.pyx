@@ -19,6 +19,9 @@ import numpy as np
 ### -------------------------------------------------------------------
 
 cdef class WilsonMatrix:
+    # Let Python reflected operators handle LHS non-matrix scalars;
+    # otherwise numpy converts the matrix through its buffer to an ndarray.
+    __array_ufunc__ = None
 
     def __imatmul__(self, WilsonMatrix v1):
         self.xx = v1.xx
@@ -76,6 +79,8 @@ cdef class WilsonMatrix:
         return cc.qnorm(self.xx)
 
     def __eq__(self, WilsonMatrix v1):
+        # Value equality; defining __eq__ makes the type unhashable (matrices
+        # are mutable, so they must not be dict/set keys): hash(wm) raises TypeError.
         return cc.qnorm(self.xx - v1.xx) == 0.0
 
     def __iadd__(self, WilsonMatrix v1):
@@ -105,6 +110,10 @@ cdef class WilsonMatrix:
         x.xx = cc.ccpy_d(v1) * self.xx
         return x
 
+    def __rmul__(self, v1):
+        # Scalar multiplication is commutative: 2 * wm == wm * 2.
+        return self.__mul__(v1)
+
     def conjugate(self):
         cdef WilsonMatrix x = WilsonMatrix()
         x.xx = cc.matrix_conjugate(self.xx)
@@ -126,6 +135,9 @@ cdef class WilsonMatrix:
 ### -------------------------------------------------------------------
 
 cdef class SpinMatrix:
+    # Let Python reflected operators handle LHS non-matrix scalars;
+    # otherwise numpy converts the matrix through its buffer to an ndarray.
+    __array_ufunc__ = None
 
     def __imatmul__(self, SpinMatrix v1):
         self.xx = v1.xx
@@ -207,6 +219,10 @@ cdef class SpinMatrix:
         x.xx = cc.ccpy_d(v1) * self.xx
         return x
 
+    def __rmul__(self, v1):
+        # Scalar multiplication is commutative: 2 * wm == wm * 2.
+        return self.__mul__(v1)
+
     def conjugate(self):
         cdef SpinMatrix x = SpinMatrix()
         x.xx = cc.matrix_conjugate(self.xx)
@@ -228,6 +244,9 @@ cdef class SpinMatrix:
 ### -------------------------------------------------------------------
 
 cdef class ColorMatrix:
+    # Let Python reflected operators handle LHS non-matrix scalars;
+    # otherwise numpy converts the matrix through its buffer to an ndarray.
+    __array_ufunc__ = None
 
     def __imatmul__(self, ColorMatrix v1):
         self.xx = v1.xx
@@ -308,6 +327,10 @@ cdef class ColorMatrix:
         cdef ColorMatrix x = ColorMatrix()
         x.xx = cc.ccpy_d(v1) * self.xx
         return x
+
+    def __rmul__(self, v1):
+        # Scalar multiplication is commutative: 2 * wm == wm * 2.
+        return self.__mul__(v1)
 
     def conjugate(self):
         cdef ColorMatrix x = ColorMatrix()
