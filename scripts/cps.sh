@@ -12,7 +12,18 @@ source qcore/set-prefix.sh $name
     time-run rsync -a --delete $distfiles/$name "$prefix"/
 
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
+    # CPS is legacy C: gcc 15 turned some C diagnostics that used to be
+    # warnings into errors by default in all C modes (e.g.
+    # cps_pp/src/util/dirac_op/d_op_base/comsrc/matrix_dgemm.c:9,
+    # `const double **pA = A;` hits -Wincompatible-pointer-types).  Demote just
+    # those diagnostics back to warnings instead of weakening qlat's own
+    # compiler flags; this is the same set nixpkgs/cps.nix already passes via
+    # NIX_CFLAGS_COMPILE to build this exact CPS revision with gcc 15.  The -w
+    # above keeps the CPS build log quiet.
     export CFLAGS="$CFLAGS -fPIC -w -Wno-psabi"
+    export CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types"
+    export CFLAGS="$CFLAGS -Wno-error=int-conversion"
+    export CFLAGS="$CFLAGS -Wno-error=implicit-function-declaration"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
