@@ -179,7 +179,7 @@ jobs:
       # killed test plus the Python/MPI environment, then upload it as an
       # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
       # the real Python-3.14 exception (tmp/recon-findings.md).
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       run: |
         # -e is on for these steps; keep the environment dump best-effort.
         set +e
@@ -197,7 +197,7 @@ jobs:
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       uses: actions/upload-artifact@v6
       with:
         name: qlat-debug-logs-build_qlat_ubuntu
@@ -322,7 +322,7 @@ jobs:
       # killed test plus the Python/MPI environment, then upload it as an
       # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
       # the real Python-3.14 exception (tmp/recon-findings.md).
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       run: |
         # -e is on for these steps; keep the environment dump best-effort.
         set +e
@@ -340,7 +340,7 @@ jobs:
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       uses: actions/upload-artifact@v6
       with:
         name: qlat-debug-logs-build_qlat_gpt_ubuntu
@@ -465,7 +465,7 @@ jobs:
       # killed test plus the Python/MPI environment, then upload it as an
       # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
       # the real Python-3.14 exception (tmp/recon-findings.md).
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       run: |
         # -e is on for these steps; keep the environment dump best-effort.
         set +e
@@ -483,7 +483,7 @@ jobs:
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
-      if: failure()
+      if: ${{ failure() || cancelled() }}
       uses: actions/upload-artifact@v6
       with:
         name: qlat-debug-logs-build_pip_ubuntu
@@ -538,10 +538,10 @@ jobs:
       # failing the job).  Dumps the macOS/toolchain info, the full per-test
       # logs preserved by --keep-failed, and reruns the first failing GPT test
       # with Grid --debug-signals and under lldb to get a SIGTRAP backtrace.
-      if: ${{ failure() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      if: ${{ failure() || cancelled() || env.QLAT_GPT_TESTS_FAILED == '1' }}
       run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload macOS failure logs"
-      if: ${{ failure() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      if: ${{ failure() || cancelled() || env.QLAT_GPT_TESTS_FAILED == '1' }}
       uses: actions/upload-artifact@v6
       with:
         name: qlat-debug-logs-build_nix_mac_clang
