@@ -30,8 +30,8 @@
 CORE_REPOS=(
     # Grid family (built by ./scripts/grid*.sh).
     "Grid|https://github.com/paboyle/Grid.git|develop|3232b438f2cf729e515c185e2dbf29d7cc276bb7|2026/10/05"
-    "Grid-clehner|https://github.com/lehner/Grid.git|feature/gpt|0d0774789f50eb3c453f23299de39eb81ceefce1|2026/10/25"
-    "Grid-ljin|https://github.com/lehner/Grid.git|feature/gpt|0d0774789f50eb3c453f23299de39eb81ceefce1|2026/10/25"
+    "Grid-clehner|https://github.com/jinluchang/Grid.git|feature/gpt|0d0774789f50eb3c453f23299de39eb81ceefce1|2026/10/25"
+    "Grid-ljin|https://github.com/jinluchang/Grid.git|feature/gpt|0d0774789f50eb3c453f23299de39eb81ceefce1|2026/10/25"
     "Grid-tblum|https://github.com/tblum2/Grid.git|develop|f6917aeba3f56954329f6140cedcb24e4c51dfc1|2026/08/26"
     # GPT family (built by ./scripts/gpt.sh).
     "gpt|https://github.com/lehner/gpt.git|master|f0c024342e6440d62e6d258876a2e981a2c50072|2026/11/16"

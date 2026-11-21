@@ -40,7 +40,7 @@ let
   version = "0d0774789f50eb3c453f23299de39eb81ceefce1"; # 2026/10/25
   #
   src-remote = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/Grid-clehner" else "https://github.com/lehner/Grid";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/Grid-clehner" else "https://github.com/jinluchang/Grid";
     ref = "feature/gpt";
     rev = version;
   };
