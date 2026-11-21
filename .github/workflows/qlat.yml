@@ -502,15 +502,30 @@ jobs:
     - name: Build qlat
       # --keep-failed keeps the failed build directory, including the full
       # per-test logs of the failed example tests, for the debug step below.
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed
+      # The tee keeps the nix-build output (with its `note: keeping build
+      # directory "..."` line) for the debug step's collector; pipefail
+      # preserves the step's exit status through the pipe.
+      run: |
+        set -o pipefail
+        log="$RUNNER_TEMP/nix-build-logs/qlat-env.log"
+        mkdir -p "$(dirname "$log")"
+        nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
     - name: Test qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed
+      run: |
+        set -o pipefail
+        log="$RUNNER_TEMP/nix-build-logs/qlat-tests.log"
+        mkdir -p "$(dirname "$log")"
+        nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed
+      run: |
+        set -o pipefail
+        log="$RUNNER_TEMP/nix-build-logs/gpt-cps-env.log"
+        mkdir -p "$(dirname "$log")"
+        nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
     - name: Test qlat with GPT and CPS
@@ -519,7 +534,10 @@ jobs:
       # aarch64-darwin build (see tmp/diag-mac.md).  Keep it non-gating, but
       # record the failure in the environment so the debug steps below run.
       run: |
-        if nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed ; then
+        set -o pipefail
+        log="$RUNNER_TEMP/nix-build-logs/gpt-cps-tests.log"
+        mkdir -p "$(dirname "$log")"
+        if nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed 2>&1 | tee "$log" ; then
             echo "QLAT_GPT_TESTS_FAILED=0" >> "$GITHUB_ENV"
             echo "Nix GPT/CPS tests passed"
         else
@@ -529,15 +547,22 @@ jobs:
     - name: Check disk space
       run: df -h
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --keep-failed
+      run: |
+        set -o pipefail
+        log="$RUNNER_TEMP/nix-build-logs/jhub-env.log"
+        mkdir -p "$(dirname "$log")"
+        nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
     - name: "Debug: dump macOS environment, preserved nix logs and SIGTRAP backtrace"
       # Runs after a gating failure, or after the known-broken non-gating Nix
       # GPT/CPS test step (which records QLAT_GPT_TESTS_FAILED instead of
       # failing the job).  Dumps the macOS/toolchain info, the full per-test
-      # logs preserved by --keep-failed, and reruns the first failing GPT test
-      # with Grid --debug-signals and under lldb to get a SIGTRAP backtrace.
+      # logs preserved by --keep-failed (the kept dir is under the nix
+      # build-dir setting, located via the teed nix-build step logs), the macOS
+      # crash reports, and reruns the first failing GPT test with Grid
+      # --debug-signals and under lldb (real Mach-O python, SIGTRAP handled by
+      # lldb) to get a SIGTRAP backtrace.
       if: ${{ failure() || cancelled() || env.QLAT_GPT_TESTS_FAILED == '1' }}
       run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload macOS failure logs"

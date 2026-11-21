@@ -5,15 +5,29 @@
 # Usage: scripts/ci-debug-mac-nix-gpt.sh <out-dir> [test-name]
 #
 # Must run from the repository root on a macOS runner with nix installed.  It
-# collects the information a failed run cannot currently show:
+# collects the information a failed run cannot show:
 #
 #   1. macOS / toolchain / debugger environment,
-#   2. the full per-test logs preserved by `nix-build --keep-failed`
-#      (defeating the Makefile's `tail -n 100` truncation),
+#   2. the full per-test logs preserved by `nix-build --keep-failed`: on nix >=
+#      2.19 the kept build directory lives under the nix `build-dir` setting
+#      (e.g. /nix/var/nix/builds/nix-...), not under $TMPDIR, so it is located
+#      by parsing `note: keeping build directory "..."` from the
+#      `$RUNNER_TEMP/nix-build-logs/*.log` tees of the workflow's nix-build
+#      steps (with `nix config show build-dir` and the legacy globs as
+#      fallbacks), together with the full `nix-store -l <drv>` build log,
 #   3. a rerun of the first failing GPT example with Grid `--debug-signals`, so
 #      Grid_fatal_signal_handler turns the SIGTRAP into a backtrace,
-#   4. a best-effort `lldb --batch -o run -o 'thread backtrace all'` rerun of a
-#      minimal qlat->GPT copy-plan reproducer (the known crash site).
+#   4. a rerun of a minimal qlat->GPT copy-plan reproducer under lldb.  The
+#      target is the *real* Mach-O interpreter resolved from
+#      `sys.base_prefix` (the nix `$env/bin/python3` is an exec wrapper, which
+#      made the previous attempt stop at `exec` in `_dyld_start` and never run
+#      the reproducer), `stop-on-exec` is disabled, SIGTRAP is handled by lldb
+#      (the reproducer does not pass Grid's `--debug-signals`, which installs
+#      Grid's handler first), the environment is exported in the shell
+#      (inherited by lldb) instead of `target.env-vars`, and both
+#      `thread backtrace all` and `disassemble --frame` are captured,
+#   5. the macOS crash reports (*.ips), which give the faulting thread/stack
+#      without a debugger.
 #
 # The reruns are guarded: a failure here must not fail the job, and anything
 # that cannot be determined is printed as unavailable.
@@ -24,6 +38,9 @@ out="${1:?usage: scripts/ci-debug-mac-nix-gpt.sh <out-dir> [test-name]}"
 mkdir -p "$out"
 
 env_attr="pkgs-cpsless-clang-ucxless.qlat-env"
+
+# The workflow tees every nix-build step into this directory.
+nix_build_logs_dir="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/nix-build-logs"
 
 cat_file() {
     local f="$1"
@@ -46,6 +63,299 @@ copy_file() {
         :
     fi
 }
+
+list_dir() {
+    local d="$1"
+    if ls -la "$d" 2>&1 ; then
+        :
+    elif sudo -n ls -la "$d" 2>&1 ; then
+        :
+    else
+        echo "<not readable: $d>"
+    fi
+}
+
+list_file() {
+    local f="$1"
+    if ls -la "$f" 2>&1 ; then
+        :
+    elif sudo -n ls -la "$f" 2>&1 ; then
+        :
+    else
+        echo "<not readable: $f>"
+    fi
+}
+
+# Run a command with a hard time limit; the nix environment does not always
+# provide GNU `timeout` and macOS has no timeout(1) by default.
+run_with_timeout() {
+    local seconds="$1"
+    shift
+    if [ -n "${env_dir:-}" ] && [ -x "$env_dir/bin/timeout" ] ; then
+        "$env_dir/bin/timeout" -s KILL "$seconds" "$@"
+    elif command -v timeout >/dev/null 2>&1 ; then
+        timeout -s KILL "$seconds" "$@"
+    elif command -v gtimeout >/dev/null 2>&1 ; then
+        gtimeout -s KILL "$seconds" "$@"
+    elif command -v perl >/dev/null 2>&1 ; then
+        perl -e 'alarm shift; exec @ARGV' "$seconds" "$@"
+    else
+        "$@"
+    fi
+}
+
+# Resolve the genuine Mach-O python interpreter, not the nix exec wrapper.
+# `sys.base_prefix` is the real store python; `sys.executable` may be the tiny
+# wrapper that execs it (which is what made lldb stop at `exec`).
+resolve_real_python() {
+    if [ -n "${CI_DEBUG_REAL_PYTHON:-}" ] ; then
+        echo "$CI_DEBUG_REAL_PYTHON"
+        return 0
+    fi
+    local cand
+    cand="$(python3 - <<'PYEOF' 2>/dev/null
+import os
+import sys
+
+cand = os.path.join(sys.base_prefix, "bin", "python%d.%d" % sys.version_info[:2])
+if os.path.exists(cand):
+    print(cand)
+elif sys.base_prefix != sys.prefix:
+    cand2 = os.path.join(sys.base_prefix, "bin", "python3")
+    if os.path.exists(cand2):
+        print(cand2)
+elif os.path.realpath(sys.executable) != sys.executable:
+    print(os.path.realpath(sys.executable))
+PYEOF
+)"
+    if [ -z "$cand" ] ; then
+        cand="$(python3 -c 'import os, sys ; print(os.path.realpath(sys.executable))' 2>/dev/null || true)"
+    fi
+    printf '%s\n' "$cand"
+}
+
+# Copy the raw nix-build step logs into the artifact, so the next run keeps the
+# `note: keeping build directory "..."` lines even if the kept dir is gone.
+copy_nix_build_step_logs() {
+    local dest="$out/nix-build-step-logs"
+    local f
+    shopt -s nullglob
+    for f in "$nix_build_logs_dir"/*.log ; do
+        copy_file "$f" "$dest/$(basename "$f")"
+    done
+}
+
+# Copy the macOS crash reports of the trapped process (no debugger needed).
+collect_crash_reports() {
+    echo
+    echo "==================== macOS crash reports ===================="
+    local dest="$out/crash-reports"
+    local src f
+    local copied=0
+    mkdir -p "$dest" 2>/dev/null || true
+    for src in "$HOME/Library/Logs/DiagnosticReports" "/Library/Logs/DiagnosticReports" ; do
+        [ -d "$src" ] || continue
+        while IFS= read -r f ; do
+            if copy_file "$f" "$dest/$(basename "$f")" ; then
+                copied=$((copied + 1))
+            fi
+        done < <(find "$src" -maxdepth 1 -type f -name '*.ips*' 2>/dev/null | sort)
+    done
+    echo "copied $copied crash report(s) to $dest"
+}
+
+# Print the full untruncated logs of one kept build directory and copy them
+# into the artifact.
+process_kept_build_dir() {
+    local d="$1"
+    local tag
+    tag="$(basename "$d")"
+    echo
+    echo "--- kept build dir: $d ---"
+    list_dir "$d"
+    echo "--- *.log* files under the kept build dir ---"
+    while IFS= read -r f ; do
+        list_file "$f"
+    done < <(find "$d" -maxdepth 8 -type f -name '*.log*' 2>/dev/null | sort)
+    # Full untruncated per-test logs (the Makefile only prints `tail -n 100`).
+    local i=0
+    local f
+    while IFS= read -r f ; do
+        echo "===== FULL LOG: $f ====="
+        cat_file "$f"
+        echo "===== END LOG: $f ====="
+        i=$((i + 1))
+        copy_file "$f" "$out/kept-nix-logs/$tag/$(printf '%02d' "$i")-$(basename "$f")"
+    done < <(find "$d" -maxdepth 10 -type f \( -name 'log.full.txt' -o -name 'log.full' -o -name 'log.check.txt.new' \) 2>/dev/null | sort)
+    # Directory listings of the failed *.py.p dirs (contain log.json + logs).
+    local pdir
+    while IFS= read -r pdir ; do
+        echo "--- test dir: $pdir ---"
+        list_dir "$pdir"
+    done < <(find "$d" -maxdepth 10 -type d -name '*.py.p' 2>/dev/null | sort)
+    # The full nix build log of the failing derivation: use the derivation named
+    # in the step log's `error: Cannot build '<drv>'` line, else reconstruct it
+    # from the legacy `nix-build-<drv-name>/` directory name.
+    local drv=""
+    local logf
+    shopt -s nullglob
+    for logf in "$nix_build_logs_dir"/*.log ; do
+        drv="$(sed -n "s/^error: Cannot build '\(.*\.drv\)'.*/\1/p" "$logf" 2>/dev/null | head -n 1)"
+        if [ -n "$drv" ] ; then
+            break
+        fi
+    done
+    if [ -z "$drv" ] ; then
+        local drv_path="/nix/store/$(basename "$d" | sed -e 's/^nix-build-//' -e 's/-[0-9][0-9]*$//')"
+        if [ -f "$drv_path" ] ; then
+            drv="$drv_path"
+        fi
+    fi
+    if [ -n "$drv" ] ; then
+        local nix_log="$out/nix-build-log-$(basename "$drv").txt"
+        if nix-store -l "$drv" > "$nix_log" 2>/dev/null || nix log "$drv" > "$nix_log" 2>/dev/null ; then
+            echo "--- failing command lines from '$drv' ---"
+            grep -a -E 'time \(|mpiexec|lldb|Trace/BPT|SIGTRAP' "$nix_log" | head -n 40 || true
+            echo "(full nix build log: $nix_log)"
+        else
+            echo "could not read the nix build log of '$drv'"
+        fi
+    fi
+}
+
+# Locate and report every kept build directory, parsing the `note: keeping
+# build directory "..."` lines from the teed nix-build step logs first (that is
+# the authoritative source for the current run), then falling back to the nix
+# `build-dir` setting and the legacy $TMPDIR/nix-build-* locations.
+collect_kept_build_dirs() {
+    echo
+    echo "==================== preserved nix build dirs ===================="
+    echo "(nix-build --keep-failed keeps failed build directories; the full logs"
+    echo " of the failed example tests are inside them)"
+    shopt -s nullglob
+    local kept_dirs=()
+    local d f
+    local note_re='^note: keeping build directory "\(.*\)"$'
+    for f in "$nix_build_logs_dir"/*.log ; do
+        [ -f "$f" ] || continue
+        while IFS= read -r d ; do
+            [ -n "$d" ] || continue
+            kept_dirs+=("$d")
+            echo "from $(basename "$f"): keeping build directory $d"
+        done < <(sed -n "s/${note_re}/\1/p" "$f" 2>/dev/null)
+    done
+    local build_dir
+    build_dir="$(nix config show 2>/dev/null | awk -F' = ' '$1=="build-dir"{print $2}')"
+    if [ -n "$build_dir" ] ; then
+        for d in "$build_dir"/nix-* ; do
+            [ -d "$d" ] || continue
+            kept_dirs+=("$d")
+            echo "from nix config show build-dir: keeping build directory $d"
+        done
+    fi
+    for d in /private/tmp/nix-build-* /tmp/nix-build-* "${TMPDIR:-/tmp}"/nix-build-* ; do
+        [ -d "$d" ] || continue
+        kept_dirs+=("$d")
+    done
+    if [ "${#kept_dirs[@]}" -gt 0 ] ; then
+        kept_dirs=($(printf '%s\n' "${kept_dirs[@]}" | sort -u))
+    fi
+    if [ "${#kept_dirs[@]}" -eq 0 ] ; then
+        echo "no kept build directory found; check that the nix-build steps still"
+        echo "use --keep-failed and tee into '$nix_build_logs_dir'"
+        return 0
+    fi
+    for d in ${kept_dirs[@]+"${kept_dirs[@]}"} ; do
+        process_kept_build_dir "$d"
+    done
+}
+
+# Rerun the minimal copy-plan reproducer under lldb, with SIGTRAP handled by
+# lldb and the real Mach-O python as the target.  One rank is enough (the trap
+# is per-rank and rank-local), and the reproducer must not use --debug-signals
+# (Grid would install its own SIGTRAP handler and could swallow the trap before
+# lldb sees it).
+run_lldb_repro() {
+    echo
+    echo "==================== lldb reproducer for the copy-plan SIGTRAP ===================="
+    if ! command -v lldb >/dev/null 2>&1 ; then
+        echo "lldb: not found; skipped"
+        return 0
+    fi
+    local real_python
+    real_python="$(resolve_real_python)"
+    if [ -z "$real_python" ] || [ ! -f "$real_python" ] ; then
+        echo "lldb not usable (no python interpreter found); skipped"
+        return 0
+    fi
+    if file "$real_python" 2>/dev/null | grep -q 'Mach-O' ; then
+        echo "lldb target (Mach-O): $real_python"
+    else
+        echo "WARNING: '$real_python' does not look like a Mach-O binary;"
+        echo "         lldb may still stop early (expected: nix exec wrapper)"
+    fi
+    cat > "$work/repro_gpt_copy_plan.py" <<'PYEOF'
+# Minimal reproducer of the macOS-Nix SIGTRAP: the first qlat->GPT copy plan
+# (qlat/qlat_gpt.py -> cgpt.copy_create_plan).  Do NOT pass --debug-signals
+# here: Grid's SIGTRAP handler would be installed first and could swallow the
+# trap before lldb sees it.
+import sys
+
+sys.argv += ["--grid", "8.8.8.8"]
+import qlat_gpt as qg
+import qlat as q
+
+qg.begin_with_gpt()
+gf = q.GaugeField(q.Geometry(q.Coordinate([8, 8, 8, 8])))
+gf.set_unit()
+plan = qg.gpt_from_qlat(gf)  # dies here today (qlat_gpt.py:113 -> cgpt copy_create_plan)
+print("copy plan created:", type(plan), flush=True)
+qg.end_with_gpt()
+PYEOF
+    local python_path
+    python_path="$(python3 -c 'import sys ; print(":".join(p for p in sys.path if p))' 2>/dev/null || true)"
+    local lldb_log="$out/lldb-repro.log"
+    echo "lldb command:"
+    echo "  lldb --batch -o 'settings set target.process.stop-on-exec false' \\"
+    echo "       -o 'process handle SIGTRAP -s true -n false -p false' \\"
+    echo "       -o run -o 'thread backtrace all' -o 'disassemble --frame' \\"
+    echo "       -- $real_python -m mpi4py $work/repro_gpt_copy_plan.py"
+    (
+        cd "$work" || exit 0
+        ulimit -c unlimited 2>/dev/null || true
+        # The environment is exported here (inherited by lldb and the inferior);
+        # do not use `settings set target.env-vars`, which replaces it.
+        export PYTHONFAULTHANDLER=1
+        export OMP_NUM_THREADS=2
+        export PYTHONPATH="${python_path}${PYTHONPATH:+:$PYTHONPATH}"
+        run_with_timeout 600 lldb --batch \
+            -o "settings set target.process.stop-on-exec false" \
+            -o "process handle SIGTRAP -s true -n false -p false" \
+            -o "process handle SIGABRT -s true -n false -p false" \
+            -o "run" \
+            -o "thread list" \
+            -o "thread backtrace all" \
+            -o "frame select 0" \
+            -o "register read pc sp fp x0 x1" \
+            -o "disassemble --frame --count 8" \
+            -o "process status" \
+            -o "quit" \
+            -- "$real_python" -m mpi4py "$work/repro_gpt_copy_plan.py"
+    ) > "$lldb_log" 2>&1
+    local lldb_status=$?
+    echo "lldb exit status: $lldb_status"
+    echo "--- interesting lines from the lldb log (full log: $lldb_log) ---"
+    grep -a -E 'stop reason|SIGTRAP|SIGABRT|thread #|frame #|brk|__builtin_trap|cgpt|Grid_' "$lldb_log" | head -n 60 || true
+    echo "--- last 400 lines of the lldb log ---"
+    tail -n 400 "$lldb_log" || true
+}
+
+# Testing hook: `CI_DEBUG_SOURCE_ONLY=1 source scripts/ci-debug-mac-nix-gpt.sh
+# <out-dir>` defines the functions above without running the collection (used
+# by tmp/task31-stub-test.sh on Linux).
+if [ "${CI_DEBUG_SOURCE_ONLY:-0}" = "1" ] ; then
+    return 0
+fi
 
 test_name="${2:-}"
 if [ -z "$test_name" ] ; then
@@ -74,54 +384,9 @@ echo "system python3: $(command -v python3 || true)"
 python3 -VV 2>&1 || true
 mpiexec --version 2>&1 || true
 
-echo
-echo "==================== preserved nix build dirs ===================="
-echo "(nix-build --keep-failed keeps failed build directories; the full logs"
-echo " of the failed example tests are inside them)"
-shopt -s nullglob
-kept_dirs=(/private/tmp/nix-build-* /tmp/nix-build-* "${TMPDIR:-/tmp}"/nix-build-*)
-if [ "${#kept_dirs[@]}" -gt 0 ] ; then
-    kept_dirs=($(printf '%s\n' "${kept_dirs[@]}" | sort -u))
-fi
-if [ "${#kept_dirs[@]}" -eq 0 ] ; then
-    echo "no nix-build-* directory found; check that the nix-build steps use --keep-failed"
-fi
-for d in ${kept_dirs[@]+"${kept_dirs[@]}"} ; do
-    echo
-    echo "--- kept build dir: $d ---"
-    ls -la "$d" 2>&1 || true
-    tag="$(basename "$d")"
-    # Directory listing of the failed tests' .p dirs and their log files.
-    while IFS= read -r pdir ; do
-        echo "--- test dir: $pdir ---"
-        ls -la "$pdir" 2>&1 || true
-    done < <(find "$d" -maxdepth 8 -type d -name '*.py.p' 2>/dev/null | sort)
-    echo "--- *.log* files under the kept build dir ---"
-    find "$d" -maxdepth 8 -type f -name '*.log*' 2>/dev/null | sort | while IFS= read -r f ; do
-        ls -la "$f" 2>&1 || true
-    done
-    # Full untruncated per-test logs (the Makefile only prints `tail -n 100`).
-    i=0
-    while IFS= read -r f ; do
-        echo "===== FULL LOG: $f ====="
-        cat_file "$f"
-        echo "===== END LOG: $f ====="
-        i=$((i + 1))
-        copy_file "$f" "$out/kept-nix-logs/$tag/$(printf '%02d' "$i")-$(basename "$f")"
-    done < <(find "$d" -maxdepth 8 -type f \( -name 'log.full.txt' -o -name 'log.full' -o -name 'log.check.txt.new' \) 2>/dev/null | sort)
-    # The failing command lines and the full nix build log of the derivation.
-    drv_path="/nix/store/$(basename "$d" | sed -e 's/^nix-build-//' -e 's/-[0-9][0-9]*$//')"
-    if [ -f "$drv_path" ] ; then
-        nix_log="$out/nix-build-log-$(basename "$drv_path").txt"
-        if nix-store -l "$drv_path" > "$nix_log" 2>/dev/null || nix log "$drv_path" > "$nix_log" 2>/dev/null ; then
-            echo "--- failing command lines from '$drv_path' ---"
-            grep -a -E 'time \(|mpiexec|lldb|Trace/BPT|SIGTRAP' "$nix_log" | head -n 40 || true
-            echo "(full nix build log: $nix_log)"
-        else
-            echo "could not read the nix build log of '$drv_path'"
-        fi
-    fi
-done
+copy_nix_build_step_logs
+collect_kept_build_dirs
+collect_crash_reports
 
 echo
 echo "==================== nix GPT test environment ===================="
@@ -139,23 +404,6 @@ env_dir="$env_link"
 export PATH="$env_dir/bin:$PATH"
 echo "env_dir = $env_dir"
 
-# Run a command with a hard time limit; the nix environment does not always
-# provide GNU `timeout` and macOS has no timeout(1) by default.
-run_with_timeout() {
-    local seconds="$1"
-    shift
-    if [ -x "$env_dir/bin/timeout" ] ; then
-        "$env_dir/bin/timeout" -s KILL "$seconds" "$@"
-    elif command -v timeout >/dev/null 2>&1 ; then
-        timeout -s KILL "$seconds" "$@"
-    elif command -v gtimeout >/dev/null 2>&1 ; then
-        gtimeout -s KILL "$seconds" "$@"
-    elif command -v perl >/dev/null 2>&1 ; then
-        perl -e 'alarm shift; exec @ARGV' "$seconds" "$@"
-    else
-        "$@"
-    fi
-}
 python3 -VV 2>&1 || true
 python3 -c 'import multiprocessing as mp ; print("python mp.get_start_method() =", mp.get_start_method())' 2>&1 || true
 mpiexec --version 2>&1 | head -n 5 || true
@@ -216,48 +464,7 @@ grep -a -i -E 'GRID_ASSERT|Grid_fatal_signal_handler|blame|SIGTRAP|Trace/BPT|sig
 echo "--- last 300 lines of the rerun ---"
 tail -n 300 "$run_log" || true
 
-echo
-echo "==================== lldb reproducer for the copy-plan SIGTRAP ===================="
-real_python="$(python3 -c 'import sys ; print(sys.executable)' 2>/dev/null || true)"
-python_path="$(python3 -c 'import os, sys ; print(os.pathsep.join(p for p in sys.path if p.endswith("site-packages")))' 2>/dev/null || true)"
-if command -v lldb >/dev/null 2>&1 && [ -n "$real_python" ] && [ -f "$real_python" ] ; then
-    cat > "$work/repro_gpt_copy_plan.py" <<'PYEOF'
-# Minimal reproducer of the macOS-Nix SIGTRAP: the first qlat->GPT copy plan
-# (qlat/qlat_gpt.py -> cgpt.copy_create_plan).  --debug-signals makes Grid
-# print a backtrace if a fatal signal is raised before lldb sees it.
-import sys
-
-sys.argv += ["--grid", "8.8.8.8", "--debug-signals"]
-import qlat_gpt as qg
-import qlat as q
-
-qg.begin_with_gpt()
-gf = q.GaugeField(q.Geometry(q.Coordinate([8, 8, 8, 8])))
-gf.set_unit()
-plan = qg.gpt_from_qlat(gf)
-print("copy plan created:", type(plan), flush=True)
-qg.end_with_gpt()
-PYEOF
-    lldb_log="$out/lldb-repro.log"
-    (
-        cd "$work" || exit 0
-        ulimit -c unlimited 2>/dev/null || true
-        export PYTHONFAULTHANDLER=1
-        export PYTHONPATH="${python_path}${PYTHONPATH:+:$PYTHONPATH}"
-        run_with_timeout 600 lldb --batch \
-            -o "settings set target.env-vars PYTHONFAULTHANDLER=1" \
-            -o run \
-            -o "thread backtrace all" \
-            -o quit \
-            -- "$real_python" "$work/repro_gpt_copy_plan.py"
-    ) > "$lldb_log" 2>&1
-    lldb_status=$?
-    echo "lldb exit status: $lldb_status"
-    echo "--- lldb output (full log: $lldb_log) ---"
-    tail -n 400 "$lldb_log" || true
-else
-    echo "lldb not usable (lldb missing or nix python not found); skipped"
-fi
+run_lldb_repro
 
 echo
 echo "==================== debug run finished ===================="
