@@ -50,6 +50,10 @@ in stdenv.mkDerivation {
 
   src = src-remote;
 
+  patches = [
+    ./grid-cartesian-stencil-surface-list-empty.patch
+  ];
+
   enableParallelBuilding = true;
 
   nativeBuildInputs = [

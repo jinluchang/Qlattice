@@ -1,0 +1,30 @@
+From: qlattice hardening audit (task-42)
+Subject: [PATCH] CartesianStencil: do not take &v[0] of an empty surface list
+
+BuildSurfaceList() computes surface_list_size = 0 on a single-rank grid
+(all stencil points are node-local), then unconditionally passes
+&surface_list_host[0] and &surface_list[0] to acceleratorCopyToDevice().
+Taking operator[](0) on an empty std::vector is UB; libc++ hardening
+(nixpkgs default -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST)
+turns it into __builtin_verbose_trap (SIGTRAP on aarch64-darwin,
+SIGILL on x86) while constructing a Wilson/Mobius fermion operator on a
+single-rank (or single-rank sub-communicator) grid.
+
+Guard the zero-size transfer; a zero-byte copy is a no-op and the
+vectors stay empty for the rest of the object's life.
+
+Applied from the Grid source root (containing Grid/): patch -p1.
+
+--- a/Grid/stencil/Stencil.h
++++ b/Grid/stencil/Stencil.h
+@@ -884,7 +884,9 @@
+ 	}
+       }
+     }
+-    acceleratorCopyToDevice(&surface_list_host[0],&surface_list[0],surface_list_size*sizeof(int));
++    if (surface_list_size > 0) {
++      acceleratorCopyToDevice(&surface_list_host[0],&surface_list[0],surface_list_size*sizeof(int));
++    }
+     //    std::cout << GridLogMessage<<"BuildSurfaceList size is "<<surface_list_size<<std::endl;
+   }
+   /// Introduce a block structure and switch off comms on boundaries

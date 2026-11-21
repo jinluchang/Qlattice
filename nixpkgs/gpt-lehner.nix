@@ -50,6 +50,10 @@ buildPythonPackage {
 
   src = src-remote;
 
+  patches = [
+    ./gpt-cgpt-enumerate-empty-vector.patch
+  ];
+
   enableParallelBuilding = true;
 
   build-system = [

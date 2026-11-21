@@ -1,0 +1,75 @@
+From: qlattice-ci-debug <noreply@example.com>
+Subject: [PATCH] cgpt: do not take operator[](0) on empty inner vectors
+
+cgpt_enumerate() splits the "find every false flag" scan over OpenMP
+threads and copies each thread's collected indices into the final array
+with
+
+    memcpy(&idx[start], &tidx[thread][0], nt[thread]*sizeof(size_t));
+
+When a thread's slice of the RLE boundary `flags` contains no false
+entry -- the normal case for a contiguous memory-transfer plan, where
+all flags are 1 except the forced last one, so only the thread owning the
+last element has a non-empty index list -- nt[thread] is 0 and
+tidx[thread] is an empty std::vector.  operator[](0) on an empty vector
+is undefined behaviour; the memcpy of size 0 only makes it harmless in
+practice with libstdc++ or Apple libc++.
+
+Nix compiles every C++ translation unit with the default hardening flag
+`libcxxhardeningfast` (cc-wrapper setup-hook), i.e.
+-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST.  In libc++ 21 fast
+mode enables _LIBCPP_ASSERT_VALID_ELEMENT_ACCESS, and the default
+assertion semantic for production modes is quick-enforce, so
+std::vector::operator[] failure executes __builtin_verbose_trap(): a
+real trap instruction (brk/SIGTRAP on arm64, ud2/SIGILL on x86-64).  On
+aarch64-darwin this turned the benign UB into the fatal SIGTRAP in
+grid/gpt copy-plan construction.  On x86_64-linux nix builds the flag is
+inert because the clang stdenv uses libstdc++.
+
+Fix: copy only when nt[thread] != 0 and use data() (valid for empty
+vectors) instead of operator[](0).  Also guard the a.size()-1 underflow
+in the two RLE helpers for empty inputs.
+
+diff --git a/lib/cgpt/lib/reduce.h b/lib/cgpt/lib/reduce.h
+--- a/lib/cgpt/lib/reduce.h
++++ b/lib/cgpt/lib/reduce.h
+--- a/lib/cgpt/lib/reduce.h
++++ b/lib/cgpt/lib/reduce.h
+@@ -131,7 +131,8 @@
+     {
+       size_t thread = thread_num();
+       size_t start = (thread == 0) ? 0 : ps_nt[thread-1];
+-      memcpy(&idx[start], &tidx[thread][0], nt[thread]*sizeof(size_t));
++      if (nt[thread])
++      memcpy(&idx[start], tidx[thread].data(), nt[thread]*sizeof(size_t));
+     }
+ 
+   //t.report();
+@@ -151,8 +152,10 @@
+ 		const vec_t & a, check_t c) {
+   
+   AlignedVector<char> flags(a.size());
+-  thread_for(i, a.size()-1, { flags[i] = c(a[i],a[i+1]); });
+-  flags[a.size()-1] = 0;
++  if (a.size()) {
++    thread_for(i, a.size()-1, { flags[i] = c(a[i],a[i+1]); });
++    flags[a.size()-1] = 0;
++  }
+ 
+   AlignedVector<size_t> idx;
+   cgpt_enumerate(idx, flags, [](char x) { return !x; });
+--- a/lib/cgpt/lib/sort.h
++++ b/lib/cgpt/lib/sort.h
+@@ -66,8 +66,10 @@
+ template<typename check_t, typename vec_t>
+ void cgpt_sorted_unique(vec_t& u, const vec_t& a, check_t c) {
+   AlignedVector<char> flags(a.size());
+-  thread_for(i, a.size()-1, { flags[i] = c(a[i],a[i+1]); });
+-  flags[a.size()-1] = 0;
++  if (a.size()) {
++    thread_for(i, a.size()-1, { flags[i] = c(a[i],a[i+1]); });
++    flags[a.size()-1] = 0;
++  }
+ 
+   AlignedVector<size_t> idx;
+   cgpt_enumerate(idx, flags, [](char x) { return !x; });
