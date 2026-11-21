@@ -526,7 +526,7 @@ jobs:
         set -o pipefail
         log="$RUNNER_TEMP/nix-build-logs/gpt-cps-env.log"
         mkdir -p "$(dirname "$log")"
-        nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
+        nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
     - name: Test qlat with GPT and CPS
@@ -538,7 +538,7 @@ jobs:
         set -o pipefail
         log="$RUNNER_TEMP/nix-build-logs/gpt-cps-tests.log"
         mkdir -p "$(dirname "$log")"
-        if nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed 2>&1 | tee "$log" ; then
+        if nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed 2>&1 | tee "$log" ; then
             echo "QLAT_GPT_TESTS_FAILED=0" >> "$GITHUB_ENV"
             echo "Nix GPT/CPS tests passed"
         else
@@ -678,7 +678,7 @@ jobs:
       run: |
         export num_proc=3
         export prefix=~/qlat-build/default
-        # ./scripts/qlat-examples-py-cps.sh # CPS not working on Mac yet
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
       run: |
         export num_proc=3
@@ -820,7 +820,7 @@ jobs:
       run: |
         export num_proc=3
         export prefix=~/qlat-build/default
-        # ./scripts/qlat-examples-py-cps.sh
+        ./scripts/qlat-examples-py-cps.sh
     - name: Testing qlat
       run: |
         export num_proc=3

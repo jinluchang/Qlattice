@@ -37,7 +37,7 @@ set -u
 out="${1:?usage: scripts/ci-debug-mac-nix-gpt.sh <out-dir> [test-name]}"
 mkdir -p "$out"
 
-env_attr="pkgs-cpsless-clang-ucxless.qlat-env"
+env_attr="pkgs-clang-ucxless.qlat-env"
 
 # The workflow tees every nix-build step into this directory.
 nix_build_logs_dir="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/nix-build-logs"
