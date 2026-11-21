@@ -106,6 +106,19 @@ cdef extern from "qlat-utils/mat-vec.h" namespace "qlat":
         WilsonVector()
         ComplexD* data()
 
+### --------------------------------------------------------
+
+cdef extern from "qlat-utils/aligned-storage.h" namespace "qlat":
+
+    cdef cppclass QlatAlignedStorage[T]:
+        QlatAlignedStorage()
+        T* ptr()
+        T* construct()
+        void destroy()
+        size_t alignment()
+        size_t capacity()
+        char* base()
+
 cdef extern from "qlat-utils/handle.h" namespace "qlat":
 
     cdef cppclass Handle[T]:

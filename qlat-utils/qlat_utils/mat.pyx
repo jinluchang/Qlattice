@@ -23,14 +23,24 @@ cdef class WilsonMatrix:
     # otherwise numpy converts the matrix through its buffer to an ndarray.
     __array_ufunc__ = None
 
+    def __cinit__(self):
+        self.xx = self.storage.construct()
+        assert (<size_t>self.xx) % self.storage.alignment() == 0
+        assert (<size_t>self.xx) + sizeof(cc.WilsonMatrix) <= (
+            <size_t>self.storage.base() + self.storage.capacity()
+        )
+
+    def __dealloc__(self):
+        self.storage.destroy()
+
     def __imatmul__(self, WilsonMatrix v1):
-        self.xx = v1.xx
+        self.xx[0] = v1.xx[0]
         return self
 
     def copy(self, cc.Bool is_copying_data = True):
         cdef WilsonMatrix x = WilsonMatrix()
         if is_copying_data:
-            x.xx = self.xx
+            x.xx[0] = self.xx[0]
         return x
 
     def __copy__(self):
@@ -40,14 +50,14 @@ cdef class WilsonMatrix:
         return self.copy()
 
     def set_zero(self):
-        cc.set_zero(self.xx)
+        cc.set_zero(self.xx[0])
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = ElemTypeWilsonMatrix.ndim()
         cdef Buffer buf = Buffer(self, ndim)
         buf.format = ElemTypeWilsonMatrix.format()
         buf.itemsize = ElemTypeWilsonMatrix.itemsize()
-        buf.buf = <char*>(self.xx.data())
+        buf.buf = <char*>(self.xx[0].data())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeWilsonMatrix.shape()
         cdef int dim
         for dim in range(ndim):
@@ -72,42 +82,42 @@ cdef class WilsonMatrix:
 
     def g5_herm(self):
         """In-place g5-Hermitian conjugation; returns self for chaining."""
-        self.xx = cc.g5_herm(self.xx)
+        self.xx[0] = cc.g5_herm(self.xx[0])
         return self
 
     def qnorm(self):
-        return cc.qnorm(self.xx)
+        return cc.qnorm(self.xx[0])
 
     def __eq__(self, WilsonMatrix v1):
         # Value equality; defining __eq__ makes the type unhashable (matrices
         # are mutable, so they must not be dict/set keys): hash(wm) raises TypeError.
-        return cc.qnorm(self.xx - v1.xx) == 0.0
+        return cc.qnorm(self.xx[0] - v1.xx[0]) == 0.0
 
     def __iadd__(self, WilsonMatrix v1):
-        self.xx += v1.xx
+        self.xx[0] += v1.xx[0]
         return self
 
     def __isub__(self, WilsonMatrix v1):
-        self.xx -= v1.xx
+        self.xx[0] -= v1.xx[0]
         return self
 
     def __imul__(self, cc.PyComplexD v1):
-        self.xx *= cc.ccpy_d(v1)
+        self.xx[0] *= cc.ccpy_d(v1)
         return self
 
     def __add__(self, WilsonMatrix v1):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = self.xx + v1.xx
+        x.xx[0] = self.xx[0] + v1.xx[0]
         return x
 
     def __sub__(self, WilsonMatrix v1):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = self.xx - v1.xx
+        x.xx[0] = self.xx[0] - v1.xx[0]
         return x
 
     def __mul__(self, cc.PyComplexD v1):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = cc.ccpy_d(v1) * self.xx
+        x.xx[0] = cc.ccpy_d(v1) * self.xx[0]
         return x
 
     def __rmul__(self, v1):
@@ -116,17 +126,17 @@ cdef class WilsonMatrix:
 
     def conjugate(self):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = cc.matrix_conjugate(self.xx)
+        x.xx[0] = cc.matrix_conjugate(self.xx[0])
         return x
 
     def transpose(self):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = cc.matrix_transpose(self.xx)
+        x.xx[0] = cc.matrix_transpose(self.xx[0])
         return x
 
     def adjoint(self):
         cdef WilsonMatrix x = WilsonMatrix()
-        x.xx = cc.matrix_adjoint(self.xx)
+        x.xx[0] = cc.matrix_adjoint(self.xx[0])
         return x
 
     def __repr__(self):
@@ -139,14 +149,24 @@ cdef class SpinMatrix:
     # otherwise numpy converts the matrix through its buffer to an ndarray.
     __array_ufunc__ = None
 
+    def __cinit__(self):
+        self.xx = self.storage.construct()
+        assert (<size_t>self.xx) % self.storage.alignment() == 0
+        assert (<size_t>self.xx) + sizeof(cc.SpinMatrix) <= (
+            <size_t>self.storage.base() + self.storage.capacity()
+        )
+
+    def __dealloc__(self):
+        self.storage.destroy()
+
     def __imatmul__(self, SpinMatrix v1):
-        self.xx = v1.xx
+        self.xx[0] = v1.xx[0]
         return self
 
     def copy(self, cc.Bool is_copying_data = True):
         cdef SpinMatrix x = SpinMatrix()
         if is_copying_data:
-            x.xx = self.xx
+            x.xx[0] = self.xx[0]
         return x
 
     def __copy__(self):
@@ -156,14 +176,14 @@ cdef class SpinMatrix:
         return self.copy()
 
     def set_zero(self):
-        cc.set_zero(self.xx)
+        cc.set_zero(self.xx[0])
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = ElemTypeSpinMatrix.ndim()
         cdef Buffer buf = Buffer(self, ndim)
         buf.format = ElemTypeSpinMatrix.format()
         buf.itemsize = ElemTypeSpinMatrix.itemsize()
-        buf.buf = <char*>(self.xx.data())
+        buf.buf = <char*>(self.xx[0].data())
         cdef cc.std_vector[Py_ssize_t] vec = ElemTypeSpinMatrix.shape()
         cdef int dim
         for dim in range(ndim):
@@ -187,36 +207,36 @@ cdef class SpinMatrix:
         return np.asarray(self)[idx]
 
     def qnorm(self):
-        return cc.qnorm(self.xx)
+        return cc.qnorm(self.xx[0])
 
     def __eq__(self, SpinMatrix v1):
-        return cc.qnorm(self.xx - v1.xx) == 0.0
+        return cc.qnorm(self.xx[0] - v1.xx[0]) == 0.0
 
     def __iadd__(self, SpinMatrix v1):
-        self.xx += v1.xx
+        self.xx[0] += v1.xx[0]
         return self
 
     def __isub__(self, SpinMatrix v1):
-        self.xx -= v1.xx
+        self.xx[0] -= v1.xx[0]
         return self
 
     def __imul__(self, cc.PyComplexD v1):
-        self.xx *= cc.ccpy_d(v1)
+        self.xx[0] *= cc.ccpy_d(v1)
         return self
 
     def __add__(self, SpinMatrix v1):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = self.xx + v1.xx
+        x.xx[0] = self.xx[0] + v1.xx[0]
         return x
 
     def __sub__(self, SpinMatrix v1):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = self.xx - v1.xx
+        x.xx[0] = self.xx[0] - v1.xx[0]
         return x
 
     def __mul__(self, cc.PyComplexD v1):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = cc.ccpy_d(v1) * self.xx
+        x.xx[0] = cc.ccpy_d(v1) * self.xx[0]
         return x
 
     def __rmul__(self, v1):
@@ -225,17 +245,17 @@ cdef class SpinMatrix:
 
     def conjugate(self):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = cc.matrix_conjugate(self.xx)
+        x.xx[0] = cc.matrix_conjugate(self.xx[0])
         return x
 
     def transpose(self):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = cc.matrix_transpose(self.xx)
+        x.xx[0] = cc.matrix_transpose(self.xx[0])
         return x
 
     def adjoint(self):
         cdef SpinMatrix x = SpinMatrix()
-        x.xx = cc.matrix_adjoint(self.xx)
+        x.xx[0] = cc.matrix_adjoint(self.xx[0])
         return x
 
     def __repr__(self):
@@ -353,31 +373,31 @@ cdef class ColorMatrix:
 ### -------------------------------------------------------------------
 
 def mat_tr_sm(SpinMatrix v):
-    return cc.pycc_d(cc.matrix_trace(v.xx))
+    return cc.pycc_d(cc.matrix_trace(v.xx[0]))
 
 def mat_tr_cm(ColorMatrix v):
     return cc.pycc_d(cc.matrix_trace(v.xx))
 
 def mat_tr_wm(WilsonMatrix v):
-    return cc.pycc_d(cc.matrix_trace(v.xx))
+    return cc.pycc_d(cc.matrix_trace(v.xx[0]))
 
 def mat_tr_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx[0], v2.xx[0]))
 
 def mat_tr_wm_sm(WilsonMatrix v1, SpinMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx[0], v2.xx[0]))
 
 def mat_tr_sm_wm(SpinMatrix v1, WilsonMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx[0], v2.xx[0]))
 
 def mat_tr_sm_sm(SpinMatrix v1, SpinMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx[0], v2.xx[0]))
 
 def mat_tr_wm_cm(WilsonMatrix v1, ColorMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx[0], v2.xx))
 
 def mat_tr_cm_wm(ColorMatrix v1, WilsonMatrix v2):
-    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
+    return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx[0]))
 
 def mat_tr_cm_cm(ColorMatrix v1, ColorMatrix v2):
     return cc.pycc_d(cc.matrix_trace(v1.xx, v2.xx))
@@ -386,12 +406,12 @@ def mat_tr_cm_cm(ColorMatrix v1, ColorMatrix v2):
 
 def mat_mul_a_wm(cc.PyComplexD v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = cc.ccpy_d(v1) * v2.xx
+    x.xx[0] = cc.ccpy_d(v1) * v2.xx[0]
     return x
 
 def mat_mul_a_sm(cc.PyComplexD v1, SpinMatrix v2):
     cdef SpinMatrix x = SpinMatrix()
-    x.xx = cc.ccpy_d(v1) * v2.xx
+    x.xx[0] = cc.ccpy_d(v1) * v2.xx[0]
     return x
 
 def mat_mul_a_cm(cc.PyComplexD v1, ColorMatrix v2):
@@ -401,32 +421,32 @@ def mat_mul_a_cm(cc.PyComplexD v1, ColorMatrix v2):
 
 def mat_mul_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx[0] * v2.xx[0]
     return x
 
 def mat_mul_sm_wm(SpinMatrix v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx[0] * v2.xx[0]
     return x
 
 def mat_mul_wm_sm(WilsonMatrix v1, SpinMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx[0] * v2.xx[0]
     return x
 
 def mat_mul_sm_sm(SpinMatrix v1, SpinMatrix v2):
     cdef SpinMatrix x = SpinMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx[0] * v2.xx[0]
     return x
 
 def mat_mul_cm_wm(ColorMatrix v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx * v2.xx[0]
     return x
 
 def mat_mul_wm_cm(WilsonMatrix v1, ColorMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx * v2.xx
+    x.xx[0] = v1.xx[0] * v2.xx
     return x
 
 def mat_mul_cm_cm(ColorMatrix v1, ColorMatrix v2):
@@ -438,12 +458,12 @@ def mat_mul_cm_cm(ColorMatrix v1, ColorMatrix v2):
 
 def mat_add_wm_wm(WilsonMatrix v1, WilsonMatrix v2):
     cdef WilsonMatrix x = WilsonMatrix()
-    x.xx = v1.xx + v2.xx
+    x.xx[0] = v1.xx[0] + v2.xx[0]
     return x
 
 def mat_add_sm_sm(SpinMatrix v1, SpinMatrix v2):
     cdef SpinMatrix x = SpinMatrix()
-    x.xx = v1.xx + v2.xx
+    x.xx[0] = v1.xx[0] + v2.xx[0]
     return x
 
 def mat_add_cm_cm(ColorMatrix v1, ColorMatrix v2):
@@ -456,14 +476,14 @@ def mat_add_cm_cm(ColorMatrix v1, ColorMatrix v2):
 def mat_epsilon_contraction_wm_wm_wm(int v_s1, int b_s1, int v_s2, int b_s2, int v_s3, int b_s3,
                                      WilsonMatrix wm1, WilsonMatrix wm2, WilsonMatrix wm3):
     cdef cc.ComplexD val
-    val = cc.epsilon_contraction(v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, wm1.xx, wm2.xx, wm3.xx)
+    val = cc.epsilon_contraction(v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, wm1.xx[0], wm2.xx[0], wm3.xx[0])
     return cc.pycc_d(val)
 
 ### -------------------------------------------------------------------
 
 def get_gamma_matrix(int mu):
     cdef SpinMatrix x = SpinMatrix()
-    x.xx = cc.get_gamma_matrix(mu)
+    x.xx[0] = cc.get_gamma_matrix(mu)
     return x
 
 gamma_matrix_0 = cc.get_gamma_matrix(0)
@@ -485,18 +505,18 @@ def as_wilson_matrix(x):
         return x
     elif x == 0:
         wm = WilsonMatrix()
-        cc.set_zero(wm.xx)
+        cc.set_zero(wm.xx[0])
         return wm
 
 def wilson_matrix_g5_herm(WilsonMatrix x):
     cdef WilsonMatrix wm = WilsonMatrix()
-    wm.xx = cc.g5_herm(x.xx)
+    wm.xx[0] = cc.g5_herm(x.xx[0])
     return wm
 
 def as_wilson_matrix_g5_herm(x):
     cdef WilsonMatrix wm = WilsonMatrix()
     if isinstance(x, WilsonMatrix):
-        wm.xx = cc.g5_herm((<WilsonMatrix>x).xx)
+        wm.xx[0] = cc.g5_herm((<WilsonMatrix>x).xx[0])
     elif x == 0:
-        cc.set_zero(wm.xx)
+        cc.set_zero(wm.xx[0])
     return wm

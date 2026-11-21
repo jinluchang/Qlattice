@@ -40,6 +40,7 @@ config_file = configure_file(output: 'config.h', configuration: conf_data)
 py3.install_sources(config_file, subdir: 'qlat_utils/include/qlat-utils')
 
 header_files = files(
+  'aligned-storage.h',
   'array.h',
   'qassert.h',
   'cache.h',

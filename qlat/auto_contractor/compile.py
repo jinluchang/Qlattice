@@ -2512,7 +2512,7 @@ class CExprCodeGenPy:
             value,
         ) in enumerate(cexpr.variables_prop):
             append_cy(
-                f"cdef cc.WilsonMatrix* p_{name} = &(<qu.WilsonMatrix>props[{idx}]).xx"
+                f"cdef cc.WilsonMatrix* p_{name} = (<qu.WilsonMatrix>props[{idx}]).xx"
             )
             append_py(f"p_{name} = props[{idx}]")
         append("# set cms")
@@ -2688,13 +2688,15 @@ class CExprCodeGenPy:
                 else:
                     if expr_type == "V_S":
                         append_cy(f"{expr_var_name}_box = WilsonMatrix()")
+                        append_cy(f"{expr_var_name}_box.xx[0] = {expr_var_name}")
                     elif expr_type == "V_G":
                         append_cy(f"{expr_var_name}_box = SpinMatrix()")
+                        append_cy(f"{expr_var_name}_box.xx[0] = {expr_var_name}")
                     elif expr_type == "V_U":
                         append_cy(f"{expr_var_name}_box = ColorMatrix()")
+                        append_cy(f"{expr_var_name}_box.xx = {expr_var_name}")
                     else:
                         raise Exception(f"{expr_type}")
-                    append_cy(f"{expr_var_name}_box.xx = {expr_var_name}")
                     append_cy(f"exprs_view[{idx}] = {expr_var_name}_box")
                     append_py(f"exprs_view[{idx}] = {expr_var_name}.copy()")
         append("# set flops")

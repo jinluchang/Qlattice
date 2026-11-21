@@ -24,17 +24,6 @@ constexpr qlat::Int qlat_aligned_bytes(qlat::Int size)
 #else
 #define QLAT_ALIGNED_BYTES \
   16  // should divide all matrix sizes (which can convert with GPT).
-// Cap the over-alignment of the matrix types at 16 bytes.  These types are
-// stored inline in Cython `cdef class` objects (qlat_utils/mat.pxd), but the
-// memory CPython allocates for an object only guarantees 16-byte alignment
-// (see https://docs.python.org/3/c-api/memory.html).  Asking for a larger
-// alignment makes GCC assume it, so -march=x86-64-v3 emits 32-byte aligned
-// AVX moves (vmovdqa/vmovapd) that fault with #GP/SIGSEGV on the 16-byte
-// aligned object.  This bug was exposed by the Ubuntu 26.04 `amd64v3`
-// packages (gcc configured with --with-arch-64=x86-64-v3), while the nix and
-// -march=x86-64 builds use 16-byte moves and stay correct.  Note that this
-// is an ABI change: qlat-utils and every package embedding these types must
-// be rebuilt together.
 constexpr qlat::Int qlat_aligned_bytes(qlat::Int size)
 {
   int ret = 0;
@@ -46,8 +35,16 @@ constexpr qlat::Int qlat_aligned_bytes(qlat::Int size)
     ret = 4;
   } else if (size % 16 != 0) {
     ret = 8;
-  } else {
+  } else if (size % 32 != 0) {
     ret = 16;
+  } else if (size % 64 != 0) {
+    ret = 32;
+  } else if (size % 128 != 0) {
+    ret = 64;
+  } else if (size % 256 != 0) {
+    ret = 128;
+  } else {
+    ret = 256;
   }
   return ret;
 }
