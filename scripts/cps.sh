@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Fail the build step (and CI) when the build fails: the trailing
+# `2>&1 | tee` pipeline below would otherwise mask the exit status, which is
+# how a gcc-15 CPS build failure went unnoticed while CI happily ran the CPS
+# tests without a qlat_cps installation.
+set -e -o pipefail
+
 name=CPS
 
 source qcore/set-prefix.sh $name

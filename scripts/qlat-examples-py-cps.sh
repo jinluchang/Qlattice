@@ -4,6 +4,16 @@ name=qlat-examples-py-cps
 
 source qcore/set-prefix.sh $name
 
+# If the CPS build/installation was skipped (marker written by
+# scripts/qlat-packages.sh), skip the CPS tests explicitly instead of letting
+# every test fail at `import qlat_cps`.
+base_prefix="$(readlink -m "$prefix/..")"
+if [ -f "$base_prefix"/cps-unavailable.txt ] ; then
+    echo "WARNING: CPS is not installed for prefix '$base_prefix'; skipping CPS tests."
+    cat "$base_prefix"/cps-unavailable.txt
+    exit 0
+fi
+
 { time {
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
