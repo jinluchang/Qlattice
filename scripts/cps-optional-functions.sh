@@ -2,13 +2,15 @@
 
 # Helpers for treating CPS as optional in the non-pip build flow.
 #
-# CPS cannot be built on macOS (its a2a code needs GSL headers, which the
-# macOS runner image does not provide) and the minimal `build.sh` configuration
-# on Linux intentionally does not build CPS at all.  In those cases the
-# CPS-dependent steps must be skipped *explicitly* (WARNING + the same
-# `cps-unavailable.txt` marker the pip flow uses) instead of aborting the whole
-# build before qlat/qlat-utils/qlat-grid are installed.  When CPS *is* built
-# (the default-gpt flow on Linux), failures stay fatal.
+# CPS historically could not be built on macOS because the brew-installed GSL
+# was missing from the compiler path; qcore/setenv.sh now adds the brew GSL
+# include/lib/pkgconfig entries to CPATH/LIBRARY_PATH/PKG_CONFIG_PATH.  Until
+# macOS CI proves the CPS build works, it stays optional there as a safety net.
+# The minimal `build.sh` configuration on Linux intentionally does not build CPS
+# at all.  In those cases the CPS-dependent steps must be skipped *explicitly*
+# (WARNING + the same `cps-unavailable.txt` marker the pip flow uses) instead of
+# aborting the whole build before qlat/qlat-utils/qlat-grid are installed.  When
+# CPS *is* built (the default-gpt flow on Linux), failures stay fatal.
 #
 # The calling build.default*.sh scripts run with `set -e -o pipefail`, and call
 # these helpers as plain commands: cps_build_optional() exits the whole build on
@@ -20,8 +22,9 @@ cps_marker_file() {
 }
 
 cps_optional_platform() {
-    # macOS does not support CPS yet.  QLAT_CPS_OPTIONAL=1 allows simulating /
-    # forcing the skip on other platforms (e.g. CI or a minimal build).
+    # CPS is still being staged on macOS, so keep it optional there as a safety
+    # net.  QLAT_CPS_OPTIONAL=1 allows simulating / forcing the skip on other
+    # platforms (e.g. CI or a minimal build).
     [ "$(uname)" = "Darwin" ] || [ "${QLAT_CPS_OPTIONAL:-0}" = "1" ]
 }
 
