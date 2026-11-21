@@ -68,7 +68,9 @@ cdef class WilsonMatrix:
         return np.asarray(self)[idx]
 
     def g5_herm(self):
+        """In-place g5-Hermitian conjugation; returns self for chaining."""
         self.xx = cc.g5_herm(self.xx)
+        return self
 
     def qnorm(self):
         return cc.qnorm(self.xx)
