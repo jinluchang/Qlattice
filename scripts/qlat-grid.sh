@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# `pipefail` so a failed build step is not hidden by the `| tee`
+# below when this script is invoked from build.default*.sh.
+set -o pipefail
+
 name=qlat-grid
 
 source qcore/set-prefix.sh $name
