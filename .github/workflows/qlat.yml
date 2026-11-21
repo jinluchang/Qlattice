@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  # Print a native Python traceback on fatal signals (SIGSEGV/SIGABRT/SIGTRAP)
+  # instead of dying silently.  The Python-3.14 jobs currently hide the real
+  # error; see tmp/recon-findings.md.
+  PYTHONFAULTHANDLER: "1"
+
 jobs:
 
   build_nix_ubuntu:
@@ -144,6 +150,10 @@ jobs:
         ./scripts/qlat-docs.sh
         [ -f /home/runner/qlat-build/default/qlat-docs/share/doc/qlat/html/index.html ]
     - name: Testing pylib qlat
+      # Cap this step so a hung worker pool fails the step (and the
+      # failure-only debug steps at the end of the job run) instead of
+      # burning GitHub's 6 h job limit without producing any log.
+      timeout-minutes: 150
       run: |
         export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
@@ -164,7 +174,36 @@ jobs:
       run: |
         git diff
         ! git diff | grep '^[+-]CHECK: '
-
+    - name: "Debug: dump full test logs and Python/MPI environment"
+      # Failure-only: print the complete (untruncated) log of every failed or
+      # killed test plus the Python/MPI environment, then upload it as an
+      # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
+      # the real Python-3.14 exception (tmp/recon-findings.md).
+      if: failure()
+      run: |
+        # -e is on for these steps; keep the environment dump best-effort.
+        set +e
+        # shellcheck disable=SC1090
+        if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
+        echo "===== Python / MPI environment ====="
+        echo "python3: $(command -v python3 || true)"
+        python3 -VV || true
+        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
+        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
+        mpiexec --version || true
+        ulimit -c || true
+        ulimit -a || true
+        uname -a || true
+        echo "===== full logs of failed/incomplete tests ====="
+        bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
+    - name: "Debug: upload failure logs"
+      if: failure()
+      uses: actions/upload-artifact@v6
+      with:
+        name: qlat-debug-logs-build_qlat_ubuntu
+        path: ${{ runner.temp }}/qlat-debug/
+        if-no-files-found: ignore
+        retention-days: 14
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -207,16 +246,22 @@ jobs:
         type ninja
         ninja --version
     - name: Testing pylib qlat
+      # Cap this step so a hung worker pool fails the step (and the
+      # failure-only debug steps at the end of the job run) instead of
+      # burning GitHub's 6 h job limit without producing any log.
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py-cps.sh
     - name: Testing pylib qlat gpt
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
@@ -272,7 +317,36 @@ jobs:
     - name: Check error for Build more packages
       run: |
         for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
-
+    - name: "Debug: dump full test logs and Python/MPI environment"
+      # Failure-only: print the complete (untruncated) log of every failed or
+      # killed test plus the Python/MPI environment, then upload it as an
+      # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
+      # the real Python-3.14 exception (tmp/recon-findings.md).
+      if: failure()
+      run: |
+        # -e is on for these steps; keep the environment dump best-effort.
+        set +e
+        # shellcheck disable=SC1090
+        if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
+        echo "===== Python / MPI environment ====="
+        echo "python3: $(command -v python3 || true)"
+        python3 -VV || true
+        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
+        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
+        mpiexec --version || true
+        ulimit -c || true
+        ulimit -a || true
+        uname -a || true
+        echo "===== full logs of failed/incomplete tests ====="
+        bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
+    - name: "Debug: upload failure logs"
+      if: failure()
+      uses: actions/upload-artifact@v6
+      with:
+        name: qlat-debug-logs-build_qlat_gpt_ubuntu
+        path: ${{ runner.temp }}/qlat-debug/
+        if-no-files-found: ignore
+        retention-days: 14
   build_pip_ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -344,11 +418,16 @@ jobs:
         export prefix=~/qlat-build/default
         ./scripts/qlat-packages.sh
     - name: Testing pylib qlat
+      # Cap this step so a hung worker pool fails the step (and the
+      # failure-only debug steps at the end of the job run) instead of
+      # burning GitHub's 6 h job limit without producing any log.
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
         ./scripts/qlat-examples-py.sh
     - name: Testing pylib qlat cps
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
@@ -364,6 +443,7 @@ jobs:
         export prefix=~/qlat-build/default
         ./scripts/qlat-examples-cpp-grid.sh
     - name: Testing pylib qlat gpt
+      timeout-minutes: 150
       run: |
         export num_proc=2
         export prefix=~/qlat-build/default
@@ -380,7 +460,36 @@ jobs:
       run: |
         git diff
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
-
+    - name: "Debug: dump full test logs and Python/MPI environment"
+      # Failure-only: print the complete (untruncated) log of every failed or
+      # killed test plus the Python/MPI environment, then upload it as an
+      # artifact.  The Makefiles only show `tail -n 100` on failure, which hid
+      # the real Python-3.14 exception (tmp/recon-findings.md).
+      if: failure()
+      run: |
+        # -e is on for these steps; keep the environment dump best-effort.
+        set +e
+        # shellcheck disable=SC1090
+        if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
+        echo "===== Python / MPI environment ====="
+        echo "python3: $(command -v python3 || true)"
+        python3 -VV || true
+        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
+        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
+        mpiexec --version || true
+        ulimit -c || true
+        ulimit -a || true
+        uname -a || true
+        echo "===== full logs of failed/incomplete tests ====="
+        bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
+    - name: "Debug: upload failure logs"
+      if: failure()
+      uses: actions/upload-artifact@v6
+      with:
+        name: qlat-debug-logs-build_pip_ubuntu
+        path: ${{ runner.temp }}/qlat-debug/
+        if-no-files-found: ignore
+        retention-days: 14
   build_nix_mac_clang:
     runs-on: macos-latest
     steps:
@@ -391,25 +500,54 @@ jobs:
     - name: Check disk space
       run: df -h
     - name: Build qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
+      # --keep-failed keeps the failed build directory, including the full
+      # per-test logs of the failed example tests, for the debug step below.
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed
     - name: Check disk space
       run: df -h
     - name: Test qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed
     - name: Check disk space
       run: df -h
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 --keep-failed
     - name: Check disk space
       run: df -h
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 || echo "Failed to run test on Mac with Nix"
+      # Non-gating since e4b22e86 (2026-06-02): every qlat_gpt example traps
+      # with SIGTRAP (exit 133) in cgpt.copy_create_plan on the Nix
+      # aarch64-darwin build (see tmp/diag-mac.md).  Keep it non-gating, but
+      # record the failure in the environment so the debug steps below run.
+      run: |
+        if nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --keep-failed ; then
+            echo "QLAT_GPT_TESTS_FAILED=0" >> "$GITHUB_ENV"
+            echo "Nix GPT/CPS tests passed"
+        else
+            echo "QLAT_GPT_TESTS_FAILED=1" >> "$GITHUB_ENV"
+            echo "Failed to run test on Mac with Nix"
+        fi
     - name: Check disk space
       run: df -h
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --keep-failed
     - name: Check disk space
       run: df -h
+    - name: "Debug: dump macOS environment, preserved nix logs and SIGTRAP backtrace"
+      # Runs after a gating failure, or after the known-broken non-gating Nix
+      # GPT/CPS test step (which records QLAT_GPT_TESTS_FAILED instead of
+      # failing the job).  Dumps the macOS/toolchain info, the full per-test
+      # logs preserved by --keep-failed, and reruns the first failing GPT test
+      # with Grid --debug-signals and under lldb to get a SIGTRAP backtrace.
+      if: ${{ failure() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
+    - name: "Debug: upload macOS failure logs"
+      if: ${{ failure() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      uses: actions/upload-artifact@v6
+      with:
+        name: qlat-debug-logs-build_nix_mac_clang
+        path: ${{ runner.temp }}/qlat-debug/
+        if-no-files-found: ignore
+        retention-days: 14
 
   build_qlat_mac:
     runs-on: macos-latest
