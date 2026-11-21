@@ -1,0 +1,155 @@
+From: qlattice CPS darwin port (task-51)
+Subject: [PATCH] a2a: portable 128-byte aligned allocation (no <malloc.h>/memalign on macOS)
+
+Several a2a headers include <malloc.h> and call glibc memalign(128, ...).
+macOS has no <malloc.h> and no memalign(); provide a small compat
+header that keeps <malloc.h>/memalign on Linux and uses
+posix_memalign() elsewhere, then route the a2a call sites through it.
+
+diff --git a/cps_pp/include/alg/a2a/aligned_alloc_compat.h b/cps_pp/include/alg/a2a/aligned_alloc_compat.h
+new file mode 100644
+--- /dev/null
++++ b/cps_pp/include/alg/a2a/aligned_alloc_compat.h
+@@ -0,0 +1,21 @@
++#ifndef CPS_ALIGNED_ALLOC_COMPAT
++#define CPS_ALIGNED_ALLOC_COMPAT
++
++// CPS allocates SIMD-aligned buffers with glibc's memalign(128, ...).  macOS
++// has neither <malloc.h> nor memalign(), so use the POSIX posix_memalign()
++// there; Linux keeps the exact previous code path.
++#include <stddef.h>
++#if defined(__linux__) || defined(__GLIBC__)
++#include <malloc.h>
++inline void* cps_aligned_alloc(size_t alignment, size_t size) {
++  return memalign(alignment, size);
++}
++#else
++#include <stdlib.h>
++inline void* cps_aligned_alloc(size_t alignment, size_t size) {
++  void* p = NULL;
++  return posix_memalign(&p, alignment, size) == 0 ? p : NULL;
++}
++#endif
++
++#endif
+diff --git a/cps_pp/include/alg/a2a/CPSfield_policies.h b/cps_pp/include/alg/a2a/CPSfield_policies.h
+--- a/cps_pp/include/alg/a2a/CPSfield_policies.h
++++ b/cps_pp/include/alg/a2a/CPSfield_policies.h
+@@ -1,7 +1,7 @@
+ #ifndef CPS_FIELD_POLICIES
+ #define CPS_FIELD_POLICIES
+ 
+-#include <malloc.h>
++#include <alg/a2a/aligned_alloc_compat.h>
+ 
+ CPS_START_NAMESPACE
+ 
+@@ -21,7 +21,7 @@
+ class Aligned128AllocPolicy{
+  protected:
+   inline static void _alloc(void** p, const size_t byte_size){
+-    *p = memalign(128,byte_size);
++    *p = cps_aligned_alloc(128,byte_size);
+     //if(!UniqueID()) printf("Aligned128AllocPolicy alloc %p, size %f MB\n",*p, double(byte_size)/1024./1024.);
+   }
+   inline static void _free(void* p){
+@@ -72,7 +72,7 @@
+  public:
+   inline void allocField(){
+     if(*ptr == NULL)
+-      *ptr = memalign(128,bs);
++      *ptr = cps_aligned_alloc(128,bs);
+   }
+   inline void freeField(){
+     if(*ptr != NULL){
+@@ -476,7 +476,7 @@
+   template<typename Vtype, typename Stype>
+   static inline void SIMDunpack(std::vector<Stype*> &into, const Vtype *from, const int n = 1){
+     int nsimd = Vtype::Nsimd();
+-    typename Vtype::scalar_type* tmp = (typename Vtype::scalar_type*)memalign(128,nsimd*sizeof(typename Vtype::scalar_type));
++    typename Vtype::scalar_type* tmp = (typename Vtype::scalar_type*)cps_aligned_alloc(128,nsimd*sizeof(typename Vtype::scalar_type));
+     for(int idx=0;idx<n;idx++){ //offset of elements on site
+       vstore(*(from+idx),tmp);      
+       for(int s=0;s<nsimd;s++)
+diff --git a/cps_pp/include/alg/a2a/a2a_sources.h b/cps_pp/include/alg/a2a/a2a_sources.h
+--- a/cps_pp/include/alg/a2a/a2a_sources.h
++++ b/cps_pp/include/alg/a2a/a2a_sources.h
+@@ -1,5 +1,7 @@
+ #ifndef _A2A_SOURCES_H
+ #define _A2A_SOURCES_H
++
++#include <alg/a2a/aligned_alloc_compat.h>
+ 
+ CPS_START_NAMESPACE
+ 
+@@ -347,10 +349,10 @@
+   }
+ public:
+ 
+-  A2AflavorProjectedSource(): val000( (ComplexType*)memalign(128,sizeof(ComplexType)) ), SourceType(){}
++  A2AflavorProjectedSource(): val000( (ComplexType*)cps_aligned_alloc(128,sizeof(ComplexType)) ), SourceType(){}
+   ~A2AflavorProjectedSource(){ free(val000); }
+   
+-  A2AflavorProjectedSource(const A2AflavorProjectedSource &r): val000( (ComplexType*)memalign(128,sizeof(ComplexType)) ), sign(r.sign), SourceType(r){
++  A2AflavorProjectedSource(const A2AflavorProjectedSource &r): val000( (ComplexType*)cps_aligned_alloc(128,sizeof(ComplexType)) ), sign(r.sign), SourceType(r){
+     *val000 = *r.val000;
+   }
+   
+diff --git a/cps_pp/include/alg/a2a/CPSfield_impl.h b/cps_pp/include/alg/a2a/CPSfield_impl.h
+--- a/cps_pp/include/alg/a2a/CPSfield_impl.h
++++ b/cps_pp/include/alg/a2a/CPSfield_impl.h
+@@ -1,5 +1,7 @@
+ #ifndef CPS_FIELD_IMPL
+ #define CPS_FIELD_IMPL
++
++#include <alg/a2a/aligned_alloc_compat.h>
+ 
+ //Implementations of CPSfield.h
+ 
+@@ -509,7 +511,7 @@
+ 
+     //Poke the GFmatrix elements into SIMD vector objects
+     typedef typename mf_Complex::scalar_type stype;
+-    stype* buf = (stype*)memalign(128, nsimd*sizeof(stype));
++    stype* buf = (stype*)cps_aligned_alloc(128, nsimd*sizeof(stype));
+ 
+     mf_Complex gfmat[3][3];
+     for(int i=0;i<3;i++){
+@@ -524,7 +526,7 @@
+     free(buf);
+ 
+     //Do the matrix multiplication
+-    mf_Complex* tmp = (mf_Complex*)memalign(128, 3*sizeof(mf_Complex));
++    mf_Complex* tmp = (mf_Complex*)cps_aligned_alloc(128, 3*sizeof(mf_Complex));
+     mf_Complex* sc_base = field.site_ptr(x4d,f); 
+     for(int s=0;s<4;s++){
+       mf_Complex* s_base = sc_base + 3 * s;
+@@ -595,7 +597,7 @@
+     int nsimd = field.Nsimd();
+ 
+     typedef typename mf_Complex::scalar_type stype;
+-    stype* buf = (stype*)memalign(128, nsimd*sizeof(stype));
++    stype* buf = (stype*)cps_aligned_alloc(128, nsimd*sizeof(stype));
+ 
+     int lane_off[DimensionPolicy::EuclideanDimension];
+     int x_gbl_lane[DimensionPolicy::EuclideanDimension];
+diff --git a/cps_pp/include/alg/a2a/CPSfield_utils.h b/cps_pp/include/alg/a2a/CPSfield_utils.h
+--- a/cps_pp/include/alg/a2a/CPSfield_utils.h
++++ b/cps_pp/include/alg/a2a/CPSfield_utils.h
+@@ -1,5 +1,7 @@
+ #ifndef CPS_FIELD_UTILS_H
+ #define CPS_FIELD_UTILS_H
++
++#include <alg/a2a/aligned_alloc_compat.h>
+ 
+ CPS_START_NAMESPACE
+ 
+@@ -503,7 +505,7 @@
+ 
+   typedef typename mf_Complex::scalar_type scalar_type;
+   const int nthr = omp_get_max_threads();
+-  scalar_type* tmp_store_thr[nthr]; for(int i=0;i<nthr;i++) tmp_store_thr[i] = (scalar_type*)memalign(128,nsimd*sizeof(scalar_type));
++  scalar_type* tmp_store_thr[nthr]; for(int i=0;i<nthr;i++) tmp_store_thr[i] = (scalar_type*)cps_aligned_alloc(128,nsimd*sizeof(scalar_type));
+   
+ #pragma omp parallel for
+   for(int ofto=0;ofto<to.nfsites();ofto++){ //loop over outer site index

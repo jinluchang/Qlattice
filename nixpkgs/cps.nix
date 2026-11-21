@@ -33,6 +33,18 @@ in stdenv.mkDerivation rec {
     rev = version;
   };
 
+  # Darwin portability fixes for the pinned upstream CPS (shared with the
+  # scripts/cps.sh flow):
+  #   - only use Linux <sys/sysinfo.h>; portable printMem() fallback
+  #   - rename cps_pp/VERSION -> VERSION.txt (it shadows libc++ <version> on
+  #     case-insensitive APFS when cps_pp is on the include path)
+  #   - portable 128-byte aligned allocation (no <malloc.h>/memalign on macOS)
+  patches = [
+    ./patches/cps-darwin-sysinfo.patch
+    ./patches/cps-darwin-version-shadow.patch
+    ./patches/cps-darwin-memalign.patch
+  ];
+
   enableParallelBuilding = true;
 
   nativeBuildInputs = [

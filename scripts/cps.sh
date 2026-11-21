@@ -17,6 +17,16 @@ source qcore/set-prefix.sh $name
     mkdir -p "$prefix" || true
     time-run rsync -a --delete $distfiles/$name "$prefix"/
 
+    # CPS is not darwin-portable upstream; apply the same patches as
+    # nixpkgs/cps.nix before configuring/building.  The rsync above always
+    # starts from $distfiles/$name, so the patches apply fresh on every run;
+    # the dry-run guard tolerates a manually patched $distfiles checkout.
+    for cps_patch in "$wd"/nixpkgs/patches/cps-darwin-*.patch ; do
+        if patch -p1 -s --dry-run --directory "$prefix/$name" < "$cps_patch" ; then
+            patch -p1 -s --directory "$prefix/$name" < "$cps_patch"
+        fi
+    done
+
     export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
     # CPS is legacy C: gcc 15 turned some C diagnostics that used to be
     # warnings into errors by default in all C modes (e.g.

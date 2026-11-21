@@ -1,0 +1,54 @@
+From: qlattice CPS darwin port (task-51)
+Subject: [PATCH] rename cps_pp/VERSION to VERSION.txt (shadows libc++ <version> on case-insensitive filesystems)
+
+CPS in-source builds put the cps_pp source directory on the include
+path (-I${BUILDDIR}), and the repository ships a text file named
+VERSION there.  On case-insensitive filesystems (macOS APFS) libc++'s
+#include <version> resolves to that file and fails with 'expected
+unqualified-id'.  Rename the file to VERSION.txt and update the two
+places that source it (configure.ac and the checked-in generated
+configure).  Build outputs are unchanged on Linux (which is
+case-sensitive and does not include <version> from libstdc++).
+
+diff --git a/cps_pp/VERSION b/cps_pp/VERSION
+deleted file mode 100644
+--- a/cps_pp/VERSION
++++ /dev/null
+@@ -1,4 +0,0 @@
+-VERSION_MAJOR=5
+-VERSION_MINOR=3
+-VERSION_SUB=1
+-VERSION_STR=\"CPS_V${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUB}\"
+diff --git a/cps_pp/VERSION.txt b/cps_pp/VERSION.txt
+new file mode 100644
+--- /dev/null
++++ b/cps_pp/VERSION.txt
+@@ -0,0 +1,4 @@
++VERSION_MAJOR=5
++VERSION_MINOR=3
++VERSION_SUB=1
++VERSION_STR=\"CPS_V${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUB}\"
+diff --git a/cps_pp/configure.ac b/cps_pp/configure.ac
+--- a/cps_pp/configure.ac
++++ b/cps_pp/configure.ac
+@@ -617,7 +617,7 @@
+ dnl configuring version number
+ echo "`git log -n 1 --format=format:"#define GITHASH \\"%H:%d\\"%n" HEAD`" > $srcdir/include/version.h
+ #git log -n 1 --format=format:GITHASH=\\\"%H:%d\\\"%n\\\" HEAD > $srcdir/GITHASH
+-.  $srcdir/VERSION
++.  $srcdir/VERSION.txt
+ #.  $srcdir/GITHASH
+ echo CPS source: $srcdir
+ echo "CPS Version MAJOR: ${VERSION_MAJOR}"
+diff --git a/cps_pp/configure b/cps_pp/configure
+--- a/cps_pp/configure
++++ b/cps_pp/configure
+@@ -5995,7 +5995,7 @@
+ 
+ echo "`git log -n 1 --format=format:"#define GITHASH \\"%H:%d\\"%n" HEAD`" > $srcdir/include/version.h
+ #git log -n 1 --format=format:GITHASH=\\\"%H:%d\\\"%n\\\" HEAD > $srcdir/GITHASH
+-.  $srcdir/VERSION
++.  $srcdir/VERSION.txt
+ #.  $srcdir/GITHASH
+ echo CPS source: $srcdir
+ echo "CPS Version MAJOR: ${VERSION_MAJOR}"

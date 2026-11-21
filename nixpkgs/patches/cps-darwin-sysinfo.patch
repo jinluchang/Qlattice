@@ -1,0 +1,44 @@
+From: qlattice CPS darwin port (task-51)
+Subject: [PATCH] a2a/utils.h: only use Linux sys/sysinfo.h, add portable printMem fallback
+
+CPS's printMem() unconditionally includes the Linux-only
+<sys/sysinfo.h> and calls sysinfo() in its non-BGQ branch, which
+breaks the macOS build (no sys/sysinfo.h, no sysinfo()).  Guard the
+include and the sysinfo() implementation with __linux__, and give
+other platforms an informational printMem() that reports the data
+as unavailable.  Linux behaviour is unchanged.
+
+diff --git a/cps_pp/include/alg/a2a/utils.h b/cps_pp/include/alg/a2a/utils.h
+--- a/cps_pp/include/alg/a2a/utils.h
++++ b/cps_pp/include/alg/a2a/utils.h
+@@ -317,7 +317,7 @@
+ CPS_END_NAMESPACE
+ #ifdef ARCH_BGQ
+ #include <spi/include/kernel/memory.h>
+-#else
++#elif defined(__linux__)
+ #include <sys/sysinfo.h>
+ #endif
+ CPS_START_NAMESPACE
+@@ -344,7 +344,7 @@
+     printf("printMem: Allocated stack: %.2f MB, avail. stack: %.2f MB\n", (double)stack/(1024*1024), (double)stackavail/(1024*1024));
+     printf("printMem: Memory: shared: %.2f MB, persist: %.2f MB, guard: %.2f MB, mmap: %.2f MB\n", (double)shared/(1024*1024), (double)persist/(1024*1024), (double)guard/(1024*1024), (double)mmap/(1024*1024));
+   }
+-#else
++#elif defined(__linux__)
+ #warning "printMem using NOARCH"
+   /* unsigned long totalram;  /\* Total usable main memory size *\/ */
+   /* unsigned long freeram;   /\* Available memory size *\/ */
+@@ -396,6 +396,12 @@
+   if(!UniqueID()) malloc_stats();
+ # endif
+   
++#else
++  // No portable memory query on this platform; keep the informational
++  // contract of printMem() by reporting that the numbers are unavailable.
++  if(!UniqueID()){
++    printf("printMem: Memory: unavailable (portable build)\n");
++  }
+ #endif
+ }
+ 
