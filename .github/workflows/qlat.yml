@@ -5,6 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 env:
   # Print a native Python traceback on fatal signals (SIGSEGV/SIGABRT/SIGTRAP)
