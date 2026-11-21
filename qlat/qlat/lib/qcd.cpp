@@ -342,8 +342,12 @@ void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf)
 
 // ------------------------------------
 
+// One shared, library-compiled instance of the unitarization math: it is used
+// by the non-template overload below and by load_gauge_field<RealD> (and any
+// other caller), so results compared bit-for-bit always come from the same
+// compiled code.  See the declaration in qcd.h for the full story.
 template <class T>
-static void unitarize(Field<ColorMatrixT<T>>& gf)
+void unitarize(Field<ColorMatrixT<T>>& gf)
 {
   TIMER("unitarize(gf)");
   qacc_for(index, gf.geo().local_volume(), {

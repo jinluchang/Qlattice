@@ -26,6 +26,19 @@ RealD gf_local_avg_plaq(const GaugeField& gf, const Coordinate& block_site);
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
 };
 
+// Rebuild every ColorMatrix link into an SU(3) matrix with the Gram-Schmidt
+// unitarization of matrix-hmc.h.
+//
+// This (library compiled) function is the single shared instance of the
+// unitarization math: anything whose result is compared bit-for-bit against
+// `unitarize(Field<ColorMatrix>&)` (e.g. the 2-row CPS gauge-field round-trip
+// in examples-cpp/dist-io) must call it instead of inlining the per-element
+// `unitarize(ColorMatrix&)` from matrix-hmc.h.  Two independently compiled
+// copies of the inline routine can contract FP operations differently when
+// FMA is enabled (-march=x86-64-v3) and then differ in the last bits.
+template <class T>
+void unitarize(Field<ColorMatrixT<T>>& gf);
+
 void unitarize(Field<ColorMatrix>& gf);
 
 void make_tr_less_anti_herm_matrix(Field<ColorMatrix>& fc);
@@ -245,11 +258,17 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
         v[m](2, 0) = vt[m * n_complex_su3 + 6];
         v[m](2, 1) = vt[m * n_complex_su3 + 7];
         v[m](2, 2) = vt[m * n_complex_su3 + 8];
-      } else {
-        unitarize(v[m]);
       }
     }
   });
+  if (not is_three_row) {
+    // Rebuild the third row with the shared library-compiled unitarize() (the
+    // same symbol the callers use); the per-site inline copy from
+    // matrix-hmc.h must not be used here because FMA contraction can make the
+    // two compilations differ in the last bits and break the bit-exact 2-row
+    // CPS round-trip (see examples-cpp/dist-io).
+    unitarize(gf);
+  }
   timer.flops += file_size;
   return file_size;
 }

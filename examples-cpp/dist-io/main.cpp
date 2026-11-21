@@ -234,6 +234,11 @@ inline void test_io()
   displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(crc == field_dist_crc32(gf));
+  // The CPS 2-row format stores only two rows per link, so load_gauge_field
+  // rebuilds the third row with the same library-compiled unitarize() that
+  // produced `ugf` above.  Keep it that way (and keep the exact CRC asserts):
+  // inlining a separate copy of the Gram-Schmidt math here could differ in the
+  // last bits under FMA contraction (-march=x86-64-v3).
   save_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   set_unit(gf);
   load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
