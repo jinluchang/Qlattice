@@ -1,30 +1,45 @@
 #include <qlat-utils/vector.h>
 
+#include <cstdint>
+
 namespace qlat
 {  //
 
-static void* alloc_mem_aligned(const Long size, const MemType mem_type)
+static void* alloc_mem_aligned(const Long size, const MemType mem_type,
+                               const Long min_alignment)
+// Allocate `size` bytes aligned to at least `min_alignment` bytes (usually
+// alignof(M) of the element type).  The configured alignment
+// (get_alignment()) is raised to `min_alignment` when it is smaller, so an
+// env override (q_alignment / q_alignment_comm) can never under-align an
+// over-aligned element type.  std::aligned_alloc() also requires the size to
+// be a multiple of the alignment, so the size is rounded up.
 {
   void* ptr = NULL;
 #if defined QLAT_NO_ALIGNED_ALLOC
+  (void)min_alignment;
   ptr = malloc(size);
 #else
-  Long alignment = get_alignment(mem_type);
-  ptr = std::aligned_alloc(alignment, size);
-  while (ptr == NULL) {
-    alignment /= 2;
-    if (alignment == 0) {
-      ptr = malloc(size);
+  Long alignment = get_effective_alignment(mem_type, min_alignment);
+  while (true) {
+    const Long alloc_size = ((size + alignment - 1) / alignment) * alignment;
+    ptr = std::aligned_alloc(alignment, alloc_size);
+    if (ptr != NULL or alignment <= min_alignment) {
       break;
-    } else {
-      ptr = std::aligned_alloc(alignment, size);
     }
+    alignment /= 2;
+    if (alignment < min_alignment) {
+      alignment = min_alignment;
+    }
+  }
+  if (ptr != NULL) {
+    qassert(((uintptr_t)ptr) % min_alignment == 0);
   }
 #endif
   return ptr;
 }
 
-void* alloc_mem_alloc(const Long size, const MemType mem_type)
+static void* alloc_mem_alloc_impl(const Long size, const MemType mem_type,
+                                  const Long min_alignment)
 {
   TIMER_FLOPS("alloc_mem_alloc");
   timer.flops += size;
@@ -39,7 +54,7 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   if (eff_mem_type == MemType::Cpu) {
     TIMER_FLOPS("alloc_mem_alloc(MemType::Cpu)");
     timer.flops += size;
-    ptr = alloc_mem_aligned(size, mem_type);
+    ptr = alloc_mem_aligned(size, mem_type, min_alignment);
     qassert(ptr != NULL);
     set_mem(ptr, 0, size, mem_type);
   } else if (eff_mem_type == MemType::Acc) {
@@ -76,12 +91,20 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
     qassert(false);
   }
 #else
-  ptr = alloc_mem_aligned(size, mem_type);
+  ptr = alloc_mem_aligned(size, mem_type, min_alignment);
   qassert_info(ptr != NULL,
                { printf("alloc_mem_alloc: %lX %ld\n", (Long)ptr, size); });
   set_mem(ptr, 0, size, mem_type);
 #endif
+  if (ptr != NULL) {
+    qassert(((uintptr_t)ptr) % min_alignment == 0);
+  }
   return ptr;
+}
+
+void* alloc_mem_alloc(const Long size, const MemType mem_type)
+{
+  return alloc_mem_alloc_impl(size, mem_type, 1);
 }
 
 void free_mem_free(void* ptr, const Long size, const MemType mem_type)
@@ -137,32 +160,38 @@ void MemCache::init(const MemType mem_type_, const Long mem_cache_max_size_)
   mem_cache_size = 0;
 }
 
-void MemCache::add(void* ptr, const Long size)
+void MemCache::add(void* ptr, const Long size, const Long alignment)
 {
   qassert(size > 0);
   mem_cache_size += size;
   static MemoryStats& ms = get_mem_stats();
   ms.cache[static_cast<Int>(mem_type)] += size;
-  std::pair<Long, void*> p(size, ptr);
-  db.insert(p);
+  db.insert(std::pair<Long, void*>(size, ptr));
+  db_alignment[ptr] = alignment;
   if (mem_cache_size > mem_cache_max_size) {
     gc();
   }
 }
 
-void* MemCache::del(const Long size)
+void* MemCache::del(const Long size, const Long min_alignment)
 {
-  auto iter = db.find(size);
-  if (iter == db.end()) {
-    return NULL;
-  } else {
+  const auto range = db.equal_range(size);
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    void* ptr = iter->second;
+    const auto alignment_iter = db_alignment.find(ptr);
+    const Long alignment =
+        (alignment_iter == db_alignment.end()) ? 1 : alignment_iter->second;
+    if (alignment < min_alignment) {
+      continue;
+    }
     mem_cache_size -= size;
     static MemoryStats& ms = get_mem_stats();
     ms.cache[static_cast<Int>(mem_type)] -= size;
-    void* ptr = iter->second;
     db.erase(iter);
+    db_alignment.erase(ptr);
     return ptr;
   }
+  return NULL;
 }
 
 void MemCache::gc()
@@ -183,6 +212,7 @@ void MemCache::gc()
   }
   qassert(mem_cache_size == 0);
   db.clear();
+  db_alignment.clear();
 }
 
 std::vector<MemCache> mk_mem_cache_vec()
@@ -199,6 +229,12 @@ std::vector<MemCache> mk_mem_cache_vec()
 
 void* alloc_mem(const Long min_size, const MemType mem_type)
 {
+  return alloc_mem(min_size, mem_type, 1);
+}
+
+void* alloc_mem(const Long min_size, const MemType mem_type,
+                const Long min_alignment)
+{
   if (min_size <= 0) {
     return NULL;
   }
@@ -207,7 +243,7 @@ void* alloc_mem(const Long min_size, const MemType mem_type)
   const Long chunk_size = get_mem_chunk_size(mem_type);
   const Long size = get_chunked_mem_size(chunk_size, min_size);
   MemCache& cache = get_mem_cache(mem_type);
-  void* ptr = cache.del(size);
+  void* ptr = cache.del(size, min_alignment);
   if (NULL != ptr) {
     return ptr;
   }
@@ -229,19 +265,26 @@ void* alloc_mem(const Long min_size, const MemType mem_type)
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
     void* ptr = NULL;
-    ptr = alloc_mem_alloc(size, mem_type);
+    ptr = alloc_mem_alloc_impl(size, mem_type, min_alignment);
+    qassert(ptr == NULL or ((uintptr_t)ptr) % min_alignment == 0);
     return ptr;
   }
 }
 
 void free_mem(void* ptr, const Long min_size, const MemType mem_type)
 {
+  free_mem(ptr, min_size, mem_type, 1);
+}
+
+void free_mem(void* ptr, const Long min_size, const MemType mem_type,
+              const Long min_alignment)
+{
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
   const Long chunk_size = get_mem_chunk_size(mem_type);
   const Long size = get_chunked_mem_size(chunk_size, min_size);
   MemCache& cache = get_mem_cache(mem_type);
-  cache.add(ptr, size);
+  cache.add(ptr, size, min_alignment);
 }
 
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,

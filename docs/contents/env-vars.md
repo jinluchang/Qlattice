@@ -54,6 +54,22 @@
 
   Default is `true`.
 
+- `q_alignment`
+
+  Alignment in bytes used for the `qlat::vector` memory buffers (and therefore for the data of `Field`, `SelectedField`, ...). Must be a nonzero power of two.
+
+  Default is `256`.
+
+  A value below the element type's `alignof` is raised to it, so e.g. `q_alignment=16` cannot under-align `Field<WilsonMatrix>` (whose elements are 256-byte aligned); lowering it is only useful to shrink the padding for weakly aligned payloads. The allocation size is rounded up to a multiple of the applied alignment (required by `std::aligned_alloc`).
+
+- `q_alignment_comm`
+
+  Same as `q_alignment`, but for `MemType::Comm` (MPI send/receive buffers).
+
+  Default is the value of `q_alignment` (`256`).
+
+  In `QLAT_USE_ACC` builds the related knobs `q_alignment_cpu`, `q_alignment_acc`, `q_alignment_uvm` and `q_alignment_comm_acc` are also available, each defaulting to `q_alignment`.
+
 - `q_num_threads`
 
   Number of OpenMP threads (will be overrided by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.

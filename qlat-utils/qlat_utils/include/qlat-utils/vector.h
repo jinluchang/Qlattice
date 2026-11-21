@@ -72,6 +72,24 @@ API inline Long& get_alignment(const MemType mem_type)
 #endif
 }
 
+API inline Long get_effective_alignment(const MemType mem_type,
+                                        const Long min_alignment)
+// Alignment actually used for an allocation: the configured alignment
+// (get_alignment()) raised to at least min_alignment (usually alignof(M) of
+// the element type), so no env setting can under-align over-aligned elements.
+// Both values must be nonzero powers of two; min_alignment divides the result.
+{
+  qassert(min_alignment > 0);
+  qassert((min_alignment & (min_alignment - 1)) == 0);
+  const Long alignment = get_alignment(mem_type);
+  qassert(alignment > 0);
+  qassert((alignment & (alignment - 1)) == 0);
+  if (alignment < min_alignment) {
+    return min_alignment;
+  }
+  return alignment;
+}
+
 API inline Long& get_mem_chunk_size(const MemType mem_type)
 // qlat parameter
 //
@@ -284,6 +302,10 @@ struct API MemCache {
   Long mem_cache_max_size;
   Long mem_cache_size;
   std::unordered_multimap<Long, void*> db;
+  // Conservative lower bound of the alignment of each cached block, so a
+  // block allocated for a weakly aligned type is never reused for an
+  // over-aligned element type.
+  std::unordered_map<void*, Long> db_alignment;
   //
   MemCache(const MemType mem_type_ = get_default_mem_type(),
            const Long mem_cache_max_size_ = -1)
@@ -294,8 +316,8 @@ struct API MemCache {
   //
   void init(const MemType mem_type_ = get_default_mem_type(),
             const Long mem_cache_max_size_ = -1);
-  void add(void* ptr, const Long size);
-  void* del(const Long size);
+  void add(void* ptr, const Long size, const Long alignment = 1);
+  void* del(const Long size, const Long min_alignment = 1);
   void gc();
 };
 
@@ -310,7 +332,16 @@ API inline MemCache& get_mem_cache(
 
 void* alloc_mem(const Long min_size, const MemType mem_type);
 
+// Same, but guarantee that the returned memory is aligned to at least
+// min_alignment bytes (normally alignof(M) of the element type); the
+// configured q_alignment* value is raised to it when it is smaller.
+void* alloc_mem(const Long min_size, const MemType mem_type,
+                const Long min_alignment);
+
 void free_mem(void* ptr, const Long min_size, const MemType mem_type);
+
+void free_mem(void* ptr, const Long min_size, const MemType mem_type,
+              const Long min_alignment);
 
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
               const MemType mem_type_src, const Long size);
@@ -406,7 +437,7 @@ struct API vector {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, v.n * sizeof(M), mem_type);
+      free_mem(v.p, v.n * sizeof(M), mem_type, alignof(M));
     }
     v = Vector<M>();
     qassert(v.p == NULL);
@@ -474,7 +505,7 @@ struct API vector {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M), mem_type_);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type_, alignof(M));
       v.n = size;
       mem_type = mem_type_;
       return;
@@ -724,7 +755,7 @@ struct API box {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, sizeof(M), mem_type);
+      free_mem(v.p, sizeof(M), mem_type, alignof(M));
     }
     v = Handle<M>();
     qassert(v.p == NULL);
@@ -781,7 +812,7 @@ struct API box {
   {
     qassert(not is_copy);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(sizeof(M), mem_type);
+      v.p = (M*)alloc_mem(sizeof(M), mem_type, alignof(M));
     }
   }
   //
