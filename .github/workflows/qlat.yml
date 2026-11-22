@@ -555,25 +555,49 @@ jobs:
         nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --keep-failed 2>&1 | tee "$log"
     - name: Check disk space
       run: df -h
-    - name: "Debug: dump macOS environment, preserved nix logs and SIGTRAP backtrace"
-      # Runs after a gating failure, or after the known-broken non-gating Nix
-      # GPT/CPS test step (which records QLAT_GPT_TESTS_FAILED instead of
-      # failing the job).  Dumps the macOS/toolchain info, the full per-test
-      # logs preserved by --keep-failed (the kept dir is under the nix
-      # build-dir setting, located via the teed nix-build step logs), the macOS
-      # crash reports, and reruns the first failing GPT test with Grid
-      # --debug-signals and under lldb (real Mach-O python, SIGTRAP handled by
-      # lldb) to get a SIGTRAP backtrace.
+    - name: "Debug: collect macOS environment and preserved nix logs"
+      # Cheap, bounded collection that must run on ANY failure/cancel: macOS /
+      # toolchain info, the teed nix-build step logs, the full per-test logs
+      # preserved by --keep-failed (the kept dir is under the nix build-dir
+      # setting, located via the teed logs) with their `nix-store -l` output,
+      # and the macOS crash reports.  The heavy lldb / --debug-signals repro is
+      # a separate gated step below, and this artifact is uploaded before it so
+      # a cancellation during that step cannot lose the collected logs (the run
+      # 44963612100/44964283050 cancellation behaviour).
       if: ${{ failure() || cancelled() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      timeout-minutes: 8
+      env:
+        CI_DEBUG_LIGHT: '1'
       run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload macOS failure logs"
+      # Uploaded immediately after the cheap collection (i.e. before the heavy
+      # repro) so the artifact lands even if the heavy step is killed by a
+      # cancel/teardown.
       if: ${{ failure() || cancelled() || env.QLAT_GPT_TESTS_FAILED == '1' }}
+      timeout-minutes: 10
       uses: actions/upload-artifact@v6
       with:
         name: qlat-debug-logs-build_nix_mac_clang
         path: ${{ runner.temp }}/qlat-debug/
         if-no-files-found: ignore
         retention-days: 14
+    - name: "Debug: rerun GPT test with Grid --debug-signals and lldb"
+      # Only when the non-gating Nix GPT/CPS test step actually ran and failed
+      # (it records QLAT_GPT_TESTS_FAILED), i.e. only when there is a SIGTRAP
+      # to reproduce.  A plain cancellation/failure before the tests has
+      # nothing to rerun, so it keeps the cheap collection only.
+      #
+      # `!cancelled()` is deliberate: a cancelled job must never reach this
+      # step, because it runs `nix-build ... -A pkgs-clang-ucxless.qlat-env`
+      # before the reruns, and a cancelled/aborted derivations must not be
+      # rebuilt by the debug path.  When this step does run (tests failed in a
+      # non-cancelled job), the environment was already built by the preceding
+      # gating "Build qlat with GPT and CPS" step, so that nix-build is a pure
+      # store lookup.  The reruns are bounded (600 s lldb, 900 s mpiexec) and
+      # the step as a whole too.
+      if: ${{ !cancelled() && env.QLAT_GPT_TESTS_FAILED == '1' }}
+      timeout-minutes: 25
+      run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
 
   build_qlat_mac:
     runs-on: macos-latest

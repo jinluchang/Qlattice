@@ -4,6 +4,21 @@
 #
 # Usage: scripts/ci-debug-mac-nix-gpt.sh <out-dir> [test-name]
 #
+# Set CI_DEBUG_LIGHT=1 for the cheap collection only: steps 1-2 above plus the
+# kept-build-dir / nix-store-log / crash-report collection, without the nix env
+# build and the two reruns (3-4).  The workflow uses that mode for the
+# cancel/failure artifact so a cancelled job does not spend 5-25 min in lldb;
+# the heavy repro runs as a separate, gated step after the artifact upload.
+#
+# The light mode is deliberately build-free: it only reads files under
+# $RUNNER_TEMP and queries nix (`nix config show`, `nix-store -l`, which
+# fetches an already-recorded build log and never builds) -- so cancelling a
+# job can never trigger additional nix compilation.  The heavy nix-build in
+# step 3 is reachable only from the non-cancelled "tests actually failed"
+# step, where the environment it names was already built by the preceding
+# gating build step (the nix-build is a pure store lookup there, no compiler
+# is started for a cancelled/failed derivation).
+#
 # Must run from the repository root on a macOS runner with nix installed.  It
 # collects the information a failed run cannot show:
 #
@@ -213,7 +228,11 @@ process_kept_build_dir() {
     fi
     if [ -n "$drv" ] ; then
         local nix_log="$out/nix-build-log-$(basename "$drv").txt"
-        if nix-store -l "$drv" > "$nix_log" 2>/dev/null || nix log "$drv" > "$nix_log" 2>/dev/null ; then
+        # `nix-store -l` / `--print-log` only reads the log nix already recorded
+        # for this (failed) derivation; it never builds or retries it.  (The
+        # newer `nix log` command is not used here on purpose: the debug path
+        # must never be able to start a nix build after a cancellation.)
+        if nix-store -l "$drv" > "$nix_log" 2>/dev/null ; then
             echo "--- failing command lines from '$drv' ---"
             grep -a -E 'time \(|mpiexec|lldb|Trace/BPT|SIGTRAP' "$nix_log" | head -n 40 || true
             echo "(full nix build log: $nix_log)"
@@ -387,6 +406,21 @@ mpiexec --version 2>&1 || true
 copy_nix_build_step_logs
 collect_kept_build_dirs
 collect_crash_reports
+
+debug_light="${CI_DEBUG_LIGHT:-0}"
+{
+    echo "collection mode: $([ "$debug_light" = "1" ] && echo light || echo full)"
+    echo "QLAT_GPT_TESTS_FAILED=${QLAT_GPT_TESTS_FAILED:-<unset>}"
+    echo "heavy nix env build / --debug-signals rerun / lldb repro: $([ "$debug_light" = "1" ] && echo skipped-light-mode || echo enabled)"
+} > "$out/debug-mode.txt" 2>/dev/null || true
+
+if [ "$debug_light" = "1" ] ; then
+    echo
+    echo "==================== light mode: skipping nix env build, --debug-signals rerun and lldb repro ===================="
+    echo "no nix build was triggered (light mode only reads the recorded logs and kept build dirs)"
+    echo "collected environment, nix build step logs, kept build dirs, nix-store logs and crash reports are under: $out"
+    exit 0
+fi
 
 echo
 echo "==================== nix GPT test environment ===================="
