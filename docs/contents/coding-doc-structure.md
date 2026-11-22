@@ -62,7 +62,7 @@ Documentation: ``docs/package/module_name.md``
 **Template for `.pyx` files (after the cython directive line):**
 
 ```python
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``package.module_name``
@@ -98,7 +98,7 @@ Documentation: ``docs/package/module_name.md``
 **Template for `.pyx.in` files (after the cython directive and Mako block):**
 
 ```python
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 {{py:
 # Mako template definitions ...

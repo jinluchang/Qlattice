@@ -283,8 +283,36 @@ of hand-rolling jackknife code. Collective MPI variants are
 
 ### Directives (top of .pyx files)
 ```python
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 ```
+Do **not** add the old implicit string-conversion options
+(`c_string_type=unicode`, `c_string_encoding=utf8`) back: conversions are
+explicit (below), so UTF-8 decode/encode is visible and deterministic at each
+boundary, and those options trigger the Cython 3.3 PEP 263 ambiguity warning
+on the first two lines of every module.
+
+### Explicit string conversion
+Python-visible text APIs take and return `str` (always UTF-8); genuinely
+binary APIs take and return `bytes`. Do not rely on implicit C/C++ string
+conversion — convert explicitly at the boundary with the inline helpers in
+`qlat-utils/qlat_utils/string_utils.pxd` (`as_bytes`, `as_str_std`,
+`as_str_c`; available unprefixed via `from qlat_utils.all cimport *`, or as
+`cc.as_bytes(...)` in modules that do `cimport everything as cc`):
+
+- **Text return**: `as_str_std(std_string_expr)` or `as_str_c(char_ptr_expr)`
+  (or `.decode('utf-8')`); e.g. `return as_str_std(cc.show(x))`.
+- **Text/binary argument**: `as_bytes(pyobj)` at the C++ call; drop the C
+  type from the Python signature, and keep a bytes local when a `char*` is
+  needed (`cdef bytes b = as_bytes(fn)` — casting a temporary is rejected).
+- **`std::vector<std::string>` ↔ Python list**: decode with
+  `[as_str_std(v) for v in vec]`, encode with
+  `[as_bytes(x) for x in lst]`; the Python-level API is a `list[str]`.
+- **Binary data**: keep `bytes` end-to-end — `content_bytes`, `qcat_bytes`,
+  `read_data_bytes`, `save_str()`/`load_str()`, the bytes branches of
+  `write`/`qtouch`/`qappend` and the buffer protocol are never decoded.
+- **Internal round-trips**: when a C++ string is passed to a Python-level
+  method, decode at the call site (`self.save_node(as_str_std(path))`) so
+  callees keep receiving `str`.
 
 ### Conventions
 - `cimport` for C++ declarations, `import` for Python
