@@ -1,0 +1,39 @@
+From: qlattice CPS darwin port (task-57)
+Subject: [PATCH] Makefile.rules: skip dependency generation when a directory has no direct sources
+
+CPS's non-makedepend dependency rule (HAVE_MAKEDEPEND is hardcoded "no" in
+configure.ac) runs
+
+  $(CXX) -M $(libcps_CXXFLAGS) $(notdir $(CSRC)) $(notdir $(CCSRC)) | sed ...
+
+in every directory reached by `make depend`.  Directories that only contain
+subdirectories (e.g. cps_pp/src/comms/noarch/, cps_pp/src/comms/) expand that
+source list to nothing, so clang/macOS prints "clang++: error: no input files".
+Makefile_depend is created empty just above, so no dependency information is
+lost by skipping the compile call; this removes the spurious error and the
+reliance on the sed pipeline masking the compiler exit status.  Linux builds
+are unchanged otherwise (the same empty-list invocations were made there too).
+
+--- a/cps_pp/Makefile.rules.in
++++ b/cps_pp/Makefile.rules.in
+@@ -125,12 +125,20 @@
+ 
+ depend: recurse
+ 	echo > Makefile_depend
++ifeq ($(strip $(notdir $(CSRC)) $(notdir $(CCSRC))),)
++# Directories that only hold subdirectories (e.g. src/comms/noarch) have no
++# sources here; running the compiler with an empty file list fails with
++# "error: no input files" on clang/macOS.  Makefile_depend was already
++# created empty above, so there is nothing left to do.
++	@echo "CPS: no sources in $(SRCDIR2); skipping dependency generation"
++else
+ ifeq ($(HAVE_MAKEDEPEND),yes)
+ 	cd $(SRCDIR2) ;makedepend -f$(BUILDDIR2)/Makefile_depend $(INCLUDE_FLAGS) $(DFLAGS) $(notdir $(CSRC)) $(notdir $(CCSRC))
+ else
+ 	cd $(SRCDIR2) ; \
+ 	$(CXX) -M $(libcps_CXXFLAGS) $(notdir $(CSRC)) $(notdir $(CCSRC)) \
+ 	| sed -e 's/:.*\.[cC]/\:/g' > $(PWD)/Makefile_depend
++endif
+ endif
+ 
+ clean: recurse

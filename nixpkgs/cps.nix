@@ -43,6 +43,7 @@ in stdenv.mkDerivation rec {
     ./patches/cps-darwin-sysinfo.patch
     ./patches/cps-darwin-version-shadow.patch
     ./patches/cps-darwin-memalign.patch
+    ./patches/cps-darwin-macdeps.patch
   ];
 
   enableParallelBuilding = true;
