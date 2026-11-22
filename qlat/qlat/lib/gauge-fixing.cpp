@@ -149,6 +149,10 @@ RealD gf_gauge_unitarity_error(const GaugeField& gf)
         for (Int j = 0; j < 3; ++j) {
           const ComplexD delta =
               m(i, j) - (i == j ? ComplexD(1.0) : ComplexD(0.0));
+          // std::abs(ComplexD) is a host-only std::complex overload that is not
+          // device callable inside this qacc_for CUDA lambda;
+          // std::sqrt(qnorm(delta)) is the device-safe equivalent (qnorm is the
+          // squared magnitude under QLAT_USE_ACC).
           err = std::max(err, std::sqrt(qnorm(delta)));
         }
       }
