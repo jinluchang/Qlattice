@@ -186,15 +186,8 @@ jobs:
         set +e
         # shellcheck disable=SC1090
         if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
-        echo "===== Python / MPI environment ====="
-        echo "python3: $(command -v python3 || true)"
-        python3 -VV || true
-        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
-        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
-        mpiexec --version || true
-        ulimit -c || true
-        ulimit -a || true
-        uname -a || true
+        # Shared context/toolchain dump, then the failed-test log collector.
+        bash scripts/ci-debug-dump-env.sh build_qlat_ubuntu
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
@@ -329,15 +322,8 @@ jobs:
         set +e
         # shellcheck disable=SC1090
         if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
-        echo "===== Python / MPI environment ====="
-        echo "python3: $(command -v python3 || true)"
-        python3 -VV || true
-        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
-        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
-        mpiexec --version || true
-        ulimit -c || true
-        ulimit -a || true
-        uname -a || true
+        # Shared context/toolchain dump, then the failed-test log collector.
+        bash scripts/ci-debug-dump-env.sh build_qlat_gpt_ubuntu
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
@@ -472,15 +458,8 @@ jobs:
         set +e
         # shellcheck disable=SC1090
         if [ -f ~/qlat-build/default/setenv.sh ] ; then source ~/qlat-build/default/setenv.sh ; fi
-        echo "===== Python / MPI environment ====="
-        echo "python3: $(command -v python3 || true)"
-        python3 -VV || true
-        python3 -c "import sys ; print(sys.version) ; print(sys.path)" || true
-        python3 -c "import multiprocessing as mp ; print('mp.get_start_method() =', mp.get_start_method()) ; print('mp.get_all_start_methods() =', mp.get_all_start_methods())" || true
-        mpiexec --version || true
-        ulimit -c || true
-        ulimit -a || true
-        uname -a || true
+        # Shared context/toolchain dump, then the failed-test log collector.
+        bash scripts/ci-debug-dump-env.sh build_pip_ubuntu
         echo "===== full logs of failed/incomplete tests ====="
         bash scripts/ci-debug-collect-logs.sh "$HOME/qlat-build/default" "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload failure logs"
@@ -568,7 +547,10 @@ jobs:
       timeout-minutes: 8
       env:
         CI_DEBUG_LIGHT: '1'
-      run: bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
+      run: |
+        set +e
+        bash scripts/ci-debug-dump-env.sh build_nix_mac_clang
+        bash scripts/ci-debug-mac-nix-gpt.sh "$RUNNER_TEMP/qlat-debug"
     - name: "Debug: upload macOS failure logs"
       # Uploaded immediately after the cheap collection (i.e. before the heavy
       # repro) so the artifact lands even if the heavy step is killed by a
