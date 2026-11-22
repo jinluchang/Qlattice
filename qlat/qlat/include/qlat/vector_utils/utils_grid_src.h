@@ -13,6 +13,8 @@
 #include "utils_gammas.h"
 #include "utils_momentum.h"
 
+#include <cinttypes>
+
 namespace qlat
 {
 
@@ -879,7 +881,7 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise,
   }
   //
   if (printv >= 1) {
-    printf("rank %d, number of non-zeros %ld \n", qlat::get_id_node(), total);
+    printf("rank %d, number of non-zeros %" PRId64 " \n", qlat::get_id_node(), total);
   }
 }
 

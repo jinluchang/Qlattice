@@ -5,6 +5,8 @@
 #include <qlat-utils/qassert.h>
 #include <qlat-utils/timer.h>
 
+#include <cinttypes>
+
 namespace qlat
 {  //
 
@@ -134,7 +136,7 @@ struct API Vector {
   qacc const M& operator[](const Long i) const
   {
     qassert_info(0 <= i && i < n,
-                 { std::printf("Vector::operator[]: i=%ld n=%ld", i, n); });
+                 { std::printf("Vector::operator[]: i=%" PRId64 " n=%" PRId64, i, n); });
     return p[i];
   }
   qacc M& operator[](const Long i)

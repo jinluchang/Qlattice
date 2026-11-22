@@ -3,6 +3,8 @@
 
 #include "qlat-utils/timer.h"
 
+#include <cinttypes>
+
 namespace qlat
 {
 
@@ -58,7 +60,7 @@ Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
       char errstr[MPI_MAX_ERROR_STRING];
       int errlen = 0;
       MPI_Error_string(ret, errstr, &errlen);
-      printf("mpi_isend: MPI_Isend failed: ret=%d '%s' dest=%d count=%ld\n",
+      printf("mpi_isend: MPI_Isend failed: ret=%d '%s' dest=%d count=%" PRId64 "\n",
              ret, errstr, dest, count);
     });
     return MPI_SUCCESS;
@@ -87,7 +89,7 @@ Int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
       char errstr[MPI_MAX_ERROR_STRING];
       int errlen = 0;
       MPI_Error_string(ret, errstr, &errlen);
-      printf("mpi_irecv: MPI_Irecv failed: ret=%d '%s' source=%d count=%ld\n",
+      printf("mpi_irecv: MPI_Irecv failed: ret=%d '%s' source=%d count=%" PRId64 "\n",
              ret, errstr, source, count);
     });
     return MPI_SUCCESS;
@@ -113,7 +115,7 @@ Int mpi_waitall(std::vector<MPI_Request>& requests)
       char errstr[MPI_MAX_ERROR_STRING];
       int errlen = 0;
       MPI_Error_string(ret, errstr, &errlen);
-      printf("mpi_waitall: MPI_Waitall failed: ret=%d '%s' num_requests=%ld\n",
+      printf("mpi_waitall: MPI_Waitall failed: ret=%d '%s' num_requests=%" PRId64 "\n",
              ret, errstr, (Long)requests.size());
     });
   }

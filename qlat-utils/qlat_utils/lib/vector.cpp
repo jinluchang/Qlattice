@@ -1,6 +1,6 @@
 #include <qlat-utils/vector.h>
 
-#include <cstdint>
+#include <cinttypes>
 
 namespace qlat
 {  //
@@ -67,8 +67,8 @@ static void* alloc_mem_alloc_impl(const Long size, const MemType mem_type,
     }
     err = qacc_Malloc(&ptr, size);
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
-                            qacc_GetErrorString(err), size, ptr));
+      qerr(fname + ssprintf(": ACC error '%s', size=%" PRId64 ", ptr=%" PRIX64 ".",
+                            qacc_GetErrorString(err), size, (uint64_t)ptr));
     }
     qassert(ptr != NULL);
     set_mem(ptr, 0, size, mem_type);
@@ -82,8 +82,8 @@ static void* alloc_mem_alloc_impl(const Long size, const MemType mem_type,
     }
     err = qacc_MallocManaged(&ptr, size);
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
-                            qacc_GetErrorString(err), size, ptr));
+      qerr(fname + ssprintf(": ACC error '%s', size=%" PRId64 ", ptr=%" PRIX64 ".",
+                            qacc_GetErrorString(err), size, (uint64_t)ptr));
     }
     qassert(ptr != NULL);
     set_mem(ptr, 0, size, mem_type);
@@ -93,7 +93,7 @@ static void* alloc_mem_alloc_impl(const Long size, const MemType mem_type,
 #else
   ptr = alloc_mem_aligned(size, mem_type, min_alignment);
   qassert_info(ptr != NULL,
-               { printf("alloc_mem_alloc: %lX %ld\n", (Long)ptr, size); });
+               { printf("alloc_mem_alloc: %" PRIX64 " %" PRId64 "\n", (uint64_t)ptr, size); });
   set_mem(ptr, 0, size, mem_type);
 #endif
   if (ptr != NULL) {
