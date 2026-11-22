@@ -145,11 +145,12 @@ tests = \
 
 all: run
 
-run: update-sources $(tests) py-qlat-ext.log
+run: update-sources $(tests) py-qlat-ext.log gauge-fixing-ext.log
 
 update-sources:
 	-for i in $(tests) ; do touch "$${i%.log}.py" ; done
 	-touch py-qlat-ext/meson.build
+	-touch gauge-fixing/meson.build
 
 %.log: %.py
 	-rm -rfv "$<".p
@@ -173,6 +174,22 @@ py-qlat-ext.log: py-qlat-ext/meson.build
 	-rm -rfv "$@"
 	-touch "$@"
 	-cp -v py-qlat-ext.p/log.check.txt.new "$@"
+
+gauge-fixing-ext.log: gauge-fixing/meson.build
+	-touch gauge-fixing/meson.build
+	-rm -rfv gauge-fixing-ext.p
+	-mkdir -p gauge-fixing-ext.p
+	-time meson setup gauge-fixing-ext.p/build gauge-fixing --prefix="$$PWD"/gauge-fixing-ext.p/install -Dpython.platlibdir="$$PWD"/gauge-fixing-ext.p/install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/gauge-fixing-ext.p/install/lib/python3/dist-packages
+	-time meson compile -C gauge-fixing-ext.p/build -j$(num_proc)
+	-time meson install -C gauge-fixing-ext.p/build
+	-cp -v gauge-fixing-ext.log.json gauge-fixing-ext.p/install/bin/
+	-time ( cd gauge-fixing-ext.p ; PYTHONPATH="$$PWD/install/lib/python3/dist-packages:$$PYTHONPATH" OMP_NUM_THREADS=1 timeout -s KILL 60m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./install/bin/gauge-fixing-ext.py --test >log.full.txt 2>&1 ; grep -a "CHECK: \|INFO: \|WARNING" log.full.txt >log.txt ; grep -a "CHECK: " log.txt >log.check.txt.new ; grep -a "CHECK: " ../"$@" >log.check.txt )
+	-if diff gauge-fixing-ext.p/log.check.txt gauge-fixing-ext.p/log.check.txt.new ; then echo passed ; else tail -n 100 gauge-fixing-ext.p/log.full.txt ; echo failed ; false ; fi
+	-rm -rfv "$@"
+	-touch "$@"
+	-cp -v gauge-fixing-ext.p/install/bin/gauge-fixing-ext.log.json.new gauge-fixing-ext.p/gauge-fixing-ext.log.json.new
+	-cp -v gauge-fixing-ext.p/gauge-fixing-ext.log.json.new "$@".json
+	-cp -v gauge-fixing-ext.p/log.txt "$@"
 
 clean:
 	-rm -rfv *.p
