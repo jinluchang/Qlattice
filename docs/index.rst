@@ -23,6 +23,8 @@ Qlattice
 
    qlat.rst
 
+   qlat-ref.rst
+
    qlat_gpt.md
 
    auto-contractor.rst
