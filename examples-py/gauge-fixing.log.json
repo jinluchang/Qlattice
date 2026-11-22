@@ -1,0 +1,54 @@
+[
+ [
+  "main: geo = Geometry([4, 4, 4, 4])"
+ ],
+ [
+  "main: landau plaq before",
+  0.2142021446916218,
+  1e-10
+ ],
+ [
+  "main: landau plaq after",
+  0.21420214469162185,
+  1e-10
+ ],
+ [
+  "main: landau functional before",
+  0.6916912612608005,
+  1e-10
+ ],
+ [
+  "main: landau functional",
+  0.7712003847505754,
+  1e-10
+ ],
+ [
+  "main: coulomb plaq before",
+  0.251298207557418,
+  1e-10
+ ],
+ [
+  "main: coulomb plaq after",
+  0.251298207557418,
+  1e-10
+ ],
+ [
+  "main: coulomb functional before",
+  0.7033689856430839,
+  1e-10
+ ],
+ [
+  "main: coulomb functional",
+  0.8101092397471701,
+  1e-10
+ ],
+ [
+  "main: num_node = 2"
+ ],
+ [
+  "main: local_volume = 128"
+ ],
+ [
+  "main: total_volume = 256"
+ ]
+]
