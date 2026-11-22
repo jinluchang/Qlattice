@@ -194,6 +194,15 @@ __all__ += [
         ]
 
 __all__ += [
+        'fix_gauge',
+        'fix_landau_gauge',
+        'fix_coulomb_gauge',
+        'get_gauge_functional',
+        'get_gauge_divergence',
+        'get_unitarity_error',
+        ]
+
+__all__ += [
         'gf_plaq_action_density_field',
         'gf_plaq_action_density',
         'gf_spatial_plaq_action_density_field',
@@ -338,6 +347,7 @@ from .smear import *
 from .hmc import *
 from .hmc_utils import *
 from .gauge_action import *
+from .gauge_fixing import *
 from .topology import *
 from .topology_utils import *
 from .wilson_flow import *

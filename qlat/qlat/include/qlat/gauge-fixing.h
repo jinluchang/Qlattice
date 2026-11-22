@@ -1,18 +1,32 @@
+#pragma once
+
 #include <qlat/qlat.h>
 
 namespace qlat
 {
 
 // Plain local steepest-descent gauge fixing (Landau and Coulomb) on a
-// distributed gauge field.  The local update is
+// distributed gauge field.
+//
+// The gauge functional is
+//
+//   F = sum_{x, mu in dirs} Re Tr U_mu(x) / (V * len(dirs) * 3)
+//
+// and the local update is
 //
 //   g(x) = exp(alpha * D(x))
 //
-// with D(x) the anti-hermitian traceless part of the staple-sum matrix (the
-// local ascent direction of the gauge functional), and the gauge field is
-// updated by U_mu(x) -> g(x) U_mu(x) g(x+mu)^dagger.  One sweep is a Jacobi
-// sweep over all sites.  There is no Fourier acceleration and no FFT.
+// where D(x) is the anti-hermitian traceless part of the staple-sum matrix
+// K(x) = sum_{mu in dirs} (U_mu(x) + U_mu(x-mu)^dagger), i.e. the local
+// ascent direction of the functional.  The gauge field is then updated by
+//
+//   U_mu(x) -> g(x) U_mu(x) g(x+mu)^dagger.
+//
+// One sweep is a Jacobi sweep over all sites.  The loop stops when the RMS
+// divergence theta (which vanishes exactly in the gauge) is at most eps or
+// after max_iter sweeps.  There is no Fourier acceleration and no FFT.
 
+// Convergence history and final values of a gauge-fixing run.
 struct GaugeFixingInfo {
   bool converged;
   Int n_iter;

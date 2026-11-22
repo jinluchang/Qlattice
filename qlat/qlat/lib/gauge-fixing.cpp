@@ -1,4 +1,4 @@
-#include <qlat-ext/gauge-fixing.h>
+#include <qlat/gauge-fixing.h>
 
 #include <algorithm>
 #include <cmath>

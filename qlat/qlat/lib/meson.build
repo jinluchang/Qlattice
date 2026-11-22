@@ -10,6 +10,7 @@ cppsources = files(
   'hmc.cpp',
   'mpi.cpp',
   'qcd.cpp',
+  'gauge-fixing.cpp',
   'qcd-utils.cpp',
   'qcd-prop.cpp',
   'qed.cpp',

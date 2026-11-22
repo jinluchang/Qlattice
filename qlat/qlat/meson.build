@@ -46,6 +46,7 @@ pxd_files = files(
   'fields_io.pxd',
   'hmc.pxd',
   'gauge_action.pxd',
+  'gauge_fixing.pxd',
   'fermion_action.pxd',
   'muon_line.pxd',
   'hlbl_contract.pxd',
@@ -126,6 +127,7 @@ name_pyx_list = [
   'contract_hvp',
   'vector_utils',
   'gauge_action',
+  'gauge_fixing',
   'muon_line',
   'hlbl_contract',
   ]

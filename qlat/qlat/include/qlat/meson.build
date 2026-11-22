@@ -48,6 +48,7 @@ header_files = files(
   'flowed-hmc.h',
   'function.h',
   'gauge-action.h',
+  'gauge-fixing.h',
   'geometry.h',
   'grid.h',
   'grid-sys.h',

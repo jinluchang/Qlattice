@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
-# Cross-check of the qlat C++/Cython gauge-fixing implementation in this
-# example project against the pure-NumPy reference package `qlat-ref`.
+# Cross-check of the public qlat gauge-fixing API (``qlat.gauge_fixing``)
+# against the pure-NumPy reference package `qlat-ref`.
 #
 # This script is NOT part of the CI test suite: the `qlat-ref` sources are a
 # sibling of `examples-py/` in the repository, while the nix example build
 # only packages `examples-py/`.  Run it manually from a checkout with the nix
-# environment and the built extension:
+# environment:
 #
 #   source result-py-local/bin/setenv-qlat.sh
-#   PYTHONPATH=<build install>/lib/python3/dist-packages:$PYTHONPATH \
-#     mpiexec -n 2 --oversubscribe --bind-to none \
-#     python3 -m mpi4py examples-py/gauge-fixing/cross_check.py
+#   mpiexec -n 2 --oversubscribe --bind-to none \
+#     python3 -m mpi4py examples-py/gauge-fixing-cross-check.py
 #
 # It builds one deterministic random gauge field with `qlat-ref`, fixes it
 # with both implementations (same max_iter/eps/alpha) and compares the
@@ -26,17 +25,11 @@ os.environ["OMP_DYNAMIC"] = "false"
 
 import numpy as np
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
-# The script directory contains the *sources* of the extension package; drop
-# it from sys.path so that the built/installed package is imported instead.
-sys.path = [path for path in sys.path if os.path.abspath(path or ".") != SCRIPT_DIR]
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(REPO_ROOT, "qlat-ref"))
 
 import qlat as q
 import qlat_ref as qr
-
-import qlat_gauge_fixing_ext as qg
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -87,7 +80,7 @@ def check_gauge(qr_fix, qg_fix, geo, fname):
     functional_difference = abs(gf_info["functional"] - ref_info["functional"])
     local_field_difference = get_local_difference(gf, U_ref, geo)
     unitarity_ref = qr.get_unitarity_error(U_ref)
-    unitarity_qlat = qg.get_unitarity_error(gf)
+    unitarity_qlat = q.get_unitarity_error(gf)
     assert ref_info["converged"]
     assert gf_info["converged"]
     assert ref_info["divergence"] <= EPS
@@ -119,8 +112,8 @@ def main():
         f"{fname}: total_site = {TOTAL_SITE}; num_node = {q.get_num_node()};"
         f" local_volume = {geo.local_volume}"
     )
-    check_gauge(qr.fix_landau_gauge, qg.fix_landau_gauge, geo, fname)
-    check_gauge(qr.fix_coulomb_gauge, qg.fix_coulomb_gauge, geo, fname)
+    check_gauge(qr.fix_landau_gauge, q.fix_landau_gauge, geo, fname)
+    check_gauge(qr.fix_coulomb_gauge, q.fix_coulomb_gauge, geo, fname)
     q.end_with_mpi()
     q.displayln_info("CHECK: cross-check finished successfully.")
 

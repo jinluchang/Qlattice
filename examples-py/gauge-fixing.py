@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 # Plain local (no Fourier acceleration) Landau and Coulomb gauge fixing test
-# for the qlat C++/Cython gauge-fixing extension of this example project.
+# of the public qlat API (``qlat.gauge_fixing``), run with 2 MPI processes on
+# a distributed gauge field.
 #
-# Run through the examples-py Makefile (target gauge-fixing-ext.log), which
-# builds the meson project and launches this script with 2 MPI processes.
+# Run through the examples-py test suite / nixpkgs/run-one-example-py.py
+# (target gauge-fixing.log).
 
 import os
 
@@ -12,8 +13,6 @@ os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OMP_DYNAMIC"] = "false"
 
 import qlat as q
-
-import qlat_gauge_fixing_ext as qg
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -39,12 +38,12 @@ def check_landau_gauge_fixing(fname, geo, rs):
     gf.set_rand(rs.split("gf-landau"), 0.5, 1)
     show_info(fname, gf, "landau before")
     plaq_before = gf.plaq()
-    functional_before = qg.get_gauge_functional(gf, [0, 1, 2, 3])
-    divergence_before = qg.get_gauge_divergence(gf, [0, 1, 2, 3])
-    info = qg.fix_landau_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
+    functional_before = q.get_gauge_functional(gf, [0, 1, 2, 3])
+    divergence_before = q.get_gauge_divergence(gf, [0, 1, 2, 3])
+    info = q.fix_landau_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
     show_info(fname, gf, "landau after")
     plaq_after = gf.plaq()
-    unitarity_error = qg.get_unitarity_error(gf)
+    unitarity_error = q.get_unitarity_error(gf)
     q.displayln_info(
         f"{fname}: landau: functional {functional_before:.15e} ->"
         f" {info['functional']:.15e} in {info['n_iter']} sweeps;"
@@ -69,12 +68,12 @@ def check_coulomb_gauge_fixing(fname, geo, rs):
     gf.set_rand(rs.split("gf-coulomb"), 0.5, 1)
     show_info(fname, gf, "coulomb before")
     plaq_before = gf.plaq()
-    functional_before = qg.get_gauge_functional(gf, [1, 2, 3])
-    divergence_before = qg.get_gauge_divergence(gf, [1, 2, 3])
-    info = qg.fix_coulomb_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
+    functional_before = q.get_gauge_functional(gf, [1, 2, 3])
+    divergence_before = q.get_gauge_divergence(gf, [1, 2, 3])
+    info = q.fix_coulomb_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
     show_info(fname, gf, "coulomb after")
     plaq_after = gf.plaq()
-    unitarity_error = qg.get_unitarity_error(gf)
+    unitarity_error = q.get_unitarity_error(gf)
     q.displayln_info(
         f"{fname}: coulomb: functional {functional_before:.15e} ->"
         f" {info['functional']:.15e} in {info['n_iter']} sweeps;"
@@ -98,9 +97,9 @@ def check_distributed_field(fname, geo):
     gf = q.GaugeField(geo)
     rs = q.RngState("gauge-fixing-distributed")
     gf.set_rand(rs.split("gf"), 0.5, 1)
-    info = qg.fix_landau_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
+    info = q.fix_landau_gauge(gf, max_iter=MAX_ITER, eps=EPS, alpha=ALPHA)
     assert info["converged"]
-    assert qg.get_gauge_divergence(gf, [0, 1, 2, 3]) <= EPS
+    assert q.get_gauge_divergence(gf, [0, 1, 2, 3]) <= EPS
     q.displayln_info(
         f"{fname}: distributed: id_node = {q.get_id_node()};"
         f" num_node = {q.get_num_node()}; local_volume = {geo.local_volume};"
