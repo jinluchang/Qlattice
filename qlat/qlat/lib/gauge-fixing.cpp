@@ -21,6 +21,12 @@ void gf_set_random_local_gradient(Field<ColorMatrix>& D, const GaugeField& gf,
                                   const std::vector<Int>& dirs)
 // gfe is the expanded copy of gf (neighbour links are available)
 {
+  const Int n_dirs = (Int)dirs.size();
+  array<Int, 4> dirs_arr;
+  dirs_arr.fill(0);
+  for (Int i = 0; i < n_dirs; ++i) {
+    dirs_arr[i] = dirs[i];
+  }
   const Geometry& geo = gf.geo();
   D.init(geo, 1);
   qacc_for(index, geo.local_volume(), {
@@ -29,8 +35,8 @@ void gf_set_random_local_gradient(Field<ColorMatrix>& D, const GaugeField& gf,
     const Vector<ColorMatrix> v = gf.get_elems_const(xl);
     ColorMatrix K;
     set_zero(K);
-    for (Int i = 0; i < (Int)dirs.size(); ++i) {
-      const Int mu = dirs[i];
+    for (Int i = 0; i < n_dirs; ++i) {
+      const Int mu = dirs_arr[i];
       Coordinate xlm = xl;
       xlm[mu] -= 1;
       const Vector<ColorMatrix> vm = gfe.get_elems_const(xlm);
@@ -74,6 +80,12 @@ void gf_gauge_gradient(Field<ColorMatrix>& D, const GaugeField& gf,
 RealD gf_gauge_functional(const GaugeField& gf, const std::vector<Int>& dirs)
 {
   TIMER("gf_gauge_functional");
+  const Int n_dirs = (Int)dirs.size();
+  array<Int, 4> dirs_arr;
+  dirs_arr.fill(0);
+  for (Int i = 0; i < n_dirs; ++i) {
+    dirs_arr[i] = dirs[i];
+  }
   const Geometry& geo = gf.geo();
   Field<RealD> f;
   f.init(geo, 1);
@@ -82,13 +94,13 @@ RealD gf_gauge_functional(const GaugeField& gf, const std::vector<Int>& dirs)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> v = gf.get_elems_const(xl);
     RealD sum = 0.0;
-    for (Int i = 0; i < (Int)dirs.size(); ++i) {
-      sum += matrix_trace(v[dirs[i]]).real();
+    for (Int i = 0; i < n_dirs; ++i) {
+      sum += matrix_trace(v[dirs_arr[i]]).real();
     }
     f.get_elem(xl) = sum;
   });
   RealD sum = field_glb_sum(f)[0];
-  return sum / (geo.total_volume() * (RealD)dirs.size() * 3.0);
+  return sum / (geo.total_volume() * (RealD)n_dirs * 3.0);
 }
 
 RealD gf_gauge_divergence_from_gradient(const Field<ColorMatrix>& D)
