@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 from qlat.all cimport *
 from . cimport everything as cc
@@ -31,7 +31,8 @@ def begin_with_grid(size_node_list = None):
     for i in range(vec_size):
         size_node = Coordinate(size_node_list[i])
         size_node_vec[i] = size_node.xx
-    cc.begin_with_grid(sys.argv, size_node_vec)
+    cdef cc.std_vector[cc.std_string] sargs_v = [as_bytes(x) for x in sys.argv]
+    cc.begin_with_grid(sargs_v, size_node_vec)
     #
     # Set the qlat communicator the same way as ``qlat_gpt.begin_with_gpt``, so
     # that ``q.get_comm().rank == q.get_id_node()``.  The C++ ``grid_begin``
@@ -54,22 +55,22 @@ def save_grid_prop_float(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.save_grid_prop_float(field_wm.xx, path)
+    cc.save_grid_prop_float(field_wm.xx, as_bytes(path))
 
 def save_grid_prop_double(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.save_grid_prop_double(field_wm.xx, path)
+    cc.save_grid_prop_double(field_wm.xx, as_bytes(path))
 
 def load_grid_prop_float(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.load_grid_prop_float(field_wm.xx, path)
+    cc.load_grid_prop_float(field_wm.xx, as_bytes(path))
 
 def load_grid_prop_double(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.load_grid_prop_double(field_wm.xx, path)
+    cc.load_grid_prop_double(field_wm.xx, as_bytes(path))

@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 from qlat.all cimport *
 from . cimport everything as cc
@@ -12,7 +12,8 @@ class q:
     )
 
 def begin_with_cps(Coordinate total_site):
-    cc.begin_with_cps(sys.argv, total_site.xx)
+    cdef cc.std_vector[cc.std_string] sargs_v = [as_bytes(x) for x in sys.argv]
+    cc.begin_with_cps(sargs_v, total_site.xx)
 
 def end_with_cps(is_preserving_cache = False):
     if not is_preserving_cache:
@@ -23,10 +24,10 @@ def save_cps_prop_double(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.save_cps_prop_double(field_wm.xx, path)
+    cc.save_cps_prop_double(field_wm.xx, as_bytes(path))
 
 def load_cps_prop_double(prop, path):
     assert isinstance(prop, q.Prop)
     assert isinstance(path, str)
     cdef FieldWilsonMatrix field_wm = prop
-    cc.load_cps_prop_double(field_wm.xx, path)
+    cc.load_cps_prop_double(field_wm.xx, as_bytes(path))
