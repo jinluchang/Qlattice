@@ -48,14 +48,14 @@ def show_flow_info(FlowInfo fi):
 
 def add_rand_order_flow_flow_info(FlowInfo fi, RngState rs, cc.RealD epsilon):
     cdef cc.FlowInfo step = cc.mk_flow_info_step(rs.xx, epsilon)
-    cdef cc.Long i
+    cdef size_t i
     for i in range(step.v.size()):
         fi.xx.v.push_back(step.v[i])
 
 def add_rand_order_flow2_flow_info(
         FlowInfo fi, RngState rs, cc.RealD epsilon, cc.RealD epsilon2):
     cdef cc.FlowInfo step = cc.mk_flow_info_step(rs.xx, epsilon, epsilon2)
-    cdef cc.Long i
+    cdef size_t i
     for i in range(step.v.size()):
         fi.xx.v.push_back(step.v[i])
 

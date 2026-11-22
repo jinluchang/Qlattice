@@ -77,7 +77,7 @@ def get_ls_fermion_action(FermionAction fa):
 def get_omega_fermion_action(FermionAction fa):
     if not fa.xx.is_using_zmobius:
         return None
-    cdef cc.Long i
+    cdef size_t i
     cdef cc.std_vector[cc.RealD] re = cc.py_get_omega_fermion_action_re(fa.xx)
     cdef cc.std_vector[cc.RealD] im = cc.py_get_omega_fermion_action_im(fa.xx)
     cdef list omega = []
