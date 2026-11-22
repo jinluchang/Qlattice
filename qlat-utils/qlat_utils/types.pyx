@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.types``
@@ -117,7 +117,7 @@ cdef class ElemTypeColorMatrix(ElemType):
         return sizeof(cc.ColorMatrix)
     @staticmethod
     def py_format():
-        return ElemTypeColorMatrix.format()
+        return cc.as_str_c(ElemTypeColorMatrix.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeColorMatrix.itemsize()
@@ -152,7 +152,7 @@ cdef class ElemTypeWilsonMatrix(ElemType):
         return sizeof(cc.WilsonMatrix)
     @staticmethod
     def py_format():
-        return ElemTypeWilsonMatrix.format()
+        return cc.as_str_c(ElemTypeWilsonMatrix.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeWilsonMatrix.itemsize()
@@ -187,7 +187,7 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
         return sizeof(cc.NonRelWilsonMatrix)
     @staticmethod
     def py_format():
-        return ElemTypeNonRelWilsonMatrix.format()
+        return cc.as_str_c(ElemTypeNonRelWilsonMatrix.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeNonRelWilsonMatrix.itemsize()
@@ -222,7 +222,7 @@ cdef class ElemTypeIsospinMatrix(ElemType):
         return sizeof(cc.IsospinMatrix)
     @staticmethod
     def py_format():
-        return ElemTypeIsospinMatrix.format()
+        return cc.as_str_c(ElemTypeIsospinMatrix.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeIsospinMatrix.itemsize()
@@ -257,7 +257,7 @@ cdef class ElemTypeSpinMatrix(ElemType):
         return sizeof(cc.SpinMatrix)
     @staticmethod
     def py_format():
-        return ElemTypeSpinMatrix.format()
+        return cc.as_str_c(ElemTypeSpinMatrix.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeSpinMatrix.itemsize()
@@ -292,7 +292,7 @@ cdef class ElemTypeWilsonVector(ElemType):
         return sizeof(cc.WilsonVector)
     @staticmethod
     def py_format():
-        return ElemTypeWilsonVector.format()
+        return cc.as_str_c(ElemTypeWilsonVector.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeWilsonVector.itemsize()
@@ -327,7 +327,7 @@ cdef class ElemTypeComplexD(ElemType):
         return sizeof(cc.ComplexD)
     @staticmethod
     def py_format():
-        return ElemTypeComplexD.format()
+        return cc.as_str_c(ElemTypeComplexD.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeComplexD.itemsize()
@@ -362,7 +362,7 @@ cdef class ElemTypeComplexF(ElemType):
         return sizeof(cc.ComplexF)
     @staticmethod
     def py_format():
-        return ElemTypeComplexF.format()
+        return cc.as_str_c(ElemTypeComplexF.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeComplexF.itemsize()
@@ -397,7 +397,7 @@ cdef class ElemTypeRealD(ElemType):
         return sizeof(cc.RealD)
     @staticmethod
     def py_format():
-        return ElemTypeRealD.format()
+        return cc.as_str_c(ElemTypeRealD.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeRealD.itemsize()
@@ -432,7 +432,7 @@ cdef class ElemTypeRealF(ElemType):
         return sizeof(cc.RealF)
     @staticmethod
     def py_format():
-        return ElemTypeRealF.format()
+        return cc.as_str_c(ElemTypeRealF.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeRealF.itemsize()
@@ -467,7 +467,7 @@ cdef class ElemTypeLong(ElemType):
         return sizeof(cc.Long)
     @staticmethod
     def py_format():
-        return ElemTypeLong.format()
+        return cc.as_str_c(ElemTypeLong.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeLong.itemsize()
@@ -502,7 +502,7 @@ cdef class ElemTypeInt(ElemType):
         return sizeof(cc.Int)
     @staticmethod
     def py_format():
-        return ElemTypeInt.format()
+        return cc.as_str_c(ElemTypeInt.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeInt.itemsize()
@@ -537,7 +537,7 @@ cdef class ElemTypeChar(ElemType):
         return sizeof(cc.Char)
     @staticmethod
     def py_format():
-        return ElemTypeChar.format()
+        return cc.as_str_c(ElemTypeChar.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeChar.itemsize()
@@ -572,7 +572,7 @@ cdef class ElemTypeInt64t(ElemType):
         return sizeof(cc.Int64t)
     @staticmethod
     def py_format():
-        return ElemTypeInt64t.format()
+        return cc.as_str_c(ElemTypeInt64t.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeInt64t.itemsize()
@@ -607,7 +607,7 @@ cdef class ElemTypeInt32t(ElemType):
         return sizeof(cc.Int32t)
     @staticmethod
     def py_format():
-        return ElemTypeInt32t.format()
+        return cc.as_str_c(ElemTypeInt32t.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeInt32t.itemsize()
@@ -642,7 +642,7 @@ cdef class ElemTypeInt8t(ElemType):
         return sizeof(cc.Int8t)
     @staticmethod
     def py_format():
-        return ElemTypeInt8t.format()
+        return cc.as_str_c(ElemTypeInt8t.format())
     @staticmethod
     def py_itemsize():
         return ElemTypeInt8t.itemsize()

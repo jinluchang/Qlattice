@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.qar``
@@ -46,19 +46,19 @@ cdef class QFile:
         cdef cc.std_string content_v
         cdef str ftype_default
         if ftype is not None:
-            ftype_v = cc.read_qfile_type(ftype)
+            ftype_v = cc.read_qfile_type(cc.as_bytes(ftype))
         else:
             ftype_default = "CFile"
-            ftype_v = cc.read_qfile_type(ftype_default)
+            ftype_v = cc.read_qfile_type(cc.as_bytes(ftype_default))
         if path is not None:
-            path_v = path
+            path_v = cc.as_bytes(path)
         if mode is not None:
-            mode_v = cc.read_qfile_mode(mode)
+            mode_v = cc.read_qfile_mode(cc.as_bytes(mode))
         else:
             mode_default = "r"
-            mode_v = cc.read_qfile_mode(mode_default)
+            mode_v = cc.read_qfile_mode(cc.as_bytes(mode_default))
         if content is not None:
-            content_v = content
+            content_v = cc.as_bytes(content)
         if content is not None:
             assert ftype is not None
             assert path is not None
@@ -107,10 +107,10 @@ cdef class QFile:
         return self.copy()
 
     def path(self):
-        return self.xx.path()
+        return cc.as_str_std(self.xx.path())
 
     def mode(self):
-        return cc.show(self.xx.mode())
+        return cc.as_str_std(cc.show(self.xx.mode()))
 
     def close(self):
         return self.xx.close()
@@ -138,7 +138,7 @@ cdef class QFile:
 
     def content(self):
         cdef cc.std_string x = self.xx.content()
-        return <str>x;
+        return cc.as_str_std(x)
 
     def content_bytes(self):
         cdef cc.std_string x = self.xx.content()
@@ -151,26 +151,28 @@ cdef class QFile:
         return cc.qfile_remaining_size(self.xx)
 
     def getline(self):
-        return cc.qgetline(self.xx)
+        return cc.as_str_std(cc.qgetline(self.xx))
 
     def getlines(self):
-        return cc.qgetlines(self.xx)
+        return [cc.as_str_std(v) for v in cc.qgetlines(self.xx)]
 
     def qcat(self):
-        return <str>cc.qcat(self.xx)
+        return cc.as_str_std(cc.qcat(self.xx))
 
     def qcat_bytes(self):
         return <bytes>cc.qcat(self.xx)
 
     def write(self, object data):
         cdef QFile qfile
+        cdef cc.std_vector[cc.std_string] data_v
         if isinstance(data, QFile):
             qfile = data
             return cc.write_from_qfile(self.xx, qfile.xx)
         elif isinstance(data, (str, bytes,)):
-            return cc.qwrite_data(<cc.std_string>data, self.xx)
+            return cc.qwrite_data(cc.as_bytes(data), self.xx)
         elif isinstance(data, (list, tuple,)):
-            return cc.qwrite_data(<cc.std_vector[cc.std_string]>data, self.xx)
+            data_v = [cc.as_bytes(x) for x in data]
+            return cc.qwrite_data(data_v, self.xx)
         else:
             raise Exception(f"write: {type(data)}")
 
@@ -179,30 +181,34 @@ cdef class QFile:
 
 ### ----------------------------------------------------------
 
-def open_qfile(const cc.std_string& path, const cc.std_string& mode):
+def open_qfile(path, mode):
     """
     Call `cc.qfopen`
     """
-    cdef cc.std_string path_v = path
-    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef bytes mode_b = cc.as_bytes(mode)
+    cdef cc.std_string path_v = path_b
+    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode_b)
     cdef QFile qfile = QFile()
     qfile.xx = cc.qfopen(path_v, mode_v);
     return qfile
 
-def open_qfile_str(const cc.std_string& path, const cc.std_string& mode, object content=None):
+def open_qfile_str(path, mode, object content=None):
     """
     Call `cc.qfopen`
     """
-    cdef str ftype = "String"
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef bytes mode_b = cc.as_bytes(mode)
+    cdef bytes ftype = b"String"
     cdef cc.QFileType ftype_v = cc.read_qfile_type(ftype)
-    cdef cc.std_string path_v = path
-    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode)
+    cdef cc.std_string path_v = path_b
+    cdef cc.QFileMode mode_v = cc.read_qfile_mode(mode_b)
     cdef cc.std_string content_v
     cdef QFile qfile = QFile()
     if content is None:
         qfile.xx = cc.qfopen(ftype_v, path_v, mode_v);
     else:
-        content_v = content
+        content_v = cc.as_bytes(content)
         qfile.xx = cc.qfopen(ftype_v, path_v, mode_v, content_v);
     return qfile
 
@@ -218,7 +224,7 @@ cdef class QarFile:
         or the ``open_qar()`` convenience wrapper which accepts positional args.
         """
         if path is not None:
-            self.xx.init(path, cc.read_qfile_mode(mode))
+            self.xx.init(cc.as_bytes(path), cc.read_qfile_mode(cc.as_bytes(mode)))
         else:
             assert path is None
             assert mode is None
@@ -240,10 +246,10 @@ cdef class QarFile:
         return self.copy()
 
     def path(self):
-        return self.xx.path
+        return cc.as_str_std(self.xx.path)
 
     def mode(self):
-        return cc.show(self.xx.mode)
+        return cc.as_str_std(cc.show(self.xx.mode))
 
     def close(self):
         return self.xx.close()
@@ -262,9 +268,9 @@ cdef class QarFile:
         ``Gobble`` on non-rank-0 nodes.  Broadcast the result from rank 0 with
         ``q.bcast_py`` to synchronize the listing across MPI ranks.
         """
-        return cc.list(self.xx)
+        return [cc.as_str_std(v) for v in cc.list(self.xx)]
 
-    def has_regular_file(self, const cc.std_string& fn):
+    def has_regular_file(self, fn):
         """
         Check if a regular file entry exists in this QAR archive.
         #
@@ -275,9 +281,10 @@ cdef class QarFile:
             #
             has_file = q.bcast_py(qar_ws.has_regular_file(fn))
         """
-        return cc.has_regular_file(self.xx, fn)
+        cdef bytes fn_b = cc.as_bytes(fn)
+        return cc.has_regular_file(self.xx, fn_b)
 
-    def has(self, const cc.std_string& fn):
+    def has(self, fn):
         """
         Check if an entry exists in this QAR archive (regular file or otherwise).
         #
@@ -287,7 +294,8 @@ cdef class QarFile:
             #
             has_entry = q.bcast_py(qar_ws.has(fn))
         """
-        return cc.has(self.xx, fn)
+        cdef bytes fn_b = cc.as_bytes(fn)
+        return cc.has(self.xx, fn_b)
 
     def __contains__(self, str fn):
         """
@@ -296,57 +304,66 @@ cdef class QarFile:
         """
         return self.has(fn)
 
-    def read(self, const cc.std_string& fn):
+    def read(self, fn):
         """
         return qfile
         """
         cdef QFile qfile = QFile()
-        qfile.xx = cc.read(self.xx, fn)
+        cdef bytes fn_b = cc.as_bytes(fn)
+        qfile.xx = cc.read(self.xx, fn_b)
         return qfile
 
-    def read_data(self, const cc.std_string& fn):
+    def read_data(self, fn):
         """
         Read entry data as a Python ``str`` (UTF-8 decoded).\n
         Only suitable for text content.  For binary data use
         :meth:`read_data_bytes` instead — this method will raise
         ``UnicodeDecodeError`` on non-UTF-8 bytes.
         """
-        return <str>cc.read_data(self.xx, fn)
+        cdef bytes fn_b = cc.as_bytes(fn)
+        return cc.as_str_std(cc.read_data(self.xx, fn_b))
 
-    def read_data_bytes(self, const cc.std_string& fn):
+    def read_data_bytes(self, fn):
         """
         Read entry data as raw ``bytes``.\n
         Safe for both text and binary content.  Prefer this over
         :meth:`read_data` unless you know the entry is plain text.
         """
-        return <bytes>cc.read_data(self.xx, fn)
+        cdef bytes fn_b = cc.as_bytes(fn)
+        return <bytes>cc.read_data(self.xx, fn_b)
 
-    def read_info(self, const cc.std_string& fn):
-        return cc.read_info(self.xx, fn)
+    def read_info(self, fn):
+        cdef bytes fn_b = cc.as_bytes(fn)
+        return cc.read_info(self.xx, fn_b)
 
     def verify_index(self):
         return cc.verify_index(self.xx)
 
-    def write(self, const cc.std_string& fn, const cc.std_string& info, object data, *, cc.Bool skip_if_exist=False):
+    def write(self, fn, info, object data, *, cc.Bool skip_if_exist=False):
+        cdef bytes fn_b = cc.as_bytes(fn)
+        cdef bytes info_b = cc.as_bytes(info)
+        cdef cc.std_vector[cc.std_string] data_v
         cdef QFile qfile
         if skip_if_exist:
             if self.has(fn):
                 return 0
         if isinstance(data, QFile):
             qfile = data
-            return cc.write_from_qfile(self.xx, fn, info, qfile.xx)
+            return cc.write_from_qfile(self.xx, fn_b, info_b, qfile.xx)
         elif isinstance(data, (str, bytes,)):
-            return cc.write_from_data(self.xx, fn, info, <cc.std_string>data)
+            return cc.write_from_data(self.xx, fn_b, info_b, cc.as_bytes(data))
         elif isinstance(data, (list, tuple,)):
-            return cc.write_from_data(self.xx, fn, info, <cc.std_vector[cc.std_string]>data)
+            data_v = [cc.as_bytes(x) for x in data]
+            return cc.write_from_data(self.xx, fn_b, info_b, data_v)
         else:
             raise Exception(f"write: {type(data)}")
 
     def show_index(self):
         return cc.show_qar_index(self.xx)
 
-    def read_index(self, const cc.std_string& qar_index_content):
-        return cc.read_qar_index(self.xx, qar_index_content)
+    def read_index(self, qar_index_content):
+        cdef bytes content_b = cc.as_bytes(qar_index_content)
+        return cc.read_qar_index(self.xx, content_b)
 
     def index_size_saved(self):
         cdef cc.Long size = self.xx.qar_index_size_saved
@@ -362,7 +379,7 @@ cdef class QarFile:
 ### ----------------------------------------------------------
 
 @q.timer
-def open_qar(const cc.std_string& path, const cc.std_string& mode):
+def open_qar(path, mode):
     """
     Call QarFile(path, mode) with kwargs
     """
@@ -402,161 +419,206 @@ def clean_up_qfile_map():
     return cc.clean_up_qfile_map()
 
 def show_all_qfile():
-    return cc.show_all_qfile()
+    return [cc.as_str_std(v) for v in cc.show_all_qfile()]
 
 ### ----------------------------------------------------------
 
-def properly_truncate_qar_file(const cc.std_string& path):
-    return cc.properly_truncate_qar_file(path)
+def properly_truncate_qar_file(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return [cc.as_str_std(v) for v in cc.properly_truncate_qar_file(path_b)]
 
 ### ----------------------------------------------------------
 
-def does_regular_file_exist_qar(const cc.std_string& path):
-    return cc.does_regular_file_exist_qar(path)
+def does_regular_file_exist_qar(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.does_regular_file_exist_qar(path_b)
 
-def does_file_exist_qar(const cc.std_string& path):
-    return cc.does_file_exist_qar(path)
+def does_file_exist_qar(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.does_file_exist_qar(path_b)
 
 @q.timer
-def qar_build_index(const cc.std_string& path_qar):
+def qar_build_index(path_qar):
     """
     create "path_qar.idx" file
     """
-    cc.qar_build_index(path_qar)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cc.qar_build_index(path_qar_b)
 
 @q.timer
-def qar_create(const cc.std_string& path_qar, const cc.std_string& path_folder,
+def qar_create(path_qar, path_folder,
                *, const cc.bool is_remove_folder_after=False):
-    return cc.qar_create(path_qar, path_folder, is_remove_folder_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_create(path_qar_b, path_folder_b, is_remove_folder_after)
 
 @q.timer
-def qar_extract(const cc.std_string& path_qar, const cc.std_string& path_folder,
+def qar_extract(path_qar, path_folder,
                 *, const cc.bool is_remove_qar_after=False):
-    return cc.qar_extract(path_qar, path_folder, is_remove_qar_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_extract(path_qar_b, path_folder_b, is_remove_qar_after)
 
 @q.timer
-def qcopy_file(const cc.std_string& path_src, const cc.std_string& path_dst):
-    return cc.qcopy_file(path_src, path_dst)
+def qcopy_file(path_src, path_dst):
+    cdef bytes path_src_b = cc.as_bytes(path_src)
+    cdef bytes path_dst_b = cc.as_bytes(path_dst)
+    return cc.qcopy_file(path_src_b, path_dst_b)
 
 @q.timer
-def list_qar(const cc.std_string& path_qar):
-    cdef list l = cc.list_qar(path_qar)
-    return [ <str>fn for fn in l ]
+def list_qar(path_qar):
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    return [cc.as_str_std(v) for v in cc.list_qar(path_qar_b)]
 
 ### ----------------------------------------------------------
 
-def qcat(const cc.std_string& path):
+def qcat(path):
     """Return contents of file as `str`"""
-    return <str>cc.qcat(path)
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.as_str_std(cc.qcat(path_b))
 
-def qcat_bytes(const cc.std_string& path):
+def qcat_bytes(path):
     """Return contents of file as `bytes`"""
-    return <bytes>cc.qcat(path)
+    cdef bytes path_b = cc.as_bytes(path)
+    return <bytes>cc.qcat(path_b)
 
-def qtouch(const cc.std_string& path, object content=None):
+def qtouch(path, object content=None):
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef cc.std_vector[cc.std_string] content_v
     if content is None:
-        return cc.qtouch(path)
+        return cc.qtouch(path_b)
     elif isinstance(content, (str, bytes,)):
-        return cc.qtouch(path, <cc.std_string>content)
+        return cc.qtouch(path_b, cc.as_bytes(content))
     elif isinstance(content, (list, tuple,)):
-        return cc.qtouch(path, <cc.std_vector[cc.std_string]>content)
+        content_v = [cc.as_bytes(x) for x in content]
+        return cc.qtouch(path_b, content_v)
     else:
         raise Exception(f"qtouch: {type(content)}")
 
-def qappend(const cc.std_string& path, object content):
+def qappend(path, object content):
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef cc.std_vector[cc.std_string] content_v
     if isinstance(content, (str, bytes,)):
-        return cc.qappend(path, <cc.std_string>content)
+        return cc.qappend(path_b, cc.as_bytes(content))
     elif isinstance(content, (list, tuple,)):
-        return cc.qappend(path, <cc.std_vector[cc.std_string]>content)
+        content_v = [cc.as_bytes(x) for x in content]
+        return cc.qappend(path_b, content_v)
     else:
         raise Exception(f"qappend: {type(content)}")
 
-def qload_datatable(const cc.std_string& path, const cc.Bool is_par=False):
-    return cc.qload_datatable(path, is_par)
+def qload_datatable(path, const cc.Bool is_par=False):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.qload_datatable(path_b, is_par)
 
-def compute_crc32(const cc.std_string& path):
-    return cc.compute_crc32(path)
+def compute_crc32(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.compute_crc32(path_b)
 
 ### ----------------------------------------------------------
 
 @q.timer
-def qar_build_index_info(const cc.std_string& path_qar):
+def qar_build_index_info(path_qar):
     """
     create "path_qar.idx" file (only on node 0)
     """
-    cc.qar_build_index_info(path_qar)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cc.qar_build_index_info(path_qar_b)
 
 @q.timer
-def qar_create_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
+def qar_create_info(path_qar, path_folder,
                *, const cc.Bool is_remove_folder_after=False):
-    return cc.qar_create_info(path_qar, path_folder, is_remove_folder_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_create_info(path_qar_b, path_folder_b, is_remove_folder_after)
 
 @q.timer
-def qar_extract_info(const cc.std_string& path_qar, const cc.std_string& path_folder,
+def qar_extract_info(path_qar, path_folder,
                 *, const cc.Bool is_remove_qar_after=False):
-    return cc.qar_extract_info(path_qar, path_folder, is_remove_qar_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_extract_info(path_qar_b, path_folder_b, is_remove_qar_after)
 
 @q.timer
-def qcopy_file_info(const cc.std_string& path_src, const cc.std_string& path_dst):
-    return cc.qcopy_file_info(path_src, path_dst)
+def qcopy_file_info(path_src, path_dst):
+    cdef bytes path_src_b = cc.as_bytes(path_src)
+    cdef bytes path_dst_b = cc.as_bytes(path_dst)
+    return cc.qcopy_file_info(path_src_b, path_dst_b)
 
-def qtouch_info(const cc.std_string& path, object content=None):
+def qtouch_info(path, object content=None):
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef cc.std_vector[cc.std_string] content_v
     if content is None:
-        return cc.qtouch_info(path)
+        return cc.qtouch_info(path_b)
     elif isinstance(content, (str, bytes,)):
-        return cc.qtouch_info(path, <cc.std_string>content)
+        return cc.qtouch_info(path_b, cc.as_bytes(content))
     elif isinstance(content, (list, tuple,)):
-        return cc.qtouch_info(path, <cc.std_vector[cc.std_string]>content)
+        content_v = [cc.as_bytes(x) for x in content]
+        return cc.qtouch_info(path_b, content_v)
     else:
         raise Exception(f"qtouch: {type(content)}")
 
-def qappend_info(const cc.std_string& path, object content):
+def qappend_info(path, object content):
+    cdef bytes path_b = cc.as_bytes(path)
+    cdef cc.std_vector[cc.std_string] content_v
     if isinstance(content, (str, bytes,)):
-        return cc.qappend_info(path, <cc.std_string>content)
+        return cc.qappend_info(path_b, cc.as_bytes(content))
     elif isinstance(content, (list, tuple,)):
-        return cc.qappend_info(path, <cc.std_vector[cc.std_string]>content)
+        content_v = [cc.as_bytes(x) for x in content]
+        return cc.qappend_info(path_b, content_v)
     else:
         raise Exception(f"qappend: {type(content)}")
 
-def check_all_files_crc32_info(const cc.std_string& path):
-    return cc.check_all_files_crc32_info(path)
+def check_all_files_crc32_info(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.check_all_files_crc32_info(path_b)
 
 ### ----------------------------------------------------------
 
-def does_regular_file_exist_qar_sync_node(const cc.std_string& path):
-    return cc.does_regular_file_exist_qar_sync_node(path)
+def does_regular_file_exist_qar_sync_node(path):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.does_regular_file_exist_qar_sync_node(path_b)
 
-def does_file_exist_qar_sync_node(const cc.std_string& path):
+def does_file_exist_qar_sync_node(path):
     """
     Return True if file or directory exists.
     """
-    return cc.does_file_exist_qar_sync_node(path)
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.does_file_exist_qar_sync_node(path_b)
 
 @q.timer
 def qar_create_sync_node(
-    const cc.std_string& path_qar, const cc.std_string& path_folder,
+    path_qar, path_folder,
     *, const cc.Bool is_remove_folder_after=False,
 ):
-    return cc.qar_create_sync_node(path_qar, path_folder, is_remove_folder_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_create_sync_node(path_qar_b, path_folder_b, is_remove_folder_after)
 
 @q.timer
-def qar_extract_sync_node(const cc.std_string& path_qar, const cc.std_string& path_folder,
+def qar_extract_sync_node(path_qar, path_folder,
                 *, const cc.Bool is_remove_qar_after=False):
-    return cc.qar_extract_sync_node(path_qar, path_folder, is_remove_qar_after)
+    cdef bytes path_qar_b = cc.as_bytes(path_qar)
+    cdef bytes path_folder_b = cc.as_bytes(path_folder)
+    return cc.qar_extract_sync_node(path_qar_b, path_folder_b, is_remove_qar_after)
 
 @q.timer
-def qcopy_file_sync_node(const cc.std_string& path_src, const cc.std_string& path_dst):
-    return cc.qcopy_file_sync_node(path_src, path_dst)
+def qcopy_file_sync_node(path_src, path_dst):
+    cdef bytes path_src_b = cc.as_bytes(path_src)
+    cdef bytes path_dst_b = cc.as_bytes(path_dst)
+    return cc.qcopy_file_sync_node(path_src_b, path_dst_b)
 
-def qcat_sync_node(const cc.std_string& path):
+def qcat_sync_node(path):
     """Return contents of file as `str`"""
-    return <str>cc.qcat_sync_node(path)
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.as_str_std(cc.qcat_sync_node(path_b))
 
-def qcat_bytes_sync_node(const cc.std_string& path):
+def qcat_bytes_sync_node(path):
     """Return contents of file as `bytes`"""
-    return <bytes>cc.qcat_sync_node(path)
+    cdef bytes path_b = cc.as_bytes(path)
+    return <bytes>cc.qcat_sync_node(path_b)
 
-def qload_datatable_sync_node(const cc.std_string& path, const cc.Bool is_par=False):
-    return cc.qload_datatable_sync_node(path, is_par)
+def qload_datatable_sync_node(path, const cc.Bool is_par=False):
+    cdef bytes path_b = cc.as_bytes(path)
+    return cc.qload_datatable_sync_node(path_b, is_par)
 
 ### ----------------------------------------------------------

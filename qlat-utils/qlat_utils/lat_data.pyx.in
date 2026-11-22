@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.lat_data``
@@ -105,22 +105,24 @@ cdef class LatData{{type_ext}}:
         """
         self.view_count -= 1
 
-    def save_node(self, const cc.std_string& path):
-        self.xx.save(path)
+    def save_node(self, path):
+        cdef bytes path_b = cc.as_bytes(path)
+        self.xx.save(path_b)
 
-    def load_node(self, const cc.std_string& path):
+    def load_node(self, path):
+        cdef bytes path_b = cc.as_bytes(path)
         if self.view_count > 0:
             raise ValueError("can't load while being viewed")
-        self.xx.load(path)
+        self.xx.load(path_b)
 
-    def save(self, const cc.std_string& path):
+    def save(self, path):
         """
         save from node 0
         """
         if cc.get_id_node() == 0:
             self.save_node(path)
 
-    def load(self, const cc.std_string& path):
+    def load(self, path):
         """
         load from node 0 and bcast
         """
@@ -132,7 +134,7 @@ cdef class LatData{{type_ext}}:
         return <bytes>self.xx.save_str()
 
     def load_str(self, bytes content):
-        cdef cc.std_string content_std_str = content
+        cdef cc.std_string content_std_str = cc.as_bytes(content)
         return self.xx.load_str(content_std_str)
 
     def bcast(self, cc.Int root=0):
@@ -168,7 +170,7 @@ cdef class LatData{{type_ext}}:
         cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
         assert dim < dim_size
-        return self.xx.info[dim].name
+        return cc.as_str_std(self.xx.info[dim].name)
 
     def dim_size(self, int dim):
         cdef int dim_size = self.xx.info.size()
@@ -180,7 +182,7 @@ cdef class LatData{{type_ext}}:
         cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
         assert dim < dim_size
-        cdef list indices = self.xx.info[dim].indices
+        cdef list indices = [cc.as_str_std(x) for x in self.xx.info[dim].indices]
         if is_filling_default:
             size = self.xx.info[dim].size
             indices_size = len(indices)
@@ -209,13 +211,14 @@ cdef class LatData{{type_ext}}:
             self.xx.info[ndim] = cc.lat_dim_re_im()
         cc.lat_data_alloc(self.xx)
 
-    def set_dim_name(self, int dim, const cc.std_string& name, list indices=None):
+    def set_dim_name(self, int dim, name, list indices=None):
         cdef int dim_size = self.xx.info.size()
         assert 0 <= dim
         assert dim < dim_size
+        cdef bytes name_b = cc.as_bytes(name)
         cdef int size
         cdef int i
-        self.xx.info[dim].name = name
+        self.xx.info[dim].name = name_b
         if indices is None:
             self.xx.info[dim].indices.resize(0)
         else:
@@ -223,7 +226,7 @@ cdef class LatData{{type_ext}}:
             size = len(indices)
             self.xx.info[dim].indices.resize(size)
             for i in range(size):
-                self.xx.info[dim].indices[i] = indices[i]
+                self.xx.info[dim].indices[i] = cc.as_bytes(indices[i])
 
     def dim_names(self):
         """
@@ -231,9 +234,9 @@ cdef class LatData{{type_ext}}:
         """
         cdef int ndim = self.xx.ndim()
         cdef int i
-        return [ self.xx.info[i].name for i in range(ndim) ]
+        return [ cc.as_str_std(self.xx.info[i].name) for i in range(ndim) ]
 
-    def dim_idx(self, int dim, const cc.std_string& idx):
+    def dim_idx(self, int dim, idx):
         """
         Return the Long idx_int that dim.indices[idx_int] contains the std::string& idx.
         Will check if the idx_int is unique.
@@ -241,7 +244,8 @@ cdef class LatData{{type_ext}}:
         For dim.indices does not cover the entire range, will require exact match or (- read_long(idx) - 1).
         Default index being -idx-1.
         """
-        return cc.lat_dim_idx(self.xx.info[dim], idx)
+        cdef bytes idx_b = cc.as_bytes(idx)
+        return cc.lat_dim_idx(self.xx.info[dim], idx_b)
 
     def to_numpy(self):
         return np.asarray(self).copy()
@@ -366,7 +370,7 @@ cdef class LatData{{type_ext}}:
 {{if type_ext == ''}}
 
     def __str__(self):
-        return cc.show(self.xx)
+        return cc.as_str_std(cc.show(self.xx))
 
     def show(self):
         return str(self)
@@ -448,7 +452,7 @@ def mk_lat_data{{type_ext2}}(list info_list, *, cc.Bool is_complex={{type_defaul
     ld.set_info(info_list, is_complex=is_complex)
     return ld
 
-def load_lat_data{{type_ext2}}(const cc.std_string& path):
+def load_lat_data{{type_ext2}}(path):
     """
     Load ``lat_data`` from file ``path``.
     Load from node 0 and bcast.

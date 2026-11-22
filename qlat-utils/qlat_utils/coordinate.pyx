@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.coordinate``
@@ -23,8 +23,7 @@ cdef Py_ssize_t coordinate_dim = 4
 
 cdef Py_ssize_t coordinate_key_index(key):
     """
-    Normalize a component index for the 4-component coordinate types.
-
+    Normalize a component index for the 4-component coordinate types.\n
     Accepts integers (including numpy integers, via ``__index__``), supports
     Python-style negative indexing, and raises ``TypeError`` for non-integers
     and ``IndexError`` for out-of-range keys.
@@ -172,8 +171,7 @@ cdef class Coordinate:
 
     def __len__(self):
         """
-        Return the number of components (always 4).
-
+        Return the number of components (always 4).\n
         This makes ``Coordinate`` a proper sized sequence, so that
         ``np.asarray(c)`` returns the numeric components, and
         ``len(c) == 4``.
@@ -183,8 +181,7 @@ cdef class Coordinate:
     def __bool__(self):
         """
         A ``Coordinate`` is always truthy, even ``Coordinate([0, 0, 0, 0])``,
-        so that ``if c:`` does not silently mean "non-zero coordinate".
-
+        so that ``if c:`` does not silently mean "non-zero coordinate".\n
         Test for the origin explicitly, e.g. ``c == Coordinate()``.
         """
         return True
@@ -407,8 +404,7 @@ cdef class CoordinateD:
 
     def __len__(self):
         """
-        Return the number of components (always 4).
-
+        Return the number of components (always 4).\n
         This makes ``CoordinateD`` a proper sized sequence, so that
         ``np.asarray(c)`` returns the numeric components, and
         ``len(c) == 4``.
@@ -418,8 +414,7 @@ cdef class CoordinateD:
     def __bool__(self):
         """
         A ``CoordinateD`` is always truthy, even ``CoordinateD([0, 0, 0, 0])``,
-        so that ``if c:`` does not silently mean "non-zero coordinate".
-
+        so that ``if c:`` does not silently mean "non-zero coordinate".\n
         Test for the origin explicitly, e.g. ``c == CoordinateD()``.
         """
         return True

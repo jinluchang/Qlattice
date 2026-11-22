@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.rng_state``
@@ -40,12 +40,12 @@ cdef class RngState:
                 self.xx = (<RngState>x).xx
             else:
                 # split into a new rng
-                seed = str(y)
+                seed = cc.as_bytes(str(y))
                 self.xx = cc.RngState((<RngState>x).xx, seed)
         else:
             assert y is None
             # seed a new rng
-            seed = str(x)
+            seed = cc.as_bytes(str(x))
             self.xx = cc.RngState(seed)
 
     def __imatmul__(self, RngState v1):
@@ -64,9 +64,10 @@ cdef class RngState:
     def __deepcopy__(self, memo):
         return self.copy()
 
-    def split(self, const cc.std_string& seed):
+    def split(self, seed):
+        cdef bytes seed_b = cc.as_bytes(seed)
         cdef RngState x = RngState()
-        x.xx = self.xx.split(seed)
+        x.xx = self.xx.split(seed_b)
         return x
 
     def rand_gen(self):

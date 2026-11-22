@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat_utils.timer``
@@ -46,7 +46,7 @@ set_verbose_level(-1)
 ### -------------------------------------------------------------------
 
 cdef void display_py_stdout(const cc.std_string& msg):
-    sys.stdout.write(msg)
+    sys.stdout.write(cc.as_str_std(msg))
     sys.stdout.flush()
 
 def set_display_method(method=None):
@@ -103,8 +103,9 @@ def displayln_info(*args):
 
 cdef class Timer:
 
-    def __cinit__(self, const cc.std_string& fname, cc.Bool is_verbose = False):
-        self.xx = cc.Timer(fname)
+    def __cinit__(self, fname, cc.Bool is_verbose = False):
+        cdef bytes fname_b = cc.as_bytes(fname)
+        self.xx = cc.Timer(fname_b)
 
     def start(self):
         self.xx.start(self.is_verbose)
@@ -148,7 +149,7 @@ def sync_node(str tag=None):
     if tag is None:
         cc.sync_node()
     else:
-        cc.sync_node(tag)
+        cc.sync_node(cc.as_bytes(tag))
 
 def get_time():
     """
@@ -229,7 +230,7 @@ def set_time_budget(time_budget=None):
 ### -------------------------------------------------------------------
 
 def timer_display(str tag = ""):
-    cc.Timer.display(tag)
+    cc.Timer.display(cc.as_bytes(tag))
 
 def timer_autodisplay():
     cc.Timer.autodisplay()
@@ -346,12 +347,12 @@ def timer(object func=None, **kwargs) -> object:
         is_verbose = True
     #
     def f(object func):
-        cdef cc.std_string fname_str
+        cdef bytes fname_b
         if fname is None:
-            fname_str = "py:" + func.__qualname__
+            fname_b = cc.as_bytes("py:" + func.__qualname__)
         else:
-            fname_str = fname
-        cdef cc.Timer qtimer = cc.Timer(fname_str)
+            fname_b = cc.as_bytes(fname)
+        cdef cc.Timer qtimer = cc.Timer(fname_b)
         if not is_timer_fork:
             if not is_flops:
                 @functools.wraps(func)
