@@ -6,3 +6,4 @@ from .types cimport *
 from .coordinate cimport *
 from .mat cimport *
 from .timer cimport *
+from .string_utils cimport *

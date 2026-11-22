@@ -37,6 +37,7 @@ pxd_files = files(
   'rng_state.pxd',
   'coordinate.pxd',
   'qar.pxd',
+  'string_utils.pxd',
   )
 
 py3.install_sources(init_files + py_files + pxd_files, subdir: 'qlat_utils')

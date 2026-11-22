@@ -15,6 +15,8 @@ from libc.stdint cimport int8_t
 
 from cpython.ref cimport PyObject
 
+from .string_utils cimport *
+
 ### --------------------------------------------------------
 
 cdef extern from "qlat-utils/complex.h" namespace "qlat":
