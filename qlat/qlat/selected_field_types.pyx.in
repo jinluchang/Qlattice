@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 {{py:
 type_name_list = [
@@ -229,31 +229,34 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.field_shift(f1.xx, f1.fsel.xx, self.xx, self.fsel.xx, shift.xx, is_reflect)
         return f1
 
-    def read_direct(self, const cc.std_string& fn):
-        cdef cc.Long total_bytes = cc.read_selected_field(self.xx, fn, self.fsel.xx)
+    def read_direct(self, fn):
+        cdef bytes fn_b = as_bytes(fn)
+        cdef cc.Long total_bytes = cc.read_selected_field(self.xx, fn_b, self.fsel.xx)
         if self.fsel is not None:
             assert self.xx.n_elems == self.fsel.xx.n_elems
         return total_bytes
 
-    def write_direct(self, const cc.std_string& fn):
+    def write_direct(self, fn):
+        cdef bytes fn_b = as_bytes(fn)
         assert self.fsel is not None
         assert self.xx.n_elems == self.fsel.xx.n_elems
-        cdef cc.Long total_bytes = cc.write_selected_field(self.xx, fn, self.fsel.xx)
+        cdef cc.Long total_bytes = cc.write_selected_field(self.xx, fn_b, self.fsel.xx)
         return total_bytes
 
-    def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
+    def read_sfr_direct(self, ShuffledFieldsReader sfr, fn):
+        cdef bytes fn_b = as_bytes(fn)
         cdef cc.Long total_bytes = 0
         cdef ShuffledBitSet sbs
         if self.fsel is None:
             if self.view_count > 0:
                 raise ValueError("can't re-init while being viewed")
             self.fsel = FieldSelection()
-            total_bytes = cc.read(sfr.xx, fn, self.xx, self.fsel.xx)
+            total_bytes = cc.read(sfr.xx, fn_b, self.xx, self.fsel.xx)
             if total_bytes == 0:
                 return 0
         else:
             sbs = sfr.get_cache_sbs(self.fsel)
-            total_bytes = cc.read(sfr.xx, fn, sbs.xx, self.xx)
+            total_bytes = cc.read(sfr.xx, fn_b, sbs.xx, self.xx)
             if total_bytes == 0:
                 return 0
             if sbs.xx.fsel.n_elems != self.fsel.xx.n_elems:
@@ -262,7 +265,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
             raise Exception(f"read_sfr_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         return total_bytes
 
-    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn, *, cc.Bool skip_if_exist=False):
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, fn, *, cc.Bool skip_if_exist=False):
+        cdef bytes fn_b = as_bytes(fn)
         if skip_if_exist:
             if sfw.has(fn):
                 return 0
@@ -273,7 +277,7 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
             raise Exception(f"write_sfw_direct: sbs.xx.fsel.n_elems={sbs.xx.fsel.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
         if self.xx.n_elems != self.fsel.xx.n_elems:
             raise Exception(f"write_sfw_direct: self.xx.n_elems={self.xx.n_elems} ; self.fsel.xx.n_elems={self.fsel.xx.n_elems}")
-        cdef cc.Long total_bytes = cc.write(sfw.xx, fn, sbs.xx, self.xx)
+        cdef cc.Long total_bytes = cc.write(sfw.xx, fn_b, sbs.xx, self.xx)
         return total_bytes
 
     def __getstate__(self):

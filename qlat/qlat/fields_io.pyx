@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.fields_io``
@@ -28,7 +28,7 @@ cache_fields_io = q.mk_cache("fields_io")
 cdef class ShuffledFieldsWriter:
 
     def __init__(self, str path not None, Coordinate new_size_node not None, cc.Bool is_append=False):
-        self.xx.init(path, new_size_node.xx, is_append)
+        self.xx.init(as_bytes(path), new_size_node.xx, is_append)
 
     def __del__(self):
         self.close()
@@ -38,7 +38,7 @@ cdef class ShuffledFieldsWriter:
         cache_fields_io.pop(id(self), None)
 
     def path(self):
-        return self.xx.path
+        return as_str_std(self.xx.path)
 
     def new_size_node(self):
         cdef Coordinate x = Coordinate()
@@ -60,10 +60,11 @@ cdef class ShuffledFieldsWriter:
         return sbs
 
     def list(self):
-        return cc.list_fields(self.xx)
+        return [as_str_std(v) for v in cc.list_fields(self.xx)]
 
-    def has(self, const cc.std_string& fn):
-        return cc.does_file_exist_sync_node(self.xx, fn)
+    def has(self, fn):
+        cdef bytes fn_b = as_bytes(fn)
+        return cc.does_file_exist_sync_node(self.xx, fn_b)
 
     def __contains__(self, str fn):
         return self.has(fn)
@@ -84,7 +85,7 @@ cdef class ShuffledFieldsReader:
     def __init__(self, str path not None, Coordinate new_size_node=None):
         if new_size_node is None:
             new_size_node = Coordinate()
-        self.xx.init(path, new_size_node.xx)
+        self.xx.init(as_bytes(path), new_size_node.xx)
 
     def __del__(self):
         self.close()
@@ -94,7 +95,7 @@ cdef class ShuffledFieldsReader:
         cache_fields_io.pop(id(self), None)
 
     def path(self):
-        return self.xx.path
+        return as_str_std(self.xx.path)
 
     def new_size_node(self):
         cdef Coordinate x = Coordinate()
@@ -116,24 +117,26 @@ cdef class ShuffledFieldsReader:
         return sbs
 
     def list(self):
-        return cc.list_fields(self.xx)
+        return [as_str_std(v) for v in cc.list_fields(self.xx)]
 
     def has_duplicates(self):
         return cc.has_duplicates(self.xx)
 
-    def has(self, const cc.std_string& fn):
-        return cc.does_file_exist_sync_node(self.xx, fn)
+    def has(self, fn):
+        cdef bytes fn_b = as_bytes(fn)
+        return cc.does_file_exist_sync_node(self.xx, fn_b)
 
     def __contains__(self, str fn):
         return self.has(fn)
 
-    def is_sparse_field(self, cc.std_string& fn):
+    def is_sparse_field(self, fn):
         """
         return True if `fn in self` and is sparse field.
         """
-        return cc.is_sparse_field_sync_node(self.xx, fn)
+        cdef bytes fn_b = as_bytes(fn)
+        return cc.is_sparse_field_sync_node(self.xx, fn_b)
 
-    def read_as_char(self, cc.std_string& fn):
+    def read_as_char(self, fn):
         """
         return SelectedFieldChar or FieldChar.
         return None if `fn not in self`.
@@ -195,7 +198,7 @@ def properly_truncate_fields(str path, cc.Bool is_check_all=False, cc.Bool is_on
         path = path[:-14]
     if new_size_node is None:
         new_size_node = Coordinate()
-    return cc.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node.xx)
+    return [as_str_std(v) for v in cc.properly_truncate_fields_sync_node(as_bytes(path), is_check_all, is_only_check, new_size_node.xx)]
 
 @q.timer
 def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
@@ -209,7 +212,9 @@ def truncate_fields(str path, list fns_keep, Coordinate new_size_node=None):
         path = path[:-14]
     if new_size_node is None:
         new_size_node = Coordinate()
-    ret = cc.truncate_fields_sync_node(path, fns_keep, new_size_node.xx)
+    cdef bytes path_b = as_bytes(path)
+    cdef cc.std_vector[cc.std_string] fns_keep_v = [as_bytes(x) for x in fns_keep]
+    ret = cc.truncate_fields_sync_node(path_b, fns_keep_v, new_size_node.xx)
     if ret != 0:
         raise Exception(f"truncate_fields: error {ret}")
 
@@ -222,7 +227,7 @@ def check_compressed_eigen_vectors(str path):
     """
     if path[-14:] == "/geon-info.txt":
         path = path[:-14]
-    return cc.check_compressed_eigen_vectors(path)
+    return cc.check_compressed_eigen_vectors(as_bytes(path))
 
 @q.timer
 def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""):
@@ -230,12 +235,12 @@ def eigen_system_repartition(Coordinate new_size_node, str path, str path_new=""
         path = path[:-14]
     if path_new[-14:] == "/geon-info.txt":
         path_new = path_new[:-14]
-    return cc.eigen_system_repartition(new_size_node.xx, path, path_new)
+    return cc.eigen_system_repartition(new_size_node.xx, as_bytes(path), as_bytes(path_new))
 
 ## --------------
 
 def show_all_shuffled_fields_writer():
-    return cc.show_all_shuffled_fields_writer()
+    return [as_str_std(v) for v in cc.show_all_shuffled_fields_writer()]
 
 ## -------------------------------------------------------------------
 

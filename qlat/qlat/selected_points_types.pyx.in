@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 {{py:
 type_name_list = [
@@ -134,7 +134,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             raise Exception(f"SelectedPoints.__init__ {args}")
 
     def init_from_n_points(self, cc.Long n_points, cc.Int multiplicity, str points_dist_type):
-        self.xx.init(n_points, multiplicity, cc.read_points_dist_type(points_dist_type))
+        self.xx.init(n_points, multiplicity, cc.read_points_dist_type(as_bytes(points_dist_type)))
 
     def init_from_psel(self, PointsSelection psel, cc.Int multiplicity=0):
         self.psel = psel
@@ -219,16 +219,18 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         cc.qswap_cast(self.xx, f1.xx)
 
     def save(
-        self, const cc.std_string& path,
+        self, path,
         const cc.Bool is_sync_node=True,
     ):
-        cc.save_selected_points(self.xx, path, is_sync_node)
+        cdef bytes path_b = as_bytes(path)
+        cc.save_selected_points(self.xx, path_b, is_sync_node)
 
     def load(
-        self, const cc.std_string& path,
+        self, path,
         const cc.Bool is_sync_node=True,
     ):
-        cc.load_selected_points(self.xx, path, is_sync_node)
+        cdef bytes path_b = as_bytes(path)
+        cc.load_selected_points(self.xx, path_b, is_sync_node)
 
     @q.timer
     def bcast(
@@ -262,7 +264,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         """
         only need str at node 0
         """
-        cdef cc.std_string content_std_str = content
+        cdef cc.std_string content_std_str = as_bytes(content)
         return cc.load_selected_points_str(self.xx, content_std_str, is_sync_node)
 
 {{if name in real_d_type_name_list}}
@@ -306,14 +308,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         """
         points_dist_type in [ "g", "l", "r", ]
         """
-        return cc.show(self.xx.points_dist_type)
+        return as_str_std(cc.show(self.xx.points_dist_type))
 
     @points_dist_type.setter
     def points_dist_type(self, str value):
         """
         set the points_dist_type flag
         """
-        self.xx.points_dist_type = cc.read_points_dist_type(value)
+        self.xx.points_dist_type = cc.read_points_dist_type(as_bytes(value))
 
     @property
     def n_points(self):

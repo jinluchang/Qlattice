@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 {{py:
 type_name_list = [
@@ -323,24 +323,28 @@ cdef class Field{{name}}(FieldBase):
             cc.reflect_field(f1.xx)
         return f1
 
-    def read_direct(self, const cc.std_string& fn, Coordinate new_size_node=None):
+    def read_direct(self, fn, Coordinate new_size_node=None):
+        cdef bytes fn_b = as_bytes(fn)
         if new_size_node is None:
             new_size_node = Coordinate()
-        return cc.read_field(self.xx, fn, new_size_node.xx)
+        return cc.read_field(self.xx, fn_b, new_size_node.xx)
 
-    def write_direct(self, const cc.std_string& fn, Coordinate new_size_node=None):
+    def write_direct(self, fn, Coordinate new_size_node=None):
+        cdef bytes fn_b = as_bytes(fn)
         if new_size_node is None:
             new_size_node = Coordinate()
-        return cc.write_field(self.xx, fn, new_size_node.xx)
+        return cc.write_field(self.xx, fn_b, new_size_node.xx)
 
-    def read_sfr_direct(self, ShuffledFieldsReader sfr, const cc.std_string& fn):
-        return cc.read(sfr.xx, fn, self.xx)
+    def read_sfr_direct(self, ShuffledFieldsReader sfr, fn):
+        cdef bytes fn_b = as_bytes(fn)
+        return cc.read(sfr.xx, fn_b, self.xx)
 
-    def write_sfw_direct(self, ShuffledFieldsWriter sfw, const cc.std_string& fn, *, cc.Bool skip_if_exist=False):
+    def write_sfw_direct(self, ShuffledFieldsWriter sfw, fn, *, cc.Bool skip_if_exist=False):
+        cdef bytes fn_b = as_bytes(fn)
         if skip_if_exist:
             if sfw.has(fn):
                 return 0
-        return cc.write(sfw.xx, fn, self.xx)
+        return cc.write(sfw.xx, fn_b, self.xx)
 
     def __getstate__(self):
         """
