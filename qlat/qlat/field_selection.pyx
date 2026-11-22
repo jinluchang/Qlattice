@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.field_selection``
@@ -334,11 +334,11 @@ cdef class SelectedShufflePlan:
 
     @property
     def points_dist_type_send(self):
-        return cc.show(self.xx.points_dist_type_send)
+        return as_str_std(cc.show(self.xx.points_dist_type_send))
 
     @property
     def points_dist_type_recv(self):
-        return cc.show(self.xx.points_dist_type_recv)
+        return as_str_std(cc.show(self.xx.points_dist_type_recv))
 
     @property
     def num_selected_points_send(self):
@@ -832,7 +832,7 @@ cdef class PointsSelection:
         points_dist_type in [ "g", "f", "l", "r", "o", ]
         Meaning: Global, Full, Local, Random, Other
         """
-        return cc.show(self.xx.points_dist_type)
+        return as_str_std(cc.show(self.xx.points_dist_type))
 
     @points_dist_type.setter
     def points_dist_type(self, str value):
@@ -840,7 +840,7 @@ cdef class PointsSelection:
         set the points_dist_type flag
         value in [ "g", "f", "l", "r", "o", ]
         """
-        self.xx.points_dist_type = cc.read_points_dist_type(value)
+        self.xx.points_dist_type = cc.read_points_dist_type(as_bytes(value))
 
     @property
     def total_site(self):
@@ -955,19 +955,21 @@ cdef class PointsSelection:
         ld.bcast()
         self.from_lat_data(ld)
 
-    def save(self, const cc.std_string& path, *, is_sync_node=True):
+    def save(self, path, *, is_sync_node=True):
+        cdef bytes path_b = as_bytes(path)
         if is_sync_node:
-            cc.save_points_selection_info(self.xx, path)
+            cc.save_points_selection_info(self.xx, path_b)
         else:
-            cc.save_points_selection(self.xx, path)
+            cc.save_points_selection(self.xx, path_b)
 
-    def load(self, const cc.std_string& path, Geometry geo=None, *, is_sync_node=True):
+    def load(self, path, Geometry geo=None, *, is_sync_node=True):
+        cdef bytes path_b = as_bytes(path)
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         if is_sync_node:
-            cc.assign_direct(self.xx, cc.load_points_selection_info(path))
+            cc.assign_direct(self.xx, cc.load_points_selection_info(path_b))
         else:
-            cc.assign_direct(self.xx, cc.load_points_selection(path))
+            cc.assign_direct(self.xx, cc.load_points_selection(path_b))
         cdef Coordinate total_site
         if path.endswith(".lati"):
             if geo is not None:
@@ -1256,14 +1258,16 @@ cdef class FieldSelection:
     def to_psel_local(self):
         return PointsSelection(self)
 
-    def save(self, const cc.std_string& path):
-        cdef cc.Long total_bytes = cc.write_field_selection(self.xx, path)
+    def save(self, path):
+        cdef bytes path_b = as_bytes(path)
+        cdef cc.Long total_bytes = cc.write_field_selection(self.xx, path_b)
         return total_bytes
 
-    def load(self, const cc.std_string& path):
+    def load(self, path):
+        cdef bytes path_b = as_bytes(path)
         if self.view_count > 0:
             raise Exception("FieldSelection: self.view_count>0")
-        cdef cc.Long total_bytes = cc.read_field_selection(self.xx, path)
+        cdef cc.Long total_bytes = cc.read_field_selection(self.xx, path_b)
         return total_bytes
 
     @property

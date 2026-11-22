@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.hmc_stats``
@@ -35,13 +35,13 @@ def display_gm_force_magnitudes(GaugeMomentum gm_force, cc.Int n_elems):
 
 def save_gm_force_magnitudes_list(fn):
     q.mk_file_dirs_info(fn)
-    cc.save_gm_force_magnitudes_list(fn)
+    cc.save_gm_force_magnitudes_list(as_bytes(fn))
 
 def display_gauge_field_info_table_with_wilson_flow(
     fn_gf_info, fn_wilson_flow_energy, GaugeField gf, cc.RealD flow_time,
     cc.Int flow_steps, cc.Int steps, cc.RealD c1=0.0
 ):
     cc.display_gauge_field_info_table_with_wilson_flow(
-        fn_gf_info, fn_wilson_flow_energy, gf.xxx().val(),
+        as_bytes(fn_gf_info), as_bytes(fn_wilson_flow_energy), gf.xxx().val(),
         flow_time, flow_steps, steps, c1
     )

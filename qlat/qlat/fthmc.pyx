@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.fthmc``
@@ -36,7 +36,7 @@ cdef class FlowInfo:
             raise Exception("add_rand_order_flow")
 
     def show(self):
-        return cc.show(self.xx)
+        return as_str_std(cc.show(self.xx))
 
 ### -------------------------------------------------------------------
 

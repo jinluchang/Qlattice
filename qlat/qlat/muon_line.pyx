@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.muon_line``
@@ -50,7 +50,7 @@ def get_number_of_muon_line_interpolations():
     return cc.get_number_of_muon_line_interpolations()
 
 @q.timer
-def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int] dims, object eps):
+def compute_save_muonline_interpolation(path, cc.std_vector[cc.Int] dims, object eps):
     """
     compute and save the muonline interpolation at `path`.
     #
@@ -59,16 +59,17 @@ def compute_save_muonline_interpolation(cc.std_string path, cc.std_vector[cc.Int
     default: epsabs=1e-8 ; epsrel=1e-3
     dims = [ 6, 6, 6, 6, 6, ] ~ [ 16, 16, 16, 16, 16, ]
     """
+    cdef bytes path_b = as_bytes(path)
     cdef cc.IntegrationEps cc_eps
     epsabs, epsrel, mineval, maxeval = eps
     cc_eps.epsabs = epsabs
     cc_eps.epsrel = epsrel
     cc_eps.mineval = mineval
     cc_eps.maxeval = maxeval
-    return cc.compute_save_muonline_interpolation_cc(path, dims, cc_eps)
+    return cc.compute_save_muonline_interpolation_cc(path_b, dims, cc_eps)
 
 @q.timer
-def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.Long] idx_list):
+def load_multiple_muonline_interpolations(path, cc.std_vector[cc.Long] idx_list):
     """
     load muonline interpolation saved at `path`.
     #
@@ -78,7 +79,7 @@ def load_multiple_muonline_interpolations(cc.std_string path, cc.std_vector[cc.L
     f"{path}/{idx:010d}/checkpoint" where f"{path}/{idx:010d}" is the path for `idx` range from 0 up to some `limit`.
     Load all if idx_list is empty.
     """
-    return cc.load_multiple_muonline_interpolations(path, idx_list)
+    return cc.load_multiple_muonline_interpolations(as_bytes(path), idx_list)
 
 def get_muon_line_m_extra_weights():
     """

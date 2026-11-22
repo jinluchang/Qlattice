@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.vector_utils``
@@ -28,25 +28,32 @@ def diff_prop(Prop p0, Prop p1):
 ### gwu / qlat file I/O
 
 def load_gwu_link(GaugeField g0, path):
-    cc.py_load_gwu_link(path, g0.xxx().val(), True)
+    cdef bytes path_b = as_bytes(path)
+    cc.py_load_gwu_link(<const char*>path_b, g0.xxx().val(), True)
 
 def save_gwu_prop(Prop prop, path):
-    cc.py_save_gwu_prop(path, prop.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_save_gwu_prop(<const char*>path_b, prop.xxx().val())
 
 def load_gwu_prop(Prop prop, path):
-    cc.py_load_gwu_prop(path, prop.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_load_gwu_prop(<const char*>path_b, prop.xxx().val())
 
 def save_gwu_noiP(Prop prop, path):
-    cc.py_save_gwu_noiP(path, prop.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_save_gwu_noiP(<const char*>path_b, prop.xxx().val())
 
 def load_gwu_noiP(Prop prop, path):
-    cc.py_load_gwu_noiP(path, prop.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_load_gwu_noiP(<const char*>path_b, prop.xxx().val())
 
 def load_qlat_link(GaugeField g0, path):
-    cc.py_load_qlat_link(path, g0.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_load_qlat_link(path_b, g0.xxx().val())
 
 def save_qlat_link(GaugeField g0, path):
-    cc.py_save_qlat_link(path, g0.xxx().val())
+    cdef bytes path_b = as_bytes(path)
+    cc.py_save_qlat_link(path_b, g0.xxx().val())
 
 ### -------------------------------------------------------------------
 ### source construction
@@ -83,14 +90,22 @@ def meson_corr(Prop p0, Prop p1, filename, cc.Int g0, cc.Int g1, cc.Int tini=0,
         mom_c = Coordinate()
     else:
         mom_c = Coordinate(mom)
-    cc.py_meson_corrE(p0.xxx().val(), p1.xxx().val(), g0, g1, filename,
-                   mom_c.xx, invmode, tini, info, shift_end)
+    cdef bytes filename_b = as_bytes(filename)
+    cdef bytes info_b = as_bytes(info)
+    cc.py_meson_corrE(p0.xxx().val(), p1.xxx().val(), g0, g1, filename_b,
+                   mom_c.xx, invmode, tini, info_b, shift_end)
 
 def corr_dat_create(filename, key_T, dimN, info="NONE"):
-    cc.corr_dat_create(filename, key_T, dimN, info)
+    cdef bytes filename_b = as_bytes(filename)
+    cdef bytes key_T_b = as_bytes(key_T)
+    cdef bytes dimN_b = as_bytes(dimN)
+    cdef bytes info_b = as_bytes(info)
+    cc.corr_dat_create(filename_b, key_T_b, dimN_b, info_b)
 
 def corr_dat_info(filename, info="NONE"):
-    cc.corr_dat_info(filename, info)
+    cdef bytes filename_b = as_bytes(filename)
+    cdef bytes info_b = as_bytes(info)
+    cc.corr_dat_info(filename_b, info_b)
 
 ### -------------------------------------------------------------------
 

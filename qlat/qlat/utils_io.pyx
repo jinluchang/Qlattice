@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.utils_io``
@@ -31,18 +31,19 @@ def release_lock():
     cc.release_lock()
 
 @q.timer
-def obtain_lock(const cc.std_string& path):
-    b = cc.obtain_lock(path)
+def obtain_lock(path):
+    cdef bytes path_b = as_bytes(path)
+    b = cc.obtain_lock(path_b)
     if b:
         obtained_lock_history_list.append(path)
     return b
 
-def qquit(const cc.std_string& msg):
+def qquit(msg):
     """
     clean python cache and then call cc.qquit(msg) (which clear all the C++ level cache and then quit)
     """
     q.clean_cache()
-    return cc.qquit(msg)
+    return cc.qquit(as_bytes(msg))
 
 @q.timer
 def check_time_limit(budget=None):
@@ -58,4 +59,4 @@ def check_time_limit(budget=None):
 
 @q.timer
 def check_stop(fn="stop.txt"):
-    return cc.check_stop(fn)
+    return cc.check_stop(as_bytes(fn))

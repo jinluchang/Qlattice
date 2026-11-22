@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.qcd``
@@ -54,14 +54,16 @@ cdef class GaugeField(FieldColorMatrix):
         """
         Save with the standard NERSC format
         """
-        return cc.save_gauge_field(self.xxx().val(), path)
+        cdef bytes path_b = as_bytes(path)
+        return cc.save_gauge_field(self.xxx().val(), path_b)
 
     @q.timer
     def load(self, path):
         """
         Load with the standard NERSC format
         """
-        return cc.load_gauge_field(self.xxx().val(), path)
+        cdef bytes path_b = as_bytes(path)
+        return cc.load_gauge_field(self.xxx().val(), path_b)
 
     def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
@@ -124,14 +126,16 @@ cdef class GaugeTransform(FieldColorMatrix):
         """
         Save with the format used in CPS
         """
-        return cc.save_gauge_transform_cps(self.xxx().val(), path)
+        cdef bytes path_b = as_bytes(path)
+        return cc.save_gauge_transform_cps(self.xxx().val(), path_b)
 
     @q.timer
     def load_cps(self, path):
         """
         Load with the format used in CPS
         """
-        return cc.load_gauge_transform_cps(self.xxx().val(), path)
+        cdef bytes path_b = as_bytes(path)
+        return cc.load_gauge_transform_cps(self.xxx().val(), path_b)
 
     def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
@@ -261,13 +265,15 @@ def save_gauge_transform_cps(GaugeTransform gt, path):
     """
     Save a GaugeTransform with the format used in CPS.
     """
-    return cc.save_gauge_transform_cps(gt.xxx().val(), path)
+    cdef bytes path_b = as_bytes(path)
+    return cc.save_gauge_transform_cps(gt.xxx().val(), path_b)
 
 def load_gauge_transform_cps(GaugeTransform gt, path):
     """
     Load a GaugeTransform with the format used in CPS.
     """
-    return cc.load_gauge_transform_cps(gt.xxx().val(), path)
+    cdef bytes path_b = as_bytes(path)
+    return cc.load_gauge_transform_cps(gt.xxx().val(), path_b)
 
 def gf_reduce_half(GaugeField gf):
     """

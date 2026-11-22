@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.hlbl_contract``
@@ -61,10 +61,11 @@ def mk_m_z_field_tag(
     return smf_d
 
 def contract_four_pair_labels(list tags):
-    return cc.contract_four_pair_labels(tags)
+    cdef cc.std_vector[cc.std_string] tags_v = [as_bytes(x) for x in tags]
+    return [as_str_std(v) for v in cc.contract_four_pair_labels(tags_v)]
 
 def contract_two_plus_two_pair_labels():
-    return cc.contract_two_plus_two_pair_labels()
+    return [as_str_std(v) for v in cc.contract_two_plus_two_pair_labels()]
 
 @q.timer
 def mk_local_current_from_props(
@@ -180,7 +181,7 @@ def contract_four_pair_no_glb_sum(
         CurrentMoments cm_xy,
         CurrentMoments cm_yx,
         const cc.Int inv_type,
-        const cc.std_vector[cc.std_string]& tags,
+        tags,
         const cc.Long r_sq_limit,
         const cc.RealD muon_mass,
         const cc.RealD z_v
@@ -201,6 +202,7 @@ def contract_four_pair_no_glb_sum(
     x, y are two sampled points (elem of `psel`). `psel_prob` factors are already included.
     z, x_op are summed over with in `fsel`. `fsel_prob` factors are already included.
     """
+    cdef cc.std_vector[cc.std_string] tags_v = [as_bytes(x) for x in tags]
     cdef PointsSelection psel = psel_prob.psel
     cdef PointsSelection psel_d = psel_d_prob.psel
     cdef Geometry geo = psel.geo
@@ -223,7 +225,7 @@ def contract_four_pair_no_glb_sum(
             cm_xy.xx,
             cm_yx.xx,
             inv_type,
-            tags,
+            tags_v,
             r_sq_limit,
             muon_mass,
             z_v,

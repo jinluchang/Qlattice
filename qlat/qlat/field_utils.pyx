@@ -1,4 +1,4 @@
-# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+# cython: binding=True, embedsignature=True
 
 """
 Module ``qlat.field_utils``
@@ -75,7 +75,8 @@ def set_marks_field_all(CommMarks comm_marks, Geometry geo, int multiplicity,
     """
     Set the standard expansion marks for ``comm_marks``.
     """
-    cc.py_set_marks_field_all(comm_marks.xx, geo.xx, multiplicity, tag)
+    cdef bytes tag_b = as_bytes(tag)
+    cc.py_set_marks_field_all(comm_marks.xx, geo.xx, multiplicity, tag_b)
 
 def mk_phase_field(Geometry geo, lmom):
     """
