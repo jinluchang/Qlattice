@@ -137,7 +137,7 @@ RealD gf_gauge_unitarity_error(const GaugeField& gf)
         for (Int j = 0; j < 3; ++j) {
           const ComplexD delta =
               m(i, j) - (i == j ? ComplexD(1.0) : ComplexD(0.0));
-          err = std::max(err, std::abs(delta));
+          err = std::max(err, std::sqrt(qnorm(delta)));
         }
       }
     }
