@@ -23,9 +23,9 @@ direction ``mu`` is ``numpy.roll(..., 1, axis=mu)``: for a link field ``U[mu]``
 the coordinate axis of direction ``mu`` is ``axis=mu`` because ``U[mu]``
 drops the leading direction axis.\n
 The implementation never loops over lattice sites: every site is treated at
-once by NumPy array operations on these shapes.  Loops are only over the
-four lattice directions and over the (short) Taylor order of the matrix
-exponential.
+once by NumPy array operations on these shapes.  Loops are only over the four
+lattice directions, the eight Lie-algebra generators of the random field, and
+the (short) Taylor order of the matrix exponential.
 """
 
 import numpy as np
@@ -33,6 +33,9 @@ import numpy as np
 ### -------------------------------------------------------------------
 
 NC = 3
+
+_ALL_DIRS = (0, 1, 2, 3)
+_SPATIAL_DIRS = (1, 2, 3)
 
 _GELL_MANN = np.asarray(
     [
@@ -57,12 +60,11 @@ def get_dirs(dirs=None):
     ``dirs=(1, 2, 3)`` means the spatial directions only (Coulomb gauge).
     """
     if dirs is None:
-        return (0, 1, 2, 3)
+        return _ALL_DIRS
     dirs = tuple(int(mu) for mu in dirs)
     assert len(dirs) > 0
     assert len(set(dirs)) == len(dirs)
-    for mu in dirs:
-        assert 0 <= mu < 4
+    assert 0 <= min(dirs) and max(dirs) < 4
     return dirs
 
 def get_matrix_adjoint(a):
@@ -92,22 +94,19 @@ def get_su3_exp(h, *, max_order=20):
     unit = np.broadcast_to(np.eye(NC), h.shape)
     t2 = h.copy()
     for order in range(max_order, 1, -1):
-        t3 = unit + t2 / order
-        t2 = h @ t3
+        t2 = h @ (unit + t2 / order)
     return unit + t2
 
 def get_unit_gauge_field(total_site):
     """Return the unit gauge field ``U_mu(x) = 1`` on ``total_site``."""
     shape = (4,) + tuple(total_site) + (NC, NC)
-    U = np.zeros(shape, dtype=np.complex128)
-    for mu in range(4):
-        U[mu] = np.eye(NC)
-    return U
+    return np.broadcast_to(np.eye(NC, dtype=np.complex128), shape).copy()
 
-def _get_random_su3_site_field(shape, rng, scale):
-    """Return a random ``SU(3)`` site field of the given shape (internal)."""
-    coef = rng.standard_normal(tuple(shape) + (8,))
-    h = np.zeros(tuple(shape) + (NC, NC), dtype=np.complex128)
+def _get_random_su3_field(shape, *, seed, scale):
+    """Return a deterministic random ``SU(3)`` field of the given shape (internal)."""
+    rng = np.random.default_rng(seed)
+    coef = rng.standard_normal(shape + (8,))
+    h = np.zeros(shape + (NC, NC), dtype=np.complex128)
     for a in range(8):
         h += 1j * scale * coef[..., a][..., None, None] * (_GELL_MANN[a] / 2)
     return get_su3_exp(h, max_order=30)
@@ -121,18 +120,14 @@ def get_random_gauge_field(total_site, *, seed=0, scale=1.0):
     (``scale=1.0`` gives a strongly disordered field, ``scale=0.0`` the unit
     field).
     """
-    rng = np.random.default_rng(seed)
-    shape = (4,) + tuple(total_site)
-    return _get_random_su3_site_field(shape, rng, scale)
+    return _get_random_su3_field((4,) + tuple(total_site), seed=seed, scale=scale)
 
 def get_random_gauge_transform(total_site, *, seed=0, scale=0.3):
     """
     Return a random ``SU(3)`` gauge transformation on ``total_site``.\n
     The transformation is deterministic given ``seed``.
     """
-    rng = np.random.default_rng(seed)
-    shape = tuple(total_site)
-    return _get_random_su3_site_field(shape, rng, scale)
+    return _get_random_su3_field(tuple(total_site), seed=seed, scale=scale)
 
 ### -------------------------------------------------------------------
 
@@ -147,11 +142,9 @@ def apply_gauge_transform(U, g):
     g = np.asarray(g, dtype=np.complex128)
     assert U.shape[0] == 4
     assert U.shape[1:] == g.shape
-    U_transformed = np.zeros_like(U)
-    for mu in range(4):
-        g_at_x_plus_mu = np.roll(g, -1, axis=mu)
-        U_transformed[mu] = g @ U[mu] @ get_matrix_adjoint(g_at_x_plus_mu)
-    return U_transformed
+    return np.stack(
+        [g @ U[mu] @ get_matrix_adjoint(np.roll(g, -1, axis=mu)) for mu in range(4)]
+    )
 
 def get_staple_sum(U, *, dirs=None):
     """
@@ -178,6 +171,10 @@ def get_local_gauge_gradient(U, *, dirs=None):
     K = get_staple_sum(U, dirs=dirs)
     return get_traceless_antihermitian_part(get_matrix_adjoint(K))
 
+def _get_trace_field(U, mu):
+    """Return ``Re Tr U_mu(x)`` on every site (helper of the functionals)."""
+    return np.trace(U[mu], axis1=-2, axis2=-1).real
+
 def get_gauge_functional(U, *, dirs=None):
     """
     Return the (normalized) gauge functional,\n
@@ -190,7 +187,7 @@ def get_gauge_functional(U, *, dirs=None):
     volume = int(np.prod(U.shape[1:5]))
     total = 0.0
     for mu in dirs:
-        total += np.sum(np.trace(U[mu], axis1=-2, axis2=-1).real)
+        total += np.sum(_get_trace_field(U, mu))
     return float(total / (volume * len(dirs) * NC))
 
 def get_coulomb_functional_list(U):
@@ -200,19 +197,21 @@ def get_coulomb_functional_list(U):
     into one independent ``3``-dimensional Landau functional per time slice.
     """
     U = np.asarray(U, dtype=np.complex128)
-    n_t = U.shape[1]
     n_spatial = int(np.prod(U.shape[2:5]))
-    total = np.zeros(n_t, dtype=np.float64)
-    for mu in (1, 2, 3):
-        total += np.sum(np.trace(U[mu], axis1=-2, axis2=-1).real, axis=(1, 2, 3))
-    return [float(value) for value in total / (n_spatial * 3 * NC)]
+    total = np.zeros(U.shape[1], dtype=np.float64)
+    for mu in _SPATIAL_DIRS:
+        total += np.sum(_get_trace_field(U, mu), axis=(1, 2, 3))
+    return (total / (n_spatial * len(_SPATIAL_DIRS) * NC)).tolist()
+
+def _get_gradient_quad(D):
+    """Return ``Tr[D(x) D(x)^dagger]`` on every site (helper of the divergences)."""
+    return np.trace(D @ get_matrix_adjoint(D), axis1=-2, axis2=-1).real
 
 def get_divergence_from_gradient(D):
     """Return the RMS divergence ``theta`` for a local gradient field ``D``."""
     D = np.asarray(D, dtype=np.complex128)
     volume = int(np.prod(D.shape[:4]))
-    quad = np.trace(D @ get_matrix_adjoint(D), axis1=-2, axis2=-1).real
-    return float(np.sqrt(np.sum(quad) / (volume * NC)))
+    return float(np.sqrt(np.sum(_get_gradient_quad(D)) / (volume * NC)))
 
 def get_gauge_divergence(U, *, dirs=None):
     """
@@ -222,8 +221,7 @@ def get_gauge_divergence(U, *, dirs=None):
     condition ``D(x) = 0`` holds.  This is the convergence measure of
     :func:`fix_landau_gauge` and :func:`fix_coulomb_gauge`.
     """
-    D = get_local_gauge_gradient(U, dirs=dirs)
-    return get_divergence_from_gradient(D)
+    return get_divergence_from_gradient(get_local_gauge_gradient(U, dirs=dirs))
 
 def get_coulomb_divergence_list(U):
     """
@@ -232,12 +230,10 @@ def get_coulomb_divergence_list(U):
     per-slice values are the natural convergence monitor of Coulomb gauge
     fixing.
     """
-    D = get_local_gauge_gradient(U, dirs=(1, 2, 3))
-    D.shape[0]
+    D = get_local_gauge_gradient(U, dirs=_SPATIAL_DIRS)
     n_spatial = int(np.prod(D.shape[1:4]))
-    quad = np.trace(D @ get_matrix_adjoint(D), axis1=-2, axis2=-1).real
-    per_slice = np.sum(quad, axis=(1, 2, 3))
-    return [float(value) for value in np.sqrt(per_slice / (n_spatial * NC))]
+    per_slice = np.sum(_get_gradient_quad(D), axis=(1, 2, 3))
+    return np.sqrt(per_slice / (n_spatial * NC)).tolist()
 
 def get_unitarity_error(U):
     """Return the maximal ``|U U^dagger - 1|`` matrix element of the field."""
@@ -265,14 +261,15 @@ def _fix_gauge(U, *, dirs, gauge_name, max_iter, eps, alpha, verbose):
     U = np.array(U, dtype=np.complex128, copy=True)
     assert alpha > 0.0
     dirs = get_dirs(dirs)
+    # Evaluate the state before the first sweep and refresh it after each one.
+    D = get_local_gauge_gradient(U, dirs=dirs)
+    functional = get_gauge_functional(U, dirs=dirs)
+    divergence = get_divergence_from_gradient(D)
     functional_list = []
     divergence_list = []
     converged = False
     n_iter = 0
     for n_iter in range(1, max_iter + 1):
-        D = get_local_gauge_gradient(U, dirs=dirs)
-        divergence = get_divergence_from_gradient(D)
-        functional = get_gauge_functional(U, dirs=dirs)
         functional_list.append(functional)
         divergence_list.append(divergence)
         if verbose:
@@ -284,9 +281,10 @@ def _fix_gauge(U, *, dirs, gauge_name, max_iter, eps, alpha, verbose):
         if divergence <= eps:
             converged = True
             break
-        g = get_su3_exp(alpha * D)
-        U = apply_gauge_transform(U, g)
-    D = get_local_gauge_gradient(U, dirs=dirs)
+        U = apply_gauge_transform(U, get_su3_exp(alpha * D))
+        D = get_local_gauge_gradient(U, dirs=dirs)
+        functional = get_gauge_functional(U, dirs=dirs)
+        divergence = get_divergence_from_gradient(D)
     info = {
         "gauge": gauge_name,
         "dirs": dirs,
@@ -295,8 +293,8 @@ def _fix_gauge(U, *, dirs, gauge_name, max_iter, eps, alpha, verbose):
         "max_iter": max_iter,
         "eps": eps,
         "alpha": alpha,
-        "functional": get_gauge_functional(U, dirs=dirs),
-        "divergence": get_divergence_from_gradient(D),
+        "functional": functional,
+        "divergence": divergence,
         "functional_list": functional_list,
         "divergence_list": divergence_list,
     }
@@ -314,7 +312,7 @@ def fix_landau_gauge(U, *, max_iter=10000, eps=1e-10, alpha=0.1, verbose=False):
     """
     return _fix_gauge(
         U,
-        dirs=(0, 1, 2, 3),
+        dirs=_ALL_DIRS,
         gauge_name="landau",
         max_iter=max_iter,
         eps=eps,
@@ -336,7 +334,7 @@ def fix_coulomb_gauge(U, *, max_iter=10000, eps=1e-10, alpha=0.1, verbose=False)
     """
     return _fix_gauge(
         U,
-        dirs=(1, 2, 3),
+        dirs=_SPATIAL_DIRS,
         gauge_name="coulomb",
         max_iter=max_iter,
         eps=eps,
