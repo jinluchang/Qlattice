@@ -44,6 +44,7 @@ in stdenv.mkDerivation rec {
     ./patches/cps-darwin-version-shadow.patch
     ./patches/cps-darwin-memalign.patch
     ./patches/cps-darwin-macdeps.patch
+    ./patches/cps-darwin-ptforce-malloc.patch
   ];
 
   enableParallelBuilding = true;

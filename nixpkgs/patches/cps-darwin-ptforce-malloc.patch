@@ -1,0 +1,28 @@
+From: qlattice CPS darwin port (task-57)
+Subject: [PATCH] pt_force.C: replace <malloc.h> with <stdlib.h> (macOS has no malloc.h)
+
+The pinned CPS revision includes the glibc-only <malloc.h> in
+cps_pp/src/util/parallel_transport/pt_base/qmp/pt_force.C (line 9).  That
+directory has no explicit source list in its Makefile, so Makefile.rules'
+wildcard picks the file up and the mac brew build compiles it (the nix build
+compiles it too, but glibc provides <malloc.h> there).  macOS/BSD libc has no
+<malloc.h>, so the mac build fails with:
+
+  pt_force.C:9:10: fatal error: 'malloc.h' file not found
+
+The file only needs standard declarations (it allocates through pt_amalloc()
+from the parallel-transport headers; the earlier includes already bring in the
+C++ standard library), so <stdlib.h> is the portable replacement; Linux
+behaviour is unchanged (malloc/free declarations are the same).
+
+--- a/cps_pp/src/util/parallel_transport/pt_base/qmp/pt_force.C
++++ b/cps_pp/src/util/parallel_transport/pt_base/qmp/pt_force.C
+@@ -6,7 +6,7 @@
+ */
+ 
+ #include <string.h>
+-#include <malloc.h>
++#include <stdlib.h>
+ #include "asq_data_types.h"
+ #include "pt_int.h"
+ 
