@@ -23,6 +23,13 @@ mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
 export mpi_options
 
+# Per-test wall-clock cap.  The default keeps the CI/CPU cap; a slow
+# local run (e.g. a CUDA variant on a contended GPU) can opt in to a
+# longer cap with QLAT_EXAMPLE_TEST_TIMEOUT=180m.
+QLAT_EXAMPLE_TEST_TIMEOUT ?= 60m
+
+export QLAT_EXAMPLE_TEST_TIMEOUT
+
 tests_cps = \
 			cps-qlat-io-test.log \
 			sparse-from-cps/log.txt
@@ -38,7 +45,7 @@ update-sources:
 %.log: %.py
 	-rm -rfv "$<".p
 	-mkdir -p "$<".p
-	-time ( cd "$<".p ; fn_py="$<" ; fn_json="$${fn_py%.py}.log.json" ; cp -v ../"$$fn_py" ../"$$fn_json" . ; q_verbose=1 timeout -s KILL 60m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$$fn_py" --test -qmp-geom 1 1 1 2 >log.full.txt 2>&1 ; grep -a "CHECK: \|INFO: \|WARNING" log.full.txt >log.txt ; grep -a "CHECK: " log.txt >log.check.txt.new ; grep -a "CHECK: " ../"$@" >log.check.txt )
+	-time ( cd "$<".p ; fn_py="$<" ; fn_json="$${fn_py%.py}.log.json" ; cp -v ../"$$fn_py" ../"$$fn_json" . ; q_verbose=1 timeout -s KILL $(QLAT_EXAMPLE_TEST_TIMEOUT) mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$$fn_py" --test -qmp-geom 1 1 1 2 >log.full.txt 2>&1 ; grep -a "CHECK: \|INFO: \|WARNING" log.full.txt >log.txt ; grep -a "CHECK: " log.txt >log.check.txt.new ; grep -a "CHECK: " ../"$@" >log.check.txt )
 	-if diff "$<".p/log.check.txt "$<".p/log.check.txt.new ; then echo passed ; else tail -n 100 "$<".p/log.full.txt ; echo failed ; fi
 	-rm -rfv "$@"
 	-touch "$@"
