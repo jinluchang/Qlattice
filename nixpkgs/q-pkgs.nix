@@ -30,6 +30,15 @@ in let
   inherit (opts) version-pypi;
   inherit (opts) options-list qlat-name-list qlat-name-list-file-from-str qlat-name-list-file;
 
+  # Per-test wall-clock cap for the examples test packages.  nix-build does not
+  # pass arbitrary environment variables into the build sandbox, so read the
+  # opt-in variable here at evaluation time and wire it into the derivation
+  # instead.  Unset keeps the Makefile default (60m); a slow local GPU run can
+  # use e.g. QLAT_EXAMPLE_TEST_TIMEOUT=180m on the nix-build command line.
+  example-test-timeout = let
+    t = builtins.getEnv "QLAT_EXAMPLE_TEST_TIMEOUT";
+  in if t == "" then null else t;
+
   mk-overlay = options: final-g: prev-g: let
     opts = mk-options options;
     #
@@ -348,6 +357,7 @@ in let
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      example-test-timeout = example-test-timeout;
       version = qlat-version;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
@@ -356,6 +366,7 @@ in let
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      example-test-timeout = example-test-timeout;
       version = qlat-version;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
@@ -364,6 +375,7 @@ in let
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      example-test-timeout = example-test-timeout;
       version = qlat-version;
     };
     qlat_docs = py-call-pkg ./qlat_docs.nix {

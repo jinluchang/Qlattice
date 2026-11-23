@@ -18,6 +18,7 @@
 , nvcc-arch ? "sm_86"
 , ngpu ? "1"
 , version ? "current"
+, example-test-timeout ? null
 }:
 
 let
@@ -82,7 +83,9 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
       '' else ''
         export num_proc=$((NIX_BUILD_CORES / 4 + 1))
       ''
-    );
+    ) + (if example-test-timeout == null then "" else ''
+      export QLAT_EXAMPLE_TEST_TIMEOUT=${example-test-timeout}
+    '');
   in extra + ''
     export OMP_NUM_THREADS=2
     echo
